@@ -1,0 +1,46 @@
+{
+  "description": "Lynx-Reservations helper extension. Provides a bunch of useful shortcuts to work with lynx-reservations.com. Firefox only.",
+  "manifest_version": 2,
+  "name": "Lynx Reservations Helper",
+  "version": "1.0",
+  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/beastify",
+  "icons": {},
+  "permissions": [],
+  "browser_action": {
+    "default_title": "Lynx Reservations Helper",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon-light-128.png",
+      "48": "icon-light-48.png",
+      "32": "icon-light-32.png"
+    },
+    "theme_icons": [
+      {
+        "light": "icons/icon-light-128.png",
+        "dark": "icons/icon-dark-128.png",
+        "size": 128
+      },
+      {
+        "light": "icons/icon-light-48.png",
+        "dark": "icons/icon-dark-48.png",
+        "size": 48
+      },
+      {
+        "light": "icons/icon-light-32.png",
+        "dark": "icons/icon-dark-32.png",
+        "size": 32
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.lynx-reservations.com/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": []
+}
