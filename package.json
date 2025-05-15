@@ -1,7 +1,7 @@
 {
-  "name": "lynx-helper-firefox-extension",
+  "name": "panpac-helper-browser-extension",
   "version": "1.0.0",
-  "description": "Firefox extension to use as helper for lynx-reservations.com",
+  "description": "Firefox/Chrome extension to use as helper for Pan PAC day to day tasks",
   "main": "index.js",
   "scripts": {
     "build-tsc": "tsc",
@@ -12,7 +12,10 @@
   "author": "Fred Ghilini <fredguile@gmail.com>",
   "license": "UNLICENSED",
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "dependencies": {},
   "devDependencies": {
+    "@types/firefox-webext-browser": "^120.0.4",
+    "@types/node": "^22.15.2",
     "copyfiles": "^2.4.1",
     "prettier": "^3.5.3",
     "typescript": "~5.7.2"
