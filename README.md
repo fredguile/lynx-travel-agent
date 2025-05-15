@@ -1,2 +1,3 @@
-# lynx-helper-firefox-extension
-Firefox extension to use as helper for lynx-reservations.com
+# panpac-helper-browser-extension
+
+Firefox/Chrome extension to use as helper for Pan PAC day to day tasks.
