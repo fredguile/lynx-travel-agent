@@ -1,0 +1,454 @@
+{
+  "name": "PAN Pac RAG Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "output": "raw",
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        760
+      ],
+      "id": "05dc57e5-c675-47b6-9b76-9eb98f22b663",
+      "name": "Microsoft Outlook Trigger",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "RutuavUZplF8LMED",
+          "name": "PAN Pacific CM account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen3:1.7b",
+        "options": {
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        320,
+        1040
+      ],
+      "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cuAn52puN6Y1j2cv",
+          "name": "Ollama Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da65d650-cf5b-4341-baa7-64f214ada989",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e466ebc8-965d-456f-a289-83ada6b5b079",
+              "name": "conversationId",
+              "value": "={{ $json.conversationId }}",
+              "type": "string"
+            },
+            {
+              "id": "acde0860-c41d-4820-9065-52fd7bfab6c3",
+              "name": "receivedDateTime",
+              "value": "={{ $json.receivedDateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "b01c5bcc-32a8-4e46-82cb-45ca4efd337d",
+              "name": "from",
+              "value": "={{ $json.from }}",
+              "type": "object"
+            },
+            {
+              "id": "5a87460c-8708-4e2a-89da-bfd346c86299",
+              "name": "toRecipients",
+              "value": "={{ $json.toRecipients }}",
+              "type": "array"
+            },
+            {
+              "id": "04b25562-6089-4f6a-8723-2ae829351cb7",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "fb2eb08d-94f0-469a-a1d5-d46f9fba52b7",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        760
+      ],
+      "id": "4d5a47c6-6c63-4135-8ed1-a801b97a4555",
+      "name": "Select Relevant Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Determine if following email content is related to a travel booking or not, evaluating all provided metadata:\n\nId: {{ $json.id }}\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}\n\nInstructions:\n- ALWAYS use the output parser to produce JSON as output. NEVER send empty response.\n- Set \"inferredLanguage\" JSON attribute with value \"french\" or \"english\" whether it was inferred that the email was written in french or english.\n- Set \"bookingRelated\" JSON attribute to true if email content is related to a travel booking, set to false otherwise.\n- Set \"bookingReference\" JSON attribute with the booking reference found in email subject or body. Booking reference is a plain string containing only alphanumerical characters, no spaces, possibly following a text pattern such as having a common prefix or suffix. It's generally found after the customer lastname.\n- If the email isn't booking-related or if no booking reference is found, DO NOT include attribute \"bookingReference\" in JSON response as it is optional.\n- Apply tool \"Format Response as JSON\" to the resulting output.\n- Use memory to store the previously found booking references. This will help determine future booking references that obey to the same text pattern.",
+        "hasOutputParser": true,
+        "options": {
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        440,
+        760
+      ],
+      "id": "959c52e7-182e-41ed-a061-cd36b4179703",
+      "name": "Classify booking-related emails",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Select Relevant Fields').first().json.id,\n  conversationId: $('Select Relevant Fields').first().json.conversationId,\n  bookingReference: input.bookingReference,\n  receivedAt: $('Select Relevant Fields').first().json.receivedDateTime,\n  from: $('Select Relevant Fields').first().json.from.emailAddress.name + '<' + $('Select Relevant Fields').first().json.from.emailAddress.address + '>',\n  subject: $('Select Relevant Fields').first().json.subject,\n  body: stripHtmlTags($('Select Relevant Fields').first().json.body.content)\n}\n\nreturn bookingKnowledge;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        760
+      ],
+      "id": "6408b463-7b76-4909-9100-c65dde890a53",
+      "name": "Build booking knowledge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1394,
+        960
+      ],
+      "id": "e78f3e32-f7e9-40a8-b017-3af7ff05ab94",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "chunkSize": 2048,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1464,
+        780
+      ],
+      "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.body }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "emailId",
+                "value": "={{ $json.emailId }}"
+              },
+              {
+                "name": "conversationId",
+                "value": "={{ $json.conversationId }}"
+              },
+              {
+                "name": "bookingReference",
+                "value": "={{ $json.bookingReference }}"
+              },
+              {
+                "name": "emailReceivedAt",
+                "value": "={{ $json.receivedAt }}"
+              },
+              {
+                "name": "from",
+                "value": "={{ $json.from }}"
+              },
+              {
+                "name": "subject",
+                "value": "={{ $json.subject }}"
+              },
+              {
+                "name": "inferredLanguage",
+                "value": "={{ $json.inferredLanguage }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        582.5
+      ],
+      "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
+      "name": "JSON"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88e185f9-035f-4af4-864d-9786913ee97d",
+              "leftValue": "={{ $json.bookingRelated }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1036,
+        760
+      ],
+      "id": "12b37d1c-c8d8-4927-97f9-3598318a5db3",
+      "name": "If booking-related email"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "emails",
+          "mode": "list",
+          "cachedResultName": "emails"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        1272,
+        360
+      ],
+      "id": "35cafd11-40b9-4450-a09a-dbad0d9905bb",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "sAMo7ZrRBZVUj1qR",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1256,
+        580
+      ],
+      "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "oG285fotoH2qC7uA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=$execution.id"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        500,
+        1040
+      ],
+      "id": "e5f732ea-1056-4012-9064-e1af8dda43e9",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Microsoft Outlook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Select Relevant Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify booking-related emails",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Relevant Fields": {
+      "main": [
+        [
+          {
+            "node": "Classify booking-related emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify booking-related emails": {
+      "main": [
+        [
+          {
+            "node": "Build booking knowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build booking knowledge": {
+      "main": [
+        [
+          {
+            "node": "If booking-related email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "JSON",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If booking-related email": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Classify booking-related emails",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3ecae682-d395-48c2-82af-ccd858ce8ba0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
+  },
+  "id": "TceuO2eGlvnB50h3",
+  "tags": [
+    {
+      "createdAt": "2025-05-15T22:58:56.006Z",
+      "updatedAt": "2025-05-15T22:58:56.006Z",
+      "id": "xnZ7dohii3rEJcbT",
+      "name": "RAG"
+    }
+  ]
+}
