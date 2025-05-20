@@ -10,7 +10,7 @@ create table emails (
   constraint emails_pkey primary key (id)
 ) TABLESPACE pg_default;
 
-comment on table emails IS 'PAN Pac emails knowledge';
+comment on table emails IS 'PAN Pac emails knowledge (hybrid search)';
 
 create or replace function emails_fts_trigger() returns trigger as $$
 begin
