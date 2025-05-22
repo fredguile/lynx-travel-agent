@@ -1,5 +1,5 @@
 {
-  "name": "PAN Pac RAG Pipeline",
+  "name": "Pan PAC RAG pipeline",
   "nodes": [
     {
       "parameters": {
@@ -31,16 +31,17 @@
     },
     {
       "parameters": {
-        "model": "qwen3:1.7b",
+        "model": "gemma3:12b",
         "options": {
+          "keepAlive": "1h",
           "format": "json"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        320,
-        1040
+        440,
+        980
       ],
       "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
       "name": "Ollama Chat Model",
@@ -113,9 +114,11 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Determine if following email content is related to a travel booking or not, evaluating all provided metadata:\n\nId: {{ $json.id }}\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}\n\nInstructions:\n- ALWAYS use the output parser to produce JSON as output. NEVER send empty response.\n- Set \"inferredLanguage\" JSON attribute with value \"french\" or \"english\" whether it was inferred that the email was written in french or english.\n- Set \"bookingRelated\" JSON attribute to true if email content is related to a travel booking, set to false otherwise.\n- Set \"bookingReference\" JSON attribute with the booking reference found in email subject or body. Booking reference is a plain string containing only alphanumerical characters, no spaces, possibly following a text pattern such as having a common prefix or suffix. It's generally found after the customer lastname.\n- If the email isn't booking-related or if no booking reference is found, DO NOT include attribute \"bookingReference\" in JSON response as it is optional.\n- Apply tool \"Format Response as JSON\" to the resulting output.\n- Use memory to store the previously found booking references. This will help determine future booking references that obey to the same text pattern.",
+        "text": "=Here is my email content:\n\nId: {{ $json.id }}\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}",
         "hasOutputParser": true,
         "options": {
+          "systemMessage": "You're an agent determining if the input email content is related to a travel booking or not. Output must be a JSON object containing 3 JSON properties \n \"bookingRelated\" (boolean, required), \"bookingReference\" (string, optional) and \"inferredLanguage\" (string, required).\n\nInstructions:\n- NEVER send empty response. If the output happens to be \"{\\n\\n\\n}\", retry the inference.\n- Set \"inferredLanguage\" JSON attribute with value \"french\" or \"english\" whether you've inferred that the email is written in french or english. Look at the subject and body for determining this.\n- Set \"bookingRelated\" JSON attribute to true if email content is related to a travel booking, set to false otherwise.\n- Set \"bookingReference\" JSON attribute with the booking reference found in email subject or body. Booking reference is a plain string containing alphanumerical characters, no spaces, usually starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n- If the email isn't booking-related or if no booking reference is found, DO NOT include attribute \"bookingReference\" in JSON response as it is optional.\n- Apply tool \"Format Response as JSON\" to the resulting output.\n- Use memory to store the previously found booking references. This will help determine future booking references that obey to the same text pattern.",
+          "maxIterations": 5,
           "returnIntermediateSteps": false
         }
       },
@@ -299,15 +302,16 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "=$execution.id"
+        "sessionKey": "={{ $json.id }}",
+        "contextWindowLength": 10
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        500,
-        1040
+        620,
+        980
       ],
-      "id": "e5f732ea-1056-4012-9064-e1af8dda43e9",
+      "id": "586bffd9-fd5a-4937-b24a-0e7c1b1ce151",
       "name": "Simple Memory"
     }
   ],
@@ -437,7 +441,7 @@
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "3ecae682-d395-48c2-82af-ccd858ce8ba0",
+  "versionId": "59922220-c800-4dd6-9464-1b2864d2c004",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
