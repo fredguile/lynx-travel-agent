@@ -1,0 +1,1 @@
+export type WhitelistedAIFields = Record<string, Record<string, number[]>>; 

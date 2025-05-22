@@ -1,18 +1,20 @@
 /// <reference types="@types/firefox-webext-browser"/>
-import { fromEvent, filter, switchMap } from 'rxjs';
+import { fromEvent, filter, switchMap, tap } from 'rxjs';
+import { timer, Observable } from 'rxjs';
+import { createLogger, getElementIndexInDocument, isWhitelistedAIField, base64ImageToBlob } from './utils';
+import { createRedCrossElement } from './ui';
+import { ENDPOINTS, SCREENSHOT_RENDER_DELAY_MS } from './constants';
 
-console.log('Content script loaded');
+const log = createLogger('contentScript');
 
-// --- Global Variables ---
-const ANALYSE_USER_CLICK_ENDPOINTS = "http://localhost:5678/webhook/1831ad0f-9c9b-4fb3-99e6-1ce8c0857931";
+log('Content script loaded');
 
 // --- Page Change Detection and Form Extraction ---
 let currentUrl = location.href;
-let lastScreenshotBase64: string | null = null;
 
 function onPageChange() {
     currentUrl = location.href;
-    console.log('Page changed:', currentUrl);
+    log('Page changed:', currentUrl);
 }
 
 // Listen for popstate (back/forward navigation)
@@ -28,89 +30,75 @@ window.addEventListener('popstate', onPageChange);
     } as History[typeof method];
 });
 
-function createRedCrossElement(event: MouseEvent) {
-    // Draw a red cross at the cursor position
-    const crossSize = 20;
-    const cross = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    cross.setAttribute('width', `${crossSize}`);
-    cross.setAttribute('height', `${crossSize}`);
-    cross.style.position = 'absolute';
-    cross.style.left = `${event.pageX - crossSize / 2}px`;
-    cross.style.top = `${event.pageY - crossSize / 2}px`;
-    cross.style.pointerEvents = 'none';
-    cross.style.zIndex = '999999';
-    cross.innerHTML = `
-        <line x1="0" y1="0" x2="${crossSize}" y2="${crossSize}" stroke="red" stroke-width="3" />
-        <line x1="${crossSize}" y1="0" x2="0" y2="${crossSize}" stroke="red" stroke-width="3" />
-    `;
-
-    return cross;
-}
-
 // Listen for clicks on the document
 fromEvent<MouseEvent>(window, 'click').pipe(
-    filter((event: MouseEvent) => {
-        const el = event.target as HTMLElement | null;
-        return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT");
-    }),
+    tap((event: MouseEvent) => log("Clicked element index:", getElementIndexInDocument(event.target as HTMLElement))),
+    filter((event: MouseEvent) => isWhitelistedAIField(currentUrl, event)),
     switchMap((event: MouseEvent) => {
         // Mark the click location with a red cross
         const cross = createRedCrossElement(event);
         document.body.appendChild(cross);
 
         // Wait a short moment to ensure the cross is rendered
-        return new Promise<void>((resolve) => setTimeout(resolve, 32)).then(() => {
-            return browser.runtime.sendMessage({ action: 'capture_screenshot' })
-                .then((response) => {
-                    // Remove the cross after screenshot
-                    if (cross.parentNode) {
-                        cross.parentNode.removeChild(cross);
-                    }
+        return timer(SCREENSHOT_RENDER_DELAY_MS).pipe(
+            switchMap(() => new Observable<void>((subscriber) => {
+                const controller = new AbortController();
+                browser.runtime.sendMessage({ action: 'capture_screenshot' })
+                    .then((response) => {
+                        // Remove the cross after screenshot
+                        if (cross.parentNode) {
+                            cross.parentNode.removeChild(cross);
+                        }
 
-                    if (response && response.screenshot) {
-                        lastScreenshotBase64 = response.screenshot;
+                        if (!response || !response.screenshot) {
+                            subscriber.complete();
+                            return;
+                        }
 
                         // Convert base64 to binary Blob
-                        let byteString: string;
-                        if (lastScreenshotBase64?.startsWith('data:image/')) {
-                            byteString = atob(lastScreenshotBase64.split(',')[1]);
-                        } else {
-                            byteString = atob(lastScreenshotBase64 || '');
-                        }
-                        const ab = new ArrayBuffer(byteString.length);
-                        const ia = new Uint8Array(ab);
-                        for (let i = 0; i < byteString.length; i++) {
-                            ia[i] = byteString.charCodeAt(i);
-                        }
-                        const blob = new Blob([ab], { type: 'image/png' });
+                        const blob = base64ImageToBlob(response.screenshot);
 
                         // Prepare multipart/form-data
                         const formData = new FormData();
                         formData.append('screenshot', blob, 'screenshot.png');
-
-                        // Post the screenshot as binary (multipart/form-data) with currentUrl as query string
-                        const urlWithQuery = `${ANALYSE_USER_CLICK_ENDPOINTS}?currentUrl=${encodeURIComponent(currentUrl)}`;
-                        return fetch(urlWithQuery, {
+                        log('Sending screenshot to:', ENDPOINTS.ANALYSE_USER_CLICK);
+                        fetch(`${ENDPOINTS.ANALYSE_USER_CLICK}?currentUrl=${encodeURIComponent(currentUrl)}`, {
                             method: 'POST',
                             body: formData,
+                            signal: controller.signal,
                         })
                             .then(res => res.text())
                             .then(json => {
-                                console.log('Server response:', json);
+                                log('Server response:', json);
+                                subscriber.next();
+                                subscriber.complete();
                             })
                             .catch(err => {
-                                console.error('Error posting screenshot:', err);
+                                if (err.name === 'AbortError') {
+                                    log('Fetch aborted');
+                                } else {
+                                    log('Error posting screenshot:', err);
+                                }
+                                subscriber.error(err);
                             });
-                    }
-                })
-                .catch((err) => {
-                    console.error('Failed to capture screenshot:', err);
-                    // Remove the cross if error
+
+                    })
+                    .catch((err) => {
+                        if (cross.parentNode) {
+                            cross.parentNode.removeChild(cross);
+                        }
+                        log('Failed to capture screenshot:', err);
+                        subscriber.error(err);
+                    });
+                // Teardown logic: abort fetch if unsubscribed
+                return () => {
                     if (cross.parentNode) {
                         cross.parentNode.removeChild(cross);
                     }
-                });
-        });
+                    controller.abort();
+                };
+            }))
+        );
     })
 ).subscribe();
 
