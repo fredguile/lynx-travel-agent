@@ -1,6 +1,6 @@
 # panpac-supabase
 
-Supabase assets and configuration for the PAN Pac extension.
+Supabase assets and configuration for the Pan PAC extension.
 
 ## Prerequisites
 
