@@ -1,0 +1,41 @@
+{
+  "description": "Pan PAC helper extension to AI autocomplete usual day to day tasks. Firefox only for now.",
+  "manifest_version": 2,
+  "name": "Pan PAC AI Helper",
+  "version": "1.0",
+  "homepage_url": "https://github.com/fredguile/panpac-helper-browser-extension",
+  "icons": {
+    "128": "src/icons/icon-light-128.png",
+    "48": "src/icons/icon-light-48.png",
+    "32": "src/icons/icon-light-32.png"
+  },
+  "browser_action": {
+    "default_title": "Pan PAC AI Helper",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "128": "src/icons/icon-light-128.png",
+      "48": "src/icons/icon-light-48.png",
+      "32": "src/icons/icon-light-32.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.lynx-reservations.com/*",
+        "*://assistance.comptoir.fr/*"
+      ],
+      "js": [
+        "src/contentScript.ts"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "src/background.ts"
+    ]
+  },
+  "permissions": [
+    "<all_urls>",
+    "activeTab"
+  ]
+}
