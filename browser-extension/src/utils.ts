@@ -1,4 +1,6 @@
+import { createRoot, Root } from 'react-dom/client';
 import debug from 'debug';
+
 import { WHITELISTED_AI_FIELDS } from './constants';
 import type { WhitelistedAIFields } from './types';
 
@@ -114,4 +116,17 @@ export function findElementLabel(el: HTMLElement): string | null {
     }
 
     return null;
+}
+
+/**
+ * Renders a React component into a new div appended to the document body.
+ * @param component The React element to render.
+ * @returns An object containing the React root and the container div.
+ */
+export function renderReactComponent(component: React.ReactElement): { reactRoot: Root, el: HTMLDivElement } {
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    const reactRoot = createRoot(el);
+    reactRoot.render(component);
+    return { reactRoot, el };
 }

@@ -25,7 +25,7 @@
         "*://assistance.comptoir.fr/*"
       ],
       "js": [
-        "src/contentScript.ts"
+        "src/contentScript.tsx"
       ]
     }
   ],

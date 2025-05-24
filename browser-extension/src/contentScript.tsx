@@ -1,15 +1,16 @@
 /// <reference types="@types/firefox-webext-browser"/>
-import { fromEvent, filter, switchMap, tap } from 'rxjs';
-import { timer, Observable } from 'rxjs';
-import { createLogger, findElementLabel, isWhitelistedAIField, base64ImageToBlob } from './utils';
-import { createRedCrossElement } from './ui';
+import { fromEvent, filter, switchMap, tap, timer, Observable } from 'rxjs';
+
 import { ENDPOINTS, SCREENSHOT_RENDER_DELAY_MS } from './constants';
+import { createLogger, isWhitelistedAIField, base64ImageToBlob, renderReactComponent } from './utils';
+import { wrapElementWithAutosuggest } from './ui';
+import { RedCross } from './ui/components/RedCross';
 
 const log = createLogger('contentScript');
 
 log('Content script loaded');
 
-// --- Page Change Detection and Form Extraction ---
+// --- Page Change Detection ---
 let currentUrl = location.href;
 
 function onPageChange() {
@@ -30,14 +31,20 @@ window.addEventListener('popstate', onPageChange);
     } as History[typeof method];
 });
 
+// Highlight whitelisted fields with AI autosuggest on hover
+fromEvent<MouseEvent>(document, 'mouseover').pipe(
+    filter((event: MouseEvent) => event.target instanceof HTMLElement),
+    filter((event: MouseEvent) => isWhitelistedAIField(currentUrl, event)),
+    tap((event: MouseEvent) => wrapElementWithAutosuggest(event.target as HTMLElement))
+).subscribe();
+
 // Listen for clicks on the document
 fromEvent<MouseEvent>(window, 'click').pipe(
     // tap((event: MouseEvent) => log("Element label:", findElementLabel(event.target as HTMLElement))),
     filter((event: MouseEvent) => isWhitelistedAIField(currentUrl, event)),
     switchMap((event: MouseEvent) => {
-        // Mark the click location with a red cross
-        const cross = createRedCrossElement(event);
-        document.body.appendChild(cross);
+        // Mark the click location with a RedCross component
+        const { reactRoot: redCrossRoot, el: redCrossEl } = renderReactComponent(<RedCross clientX={event.clientX} clientY={event.clientY} />);
 
         // Wait a short moment to ensure the cross is rendered
         return timer(SCREENSHOT_RENDER_DELAY_MS).pipe(
@@ -46,8 +53,9 @@ fromEvent<MouseEvent>(window, 'click').pipe(
                 browser.runtime.sendMessage({ action: 'capture_screenshot' })
                     .then((response) => {
                         // Remove the cross after screenshot
-                        if (cross.parentNode) {
-                            cross.parentNode.removeChild(cross);
+                        if (redCrossEl.parentNode) {
+                            redCrossRoot.unmount();
+                            redCrossEl.parentNode.removeChild(redCrossEl);
                         }
 
                         if (!response || !response.screenshot) {
@@ -84,16 +92,18 @@ fromEvent<MouseEvent>(window, 'click').pipe(
 
                     })
                     .catch((err) => {
-                        if (cross.parentNode) {
-                            cross.parentNode.removeChild(cross);
+                        if (redCrossEl.parentNode) {
+                            redCrossRoot.unmount();
+                            redCrossEl.parentNode.removeChild(redCrossEl);
                         }
                         log('Failed to capture screenshot:', err);
                         subscriber.error(err);
                     });
                 // Teardown logic: abort fetch if unsubscribed
                 return () => {
-                    if (cross.parentNode) {
-                        cross.parentNode.removeChild(cross);
+                    if (redCrossEl.parentNode) {
+                        redCrossRoot.unmount();
+                        redCrossEl.parentNode.removeChild(redCrossEl);
                     }
                     controller.abort();
                 };
