@@ -16,20 +16,6 @@ export function createLogger(namespace: string) {
 }
 
 /**
- * Gets the index of the given element among all elements of the same tag name in the document.
- * @param element - The HTMLElement to find the index for.
- * @returns The index of the element among elements with the same tag name.
- */
-export function getElementIndexInDocument(element: HTMLElement) {
-    const { tagName } = element;
-    // query all elements with the same tag name
-    const elements = document.querySelectorAll(tagName);
-    // return the index of the element
-    return Array.from(elements).indexOf(element);
-}
-
-
-/**
  * Checks if the clicked element is whitelisted for AI actions based on the current URL, tag name, and element index.
  * @param currentUrl The current page URL
  * @param event The MouseEvent from the click
@@ -41,10 +27,11 @@ export function isWhitelistedAIField(currentUrl: string, event: MouseEvent): boo
     const whitelistForUrl = (WHITELISTED_AI_FIELDS as WhitelistedAIFields)[currentUrl];
     if (!whitelistForUrl) return false;
     const tagName = el.tagName;
-    const whitelistedIndexes = whitelistForUrl[tagName as keyof typeof whitelistForUrl];
-    if (!whitelistedIndexes) return false;
-    const idx = getElementIndexInDocument(el);
-    return whitelistedIndexes.includes(idx);
+    const whitelistedLabels = whitelistForUrl[tagName as keyof typeof whitelistForUrl];
+    if (!whitelistedLabels) return false;
+    const label = findElementLabel(el);
+    if (!label) return false;
+    return whitelistedLabels.includes(label);
 }
 
 /**
@@ -65,4 +52,66 @@ export function base64ImageToBlob(base64Image: string): Blob {
         ia[i] = byteString.charCodeAt(i);
     }
     return new Blob([ab], { type: 'image/png' });
+}
+
+/**
+ * Infers the label for a given form element.
+ * - Only works for form elements (input, select, textarea, etc.).
+ * - If the element has an ID, searches for a <label> with a matching 'for' attribute.
+ * - If no ID and inside a table, looks for a previous column <div> with class 'fieldLabel'.
+ * @param el The HTMLElement to find the label for.
+ * @returns The inferred label string, or null if not found.
+ */
+export function findElementLabel(el: HTMLElement): string | null {
+    // Only consider form elements
+    const formTags = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'FIELDSET'];
+    if (!formTags.includes(el.tagName)) {
+        return null;
+    }
+
+    // If element has an ID, try to find a <label for="...">
+    const id = el.getAttribute('id');
+    if (id) {
+        const label = document.querySelector(`label[for="${id}"]`);
+        if (label) {
+            return label.textContent?.trim() || null;
+        }
+    }
+
+    // If no ID and inside a table, look for previous column with .fieldLabel
+    let parent: HTMLElement | null = el.parentElement;
+    while (parent && parent.tagName !== 'TABLE') {
+        parent = parent.parentElement;
+    }
+    if (parent && parent.tagName === 'TABLE') {
+        // Find the closest ancestor <tr> and <td>
+        let td: HTMLElement | null = el;
+        while (td && td.tagName !== 'TD') {
+            td = td.parentElement;
+        }
+        if (td && td.parentElement) {
+            const tr = td.parentElement;
+            // Find all <td> siblings before this one
+            const tds = Array.from(tr.children);
+            const idx = tds.indexOf(td);
+            // First, look for a div.fieldLabel in previous columns
+            for (let i = idx - 1; i >= 0; i--) {
+                const prevTd = tds[i] as HTMLElement;
+                const labelDiv = prevTd.querySelector('div.fieldLabel');
+                if (labelDiv && labelDiv.textContent) {
+                    return labelDiv.textContent.trim();
+                }
+            }
+            // If not found, check the cell above in the previous row (same column index)
+            const prevTr = tr.previousElementSibling as HTMLElement | null;
+            if (prevTr && prevTr.tagName === 'TR' && idx >= 0 && idx < prevTr.children.length) {
+                const aboveTd = prevTr.children[idx] as HTMLElement;
+                if (aboveTd.classList.contains('fieldLabel')) {
+                    return aboveTd.textContent?.trim() || null;
+                }
+            }
+        }
+    }
+
+    return null;
 }

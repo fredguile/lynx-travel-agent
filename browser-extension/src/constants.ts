@@ -6,13 +6,13 @@ export const ENDPOINTS = {
 
 export const WHITELISTED_AI_FIELDS: WhitelistedAIFields = {
     'https://www.lynx-reservations.com/lynx/#_FILE_UPDATE': {
-        'TEXTAREA': [0]
+        'TEXTAREA': ['Default Remark:']
     },
     'https://www.lynx-reservations.com/lynx/#_FLIGHT_INFO_PANEL': {
-        'INPUT': [231, 239, 240, 241, 242, 243]
+        'INPUT': ['Notes:', 'Flight Number', 'Flight Origin', '	Flight Destination', '	Flight Departure Time', 'Flight Arrival Time']
     },
     'https://www.lynx-reservations.com/lynx/#_FILE_PAX_PANEL': {
-        'INPUT': [179, 180, 181, 186, 187, 188]
+        'INPUT': ['Address:', 'Suburb:', 'Post/Zip Code:', 'Phone No:']
     }
 };
 

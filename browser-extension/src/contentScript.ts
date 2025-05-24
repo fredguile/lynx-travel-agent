@@ -1,7 +1,7 @@
 /// <reference types="@types/firefox-webext-browser"/>
 import { fromEvent, filter, switchMap, tap } from 'rxjs';
 import { timer, Observable } from 'rxjs';
-import { createLogger, getElementIndexInDocument, isWhitelistedAIField, base64ImageToBlob } from './utils';
+import { createLogger, findElementLabel, isWhitelistedAIField, base64ImageToBlob } from './utils';
 import { createRedCrossElement } from './ui';
 import { ENDPOINTS, SCREENSHOT_RENDER_DELAY_MS } from './constants';
 
@@ -32,7 +32,7 @@ window.addEventListener('popstate', onPageChange);
 
 // Listen for clicks on the document
 fromEvent<MouseEvent>(window, 'click').pipe(
-    tap((event: MouseEvent) => log("Clicked element index:", getElementIndexInDocument(event.target as HTMLElement))),
+    // tap((event: MouseEvent) => log("Element label:", findElementLabel(event.target as HTMLElement))),
     filter((event: MouseEvent) => isWhitelistedAIField(currentUrl, event)),
     switchMap((event: MouseEvent) => {
         // Mark the click location with a red cross
