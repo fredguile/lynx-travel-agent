@@ -1,4 +1,5 @@
 import { createRoot, Root } from 'react-dom/client';
+import { createPortal } from 'react-dom';
 import debug from 'debug';
 
 import { WHITELISTED_AI_FIELDS } from './constants';
@@ -23,15 +24,13 @@ export function createLogger(namespace: string) {
  * @param event The MouseEvent from the click
  * @returns true if the element is whitelisted, false otherwise
  */
-export function isWhitelistedAIField(currentUrl: string, event: MouseEvent): boolean {
-    const el = event.target as HTMLElement | null;
-    if (!el) return false;
+export function isWhitelistedAIField(currentUrl: string, element: HTMLElement): boolean {
     const whitelistForUrl = (WHITELISTED_AI_FIELDS as WhitelistedAIFields)[currentUrl];
     if (!whitelistForUrl) return false;
-    const tagName = el.tagName;
+    const tagName = element.tagName;
     const whitelistedLabels = whitelistForUrl[tagName as keyof typeof whitelistForUrl];
     if (!whitelistedLabels) return false;
-    const label = findElementLabel(el);
+    const label = findElementLabel(element);
     if (!label) return false;
     return whitelistedLabels.includes(label);
 }
@@ -119,14 +118,14 @@ export function findElementLabel(el: HTMLElement): string | null {
 }
 
 /**
- * Renders a React component into a new div appended to the document body.
+ * Renders a React component as a portal directly into the specified container (default: document.body).
  * @param component The React element to render.
- * @returns An object containing the React root and the container div.
+ * @param container The DOM node to portal into (default: document.body).
+ * @returns An object containing the React root.
  */
-export function renderReactComponent(component: React.ReactElement): { reactRoot: Root, el: HTMLDivElement } {
-    const el = document.createElement('div');
-    document.body.appendChild(el);
-    const reactRoot = createRoot(el);
-    reactRoot.render(component);
-    return { reactRoot, el };
+export function renderReactPortal(component: React.ReactElement, container: HTMLElement = document.body): { reactRoot: Root } {
+    // Create a root on the container (body)
+    const reactRoot = createRoot(container);
+    reactRoot.render(createPortal(component, container));
+    return { reactRoot };
 }

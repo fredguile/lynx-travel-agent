@@ -1,29 +1,35 @@
-import { AIAutosuggestOverlay } from './ui/components/AIAutosuggestOverlay';
-
-import { createLogger, renderReactComponent } from './utils';
+import { AIAutoSuggest } from './ui/components/AIAutoSuggest';
+import { HTMLElementWrapper } from './ui/components/HTMLElementWrapper';
+import { createLogger, renderReactPortal } from './utils';
 
 const log = createLogger('ui');
 
-export function wrapElementWithAutosuggest(element: HTMLElement) {
-    const rect = element.getBoundingClientRect();
-    const left = rect.left + rect.width / 2 + window.scrollX;
-    const top = rect.top + window.scrollY;
+let wrapperId = 0;
 
-    log('wrapElementWithAutosuggest', { left, top })
+export function wrapElementWithAutoSuggest(currentUrl: string, element: HTMLElement) {
+    log('wrapElementWithAutoSuggest', element);
 
-    let handler: ReturnType<typeof renderReactComponent> | null = null;
+    // Get the parent node before detaching
+    const parentNode = element.parentNode;
+    if (!parentNode) {
+        throw new Error(`Element has no parent node: ${element.outerHTML}`);
+    }
 
-    const onClose = () => {
-        if (handler?.reactRoot) {
-            handler.reactRoot.unmount();
-            handler.el.remove();
-        }
-    };
+    // Create a placeholder to mark the original position
+    const placeholderEl = document.createElement('div');
+    placeholderEl.id = `ai-auto-suggest-placeholder-${wrapperId}`;
+    parentNode.insertBefore(placeholderEl, element);
 
-    handler = renderReactComponent(
-        <AIAutosuggestOverlay left={left} top={top} onClose={onClose} />
+    // Detach element from DOM
+    element.remove();
+
+    // Render AIAutoSuggest with the element as children
+    renderReactPortal(
+        <AIAutoSuggest wrapperId={wrapperId} currentUrl={currentUrl}>
+            <HTMLElementWrapper element={element} />
+        </AIAutoSuggest>,
+        placeholderEl
     );
-    element.parentElement?.appendChild(handler.el);
 
-    return onClose;
+    wrapperId++;
 }

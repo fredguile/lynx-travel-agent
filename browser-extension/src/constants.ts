@@ -5,6 +5,9 @@ export const ENDPOINTS = {
 }
 
 export const WHITELISTED_AI_FIELDS: WhitelistedAIFields = {
+    'https://www.lynx-reservations.com/lynx/#': {
+        'INPUT': ['Supplier']
+    },
     'https://www.lynx-reservations.com/lynx/#_FILE_UPDATE': {
         'TEXTAREA': ['Default Remark:']
     },
