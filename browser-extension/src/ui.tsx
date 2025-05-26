@@ -6,7 +6,7 @@ const log = createLogger('ui');
 
 let wrapperId = 0;
 
-export function wrapElementWithAutoSuggest(currentUrl: string, element: HTMLElement) {
+export function wrapElementWithAutoSuggest(currentUrl: string, currentBookingRef: string, element: HTMLElement) {
     log('wrapElementWithAutoSuggest', element);
 
     // Get the parent node before detaching
@@ -25,7 +25,7 @@ export function wrapElementWithAutoSuggest(currentUrl: string, element: HTMLElem
 
     // Render AIAutoSuggest with the element as children
     renderReactPortal(
-        <AIAutoSuggest wrapperId={wrapperId} currentUrl={currentUrl}>
+        <AIAutoSuggest wrapperId={wrapperId} currentUrl={currentUrl} currentBookingRef={currentBookingRef}>
             <HTMLElementWrapper element={element} />
         </AIAutoSuggest>,
         placeholderEl

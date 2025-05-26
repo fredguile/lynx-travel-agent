@@ -56,8 +56,8 @@ export function base64ImageToBlob(base64Image: string): Blob {
 }
 
 /**
- * Infers the label for a given form element.
- * - Only works for form elements (input, select, textarea, etc.).
+ * Infers the label for a given form or read-only element.
+ * - Only works for form elements (input, select, textarea, etc.) and read-only fields.
  * - If the element has an ID, searches for a <label> with a matching 'for' attribute.
  * - If no ID and inside a table, looks for a previous column <div> with class 'fieldLabel'.
  * @param el The HTMLElement to find the label for.
@@ -65,14 +65,14 @@ export function base64ImageToBlob(base64Image: string): Blob {
  */
 export function findElementLabel(el: HTMLElement): string | null {
     // Only consider form elements
-    const formTags = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'FIELDSET'];
+    const formTags = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'FIELDSET', 'DIV'];
     if (!formTags.includes(el.tagName)) {
         return null;
     }
 
     // If element has an ID, try to find a <label for="...">
     const id = el.getAttribute('id');
-    if (id) {
+    if (el.tagName !== 'DIV' && id) {
         const label = document.querySelector(`label[for="${id}"]`);
         if (label) {
             return label.textContent?.trim() || null;
@@ -128,4 +128,23 @@ export function renderReactPortal(component: React.ReactElement, container: HTML
     const reactRoot = createRoot(container);
     reactRoot.render(createPortal(component, container));
     return { reactRoot };
+}
+
+/**
+ * Returns true if the element and all its ancestors are visible (not display: none).
+ * @param el The HTMLElement to check.
+ * @returns boolean
+ */
+export function isElementVisible(el: HTMLElement): boolean {
+    let current: HTMLElement | null = el;
+    while (current) {
+        if (current instanceof HTMLElement) {
+            const style = window.getComputedStyle(current);
+            if (style.display === 'none') {
+                return false;
+            }
+        }
+        current = current.parentElement;
+    }
+    return true;
 }

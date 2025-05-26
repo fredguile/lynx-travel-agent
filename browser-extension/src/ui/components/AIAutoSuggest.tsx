@@ -1,87 +1,71 @@
 /** @jsxImportSource @compiled/react */
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef } from 'react';
 import { css } from '@compiled/react';
 
 import { RedCross } from './RedCross';
+import { useAIAutoSuggestStore, AIAutoSuggestContainer } from '../state/AIAutoSuggestStore';
 import icon from 'url:../../icons/icon-light-32.png';
-import { base64ImageToBlob, createLogger } from '../../utils';
-import { ENDPOINTS } from '../../constants';
+import { createLogger } from '../../utils';
 
 interface AIAutoSuggestProps {
   wrapperId: number;
   currentUrl: string;
+  currentBookingRef: string;
   children: ReactElement;
 }
 
 const HIDE_TIMER_MS = 800;
+const CROSS_LEFT_OFFSET = 20;
+
 const log = createLogger('aiAutoSuggest');
 
-export const AIAutoSuggest = ({ wrapperId, currentUrl, children }: AIAutoSuggestProps) => {
-  const [visible, setVisible] = useState(false);
+export const AIAutoSuggest = ({ wrapperId, currentUrl, currentBookingRef, children }: AIAutoSuggestProps) => {
   const childrenRef = useRef<HTMLDivElement>(null);
-  const [redCrossVisible, setRedCrossVisible] = useState(false);
-  const [redCrossLeft, setRedCrossLeft] = useState(0);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const onClick = useCallback(async () => {
-    setRedCrossVisible(true);
+  const [
+    { visible, crossVisible, crossLeft, loading },
+    { setVisible, setCrossLeft, aiSuggestContent }
+  ] = useAIAutoSuggestStore();
 
-    const controller = new AbortController();
-
-    try {
-      // Capture screenshot
-      const response = await browser.runtime.sendMessage({ action: 'capture_screenshot' });
-
-      // Convert base64 to binary Blob
-      const blob = base64ImageToBlob(response.screenshot);
-
-      // Prepare multipart/form-data
-      const formData = new FormData();
-      formData.append('screenshot', blob, 'screenshot.png');
-      log('Sending screenshot to:', ENDPOINTS.ANALYSE_USER_CLICK);
-      const res = await fetch(`${ENDPOINTS.ANALYSE_USER_CLICK}?currentUrl=${encodeURIComponent(currentUrl)}`, {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal,
-      });
-
-      const text = await res.text();
-      log('Server response:', text);
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        log('Fetch aborted');
-      } else {
-        log('Error posting screenshot:', err);
-      }
-    } finally {
-      setRedCrossVisible(false);
+  useEffect(() => {
+    // position cross relative to the children
+    const childrenEl = childrenRef.current;
+    if (childrenEl) {
+      const rect = childrenEl.getBoundingClientRect();
+      setCrossLeft(rect.width + CROSS_LEFT_OFFSET);
     }
   }, []);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     if (hideTimer.current) {
       clearTimeout(hideTimer.current);
       hideTimer.current = null;
     }
     setVisible(true);
-  };
+  }, [setVisible]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     hideTimer.current = setTimeout(() => {
-      setVisible(false);
+      if (!loading) {
+        setVisible(false);
+      }
     }, HIDE_TIMER_MS);
-  };
+  }, [setVisible, loading]);
 
-  useEffect(() => {
-    const childrenEl = childrenRef.current;
-    if (childrenEl) {
-      const rect = childrenEl.getBoundingClientRect();
-      setRedCrossLeft(rect.width + 20);
-    }
-  }, []);
+  const onClick = useCallback(() => aiSuggestContent({
+    currentUrl,
+    currentBookingRef,
+    onSuccess: (text: string) => {
+      log('Server response:', text);
+    },
+    onError: (err: Error) => {
+      log('Error posting screenshot:', err);
+    },
+  }), [currentUrl, aiSuggestContent]);
 
   return (
-    <>
+    <AIAutoSuggestContainer scope={`ai-auto-suggest-${wrapperId}`}>
       <div
         id={`ai-auto-suggest-${wrapperId}`}
         css={aiAutoSuggestStyle}
@@ -94,7 +78,9 @@ export const AIAutoSuggest = ({ wrapperId, currentUrl, children }: AIAutoSuggest
           css={iconStyle}
           alt="Pan PAC AI Helper"
         />
-        <a css={linkStyle} onClick={onClick}>Suggest content</a>
+        <a css={linkStyle} onClick={onClick}>
+          {loading ? 'Loading...' : 'Suggest content'}
+        </a>
       </div>
       <div
         onMouseEnter={handleMouseEnter}
@@ -104,8 +90,8 @@ export const AIAutoSuggest = ({ wrapperId, currentUrl, children }: AIAutoSuggest
       >
         {children}
       </div>
-      {redCrossVisible && <RedCross left={redCrossLeft} />}
-    </>
+      {crossVisible && <RedCross left={crossLeft} />}
+    </AIAutoSuggestContainer>
   );
 };
 
