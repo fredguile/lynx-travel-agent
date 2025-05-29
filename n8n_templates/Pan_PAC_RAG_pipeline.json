@@ -25,13 +25,13 @@
       "credentials": {
         "microsoftOutlookOAuth2Api": {
           "id": "RutuavUZplF8LMED",
-          "name": "PAN Pacific CM account"
+          "name": "Pan PAC CM test account "
         }
       }
     },
     {
       "parameters": {
-        "model": "gemma3:12b",
+        "model": "qwen3:1.7b",
         "options": {
           "keepAlive": "1h",
           "format": "json"
@@ -40,7 +40,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        440,
+        468,
         980
       ],
       "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
@@ -114,11 +114,11 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Here is my email content:\n\nId: {{ $json.id }}\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}",
+        "text": "=Here's my email below:\nId: {{ $json.id }}\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}\n\nInstructions:\n- Set \"inferredLanguage\" JSON attribute with value \"french\" or \"english\" whether you've inferred that the email is written in french or english. Look at the subject and body for determining this.\n- Set \"bookingRelated\" JSON attribute to true if email content is related to a travel booking, set to false otherwise.\n- Set \"bookingReference\" JSON attribute with the booking reference found in email subject or body. Booking reference is a plain string containing alphanumerical characters, no spaces, usually starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n- If the email isn't booking-related or if no booking reference is found, DO NOT include attribute \"bookingReference\" in JSON response as it is optional.",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You're an agent determining if the input email content is related to a travel booking or not. Output must be a JSON object containing 3 JSON properties \n \"bookingRelated\" (boolean, required), \"bookingReference\" (string, optional) and \"inferredLanguage\" (string, required).\n\nInstructions:\n- NEVER send empty response. If the output happens to be \"{\\n\\n\\n}\", retry the inference.\n- Set \"inferredLanguage\" JSON attribute with value \"french\" or \"english\" whether you've inferred that the email is written in french or english. Look at the subject and body for determining this.\n- Set \"bookingRelated\" JSON attribute to true if email content is related to a travel booking, set to false otherwise.\n- Set \"bookingReference\" JSON attribute with the booking reference found in email subject or body. Booking reference is a plain string containing alphanumerical characters, no spaces, usually starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n- If the email isn't booking-related or if no booking reference is found, DO NOT include attribute \"bookingReference\" in JSON response as it is optional.\n- Apply tool \"Format Response as JSON\" to the resulting output.\n- Use memory to store the previously found booking references. This will help determine future booking references that obey to the same text pattern.",
-          "maxIterations": 5,
+          "systemMessage": "You're determining if the input email content is related to a travel booking or not. Output must be a JSON object containing three JSON attributes\n \"bookingRelated\" (boolean, required), \"bookingReference\" (string, optional) and \"inferredLanguage\" (string, required).",
+          "maxIterations": 3,
           "returnIntermediateSteps": false
         }
       },
@@ -134,12 +134,12 @@
     },
     {
       "parameters": {
-        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Select Relevant Fields').first().json.id,\n  conversationId: $('Select Relevant Fields').first().json.conversationId,\n  bookingReference: input.bookingReference,\n  receivedAt: $('Select Relevant Fields').first().json.receivedDateTime,\n  from: $('Select Relevant Fields').first().json.from.emailAddress.name + '<' + $('Select Relevant Fields').first().json.from.emailAddress.address + '>',\n  subject: $('Select Relevant Fields').first().json.subject,\n  body: stripHtmlTags($('Select Relevant Fields').first().json.body.content)\n}\n\nreturn bookingKnowledge;"
+        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nconst input = $input.first().json.output;\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Select Relevant Fields').first().json.id,\n  conversationId: $('Select Relevant Fields').first().json.conversationId,\n  bookingReference: input.bookingReference,\n  receivedAt: $('Select Relevant Fields').first().json.receivedDateTime,\n  from: $('Select Relevant Fields').first().json.from.emailAddress.name + '<' + $('Select Relevant Fields').first().json.from.emailAddress.address + '>',\n  subject: $('Select Relevant Fields').first().json.subject,\n  body: stripHtmlTags($('Select Relevant Fields').first().json.body.content)\n}\n\nreturn bookingKnowledge;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        816,
+        820,
         760
       ],
       "id": "6408b463-7b76-4909-9100-c65dde890a53",
@@ -259,9 +259,9 @@
         "mode": "insert",
         "tableName": {
           "__rl": true,
-          "value": "emails",
+          "value": "emails_dev",
           "mode": "list",
-          "cachedResultName": "emails"
+          "cachedResultName": "emails_dev"
         },
         "options": {}
       },
@@ -301,18 +301,17 @@
     },
     {
       "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $json.id }}",
-        "contextWindowLength": 10
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"bookingRelated\": {\n\t\t\t\"type\": \"boolean\"\n\t\t},\n\t\t\"bookingReference\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n        \"inferredLanguage\": {\n            \"type\": \"string\"\n        }\n\t},\n    \"required\": [\"bookingRelated\", \"inferredLanguage\"]\n}"
       },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
       "position": [
-        620,
-        980
+        680,
+        1000
       ],
-      "id": "586bffd9-fd5a-4937-b24a-0e7c1b1ce151",
-      "name": "Simple Memory"
+      "id": "e5257af2-fda1-4e06-8464-7bd80d6d3b76",
+      "name": "Structured Output Parser"
     }
   ],
   "pinData": {},
@@ -423,25 +422,25 @@
         ]
       ]
     },
-    "Simple Memory": {
-      "ai_memory": [
+    "Structured Output Parser": {
+      "ai_outputParser": [
         [
           {
             "node": "Classify booking-related emails",
-            "type": "ai_memory",
+            "type": "ai_outputParser",
             "index": 0
           }
         ]
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "59922220-c800-4dd6-9464-1b2864d2c004",
+  "versionId": "7fd0d74b-7701-4393-85e6-014fddece37f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
