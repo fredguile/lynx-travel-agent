@@ -1,0 +1,865 @@
+{
+  "name": "Pan PAC RAG pipeline (dev)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "output": "raw",
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTrigger",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        1060
+      ],
+      "id": "05dc57e5-c675-47b6-9b76-9eb98f22b663",
+      "name": "Microsoft Outlook Trigger",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "RutuavUZplF8LMED",
+          "name": "Pan PAC CM test account "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma3:12b",
+        "options": {
+          "keepAlive": "1h",
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        388,
+        1280
+      ],
+      "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cuAn52puN6Y1j2cv",
+          "name": "Ollama Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da65d650-cf5b-4341-baa7-64f214ada989",
+              "name": "id",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e466ebc8-965d-456f-a289-83ada6b5b079",
+              "name": "conversationId",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.conversationId }}",
+              "type": "string"
+            },
+            {
+              "id": "acde0860-c41d-4820-9065-52fd7bfab6c3",
+              "name": "receivedDateTime",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.receivedDateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "b01c5bcc-32a8-4e46-82cb-45ca4efd337d",
+              "name": "from",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.from }}",
+              "type": "object"
+            },
+            {
+              "id": "5a87460c-8708-4e2a-89da-bfd346c86299",
+              "name": "toRecipients",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.toRecipients }}",
+              "type": "array"
+            },
+            {
+              "id": "04b25562-6089-4f6a-8723-2ae829351cb7",
+              "name": "subject",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "fb2eb08d-94f0-469a-a1d5-d46f9fba52b7",
+              "name": "body",
+              "value": "={{ $('Microsoft Outlook Trigger').item.json.body }}",
+              "type": "object"
+            },
+            {
+              "id": "579c5339-186f-4464-a45a-9f5208c4ade8",
+              "name": "hasAttachments",
+              "value": "={{ $json.hasAttachments }}",
+              "type": "boolean"
+            },
+            {
+              "id": "56638b17-6b9e-49c9-b2a2-cc44bb1d576b",
+              "name": "attachments",
+              "value": "={{ $binary }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        1060
+      ],
+      "id": "4d5a47c6-6c63-4135-8ed1-a801b97a4555",
+      "name": "Select Relevant Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is my email content:\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking.\n   - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n   - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Extract Booking Reference (if available)**: If the email contains a booking reference, extract it and include it in the response. Booking reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n3. **Extract Booking Confirmation Number (if available)**: If the email contains a booking confirmation number, extract it and include it in the response. Booking confirmnation number is a plain string containing numerical characters, no spaces. Don't mistake it with he booking reference that is an alphanumerical string starting with the \"FT\" prefix.\n\n4. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"bookingReference\": \"<string>\",  // Optional. If a booking reference is found, provide it; otherwise, return an empty string.\n  \"bookingConfirmationNumber\": \"<string>\", // Optional. If a booking confirmation number is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"en\", \"fr\", \"es\").\n}",
+          "maxIterations": 1,
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        300,
+        1060
+      ],
+      "id": "959c52e7-182e-41ed-a061-cd36b4179703",
+      "name": "Classify booking-related emails",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nfunction parseAttachments(items) {\n  const results = [];\n\n  for (const item of items) {\n      for (const key of Object.keys(item.binary)) {\n          results.push({\n              json: {\n                  fileName: item.binary[key].fileName\n              },\n              binary: {\n                  data: item.binary[key],\n              }\n          });\n      }\n  }\n  \n  return results;\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst hasAttachments = $('Microsoft Outlook Trigger').first().json.hasAttachments;\n\nconst attachements = hasAttachments ? parseAttachments( $('Microsoft Outlook Trigger').all()) : [];\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Microsoft Outlook Trigger').first().json.id,\n  conversationId: $('Microsoft Outlook Trigger').first().json.conversationId,\n  bookingReference: input.bookingReference,\n  bookingConfirmationNumber: input.bookingConfirmationNumber,\n  receivedAt: $('Microsoft Outlook Trigger').first().json.receivedDateTime,\n  from: $('Microsoft Outlook Trigger').first().json.from.emailAddress.name + '<' + $('Microsoft Outlook Trigger').first().json.from.emailAddress.address + '>',\n  subject: $('Microsoft Outlook Trigger').first().json.subject,\n  body: stripHtmlTags($('Microsoft Outlook Trigger').first().json.body.content),\n  hasAttachments,\n  attachements,\n};\n\nreturn bookingKnowledge;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        676,
+        1060
+      ],
+      "id": "6408b463-7b76-4909-9100-c65dde890a53",
+      "name": "Build booking knowledge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "chunkSize": 2048,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1324,
+        880
+      ],
+      "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.body }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "emailId",
+                "value": "={{ $json.emailId }}"
+              },
+              {
+                "name": "conversationId",
+                "value": "={{ $json.conversationId }}"
+              },
+              {
+                "name": "bookingReference",
+                "value": "={{ $json.bookingReference }}"
+              },
+              {
+                "name": "bookingConfirmationNumber",
+                "value": "={{ $json.bookingConfirmationNumber }}"
+              },
+              {
+                "name": "from",
+                "value": "={{ $json.from }}"
+              },
+              {
+                "name": "subject",
+                "value": "={{ $json.subject }}"
+              },
+              {
+                "name": "inferredLanguage",
+                "value": "={{ $json.inferredLanguage }}"
+              },
+              {
+                "name": "emailReceivedAt",
+                "value": "={{ $json.receivedAt }}"
+              },
+              {
+                "name": "environment",
+                "value": "dev"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1236,
+        682.5
+      ],
+      "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
+      "name": "JSON"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88e185f9-035f-4af4-864d-9786913ee97d",
+              "leftValue": "={{ $json.bookingRelated }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        1060
+      ],
+      "id": "12b37d1c-c8d8-4927-97f9-3598318a5db3",
+      "name": "If booking-related email"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1116,
+        680
+      ],
+      "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "oG285fotoH2qC7uA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9ce08345-eeee-47f4-a6b0-c678f0eb39a8",
+              "leftValue": "={{ $json.hasAttachments }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1254,
+        1060
+      ],
+      "id": "5ae8e327-0246-492d-9e7a-e2240fd8ccc8",
+      "name": "If booking has attachment"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2712,
+        1180
+      ],
+      "id": "fed834d0-bba7-4a0b-95bd-08c9cd985f28",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oG285fotoH2qC7uA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 2048,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2920,
+        1380
+      ],
+      "id": "bf38bfdc-4a4b-4f5f-a459-88bd62e5d8c0",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.binary.data.mimeType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b4b8ac68-c4f7-47b2-9bc2-290965a47628"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2052,
+        1060
+      ],
+      "id": "8002c088-fa72-4360-ba36-2503612c6770",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "attachements",
+        "options": {
+          "includeBinary": true
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1612,
+        960
+      ],
+      "id": "b0de4ac4-36f7-4900-a750-342f65ebeff0",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1832,
+        960
+      ],
+      "id": "c850e9b2-d8a1-4360-88aa-d43be7270a8b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "binary.data.data",
+        "options": {
+          "fileName": "={{ $json.json.fileName }}",
+          "mimeType": "={{ $json.binary.data.mimeType }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        960
+      ],
+      "id": "72dc8302-fede-444d-ab17-c7cc0320545d",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1254,
+        1260
+      ],
+      "id": "e78f3e32-f7e9-40a8-b017-3af7ff05ab94",
+      "name": "Not booking-related, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1612,
+        1160
+      ],
+      "id": "59c0e29e-c341-421e-b496-95a207969f0b",
+      "name": "No attachment, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2052,
+        860
+      ],
+      "id": "93f978f2-5fa2-485c-9804-c7e892ee22a6",
+      "name": "Loop done, nothing to do"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        1160
+      ],
+      "id": "6202d754-74db-469b-a4d0-b6427edbfba3",
+      "name": "Not implemented yet"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2492,
+        960
+      ],
+      "id": "d6d9aea3-6aa6-4c31-9a82-0fb0922eaf24",
+      "name": "Extract from PDF"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "emails_dev",
+          "mode": "list",
+          "cachedResultName": "emails_dev"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        1132,
+        460
+      ],
+      "id": "35cafd11-40b9-4450-a09a-dbad0d9905bb",
+      "name": "Supabase Vector Store for Emails",
+      "credentials": {
+        "supabaseApi": {
+          "id": "sAMo7ZrRBZVUj1qR",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "emails_dev",
+          "mode": "list",
+          "cachedResultName": "emails_dev"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        2728,
+        960
+      ],
+      "id": "b99b5216-aac5-4def-a5e6-33caade7bdd0",
+      "name": "Supabase Vector Store for PDFs",
+      "credentials": {
+        "supabaseApi": {
+          "id": "sAMo7ZrRBZVUj1qR",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "emailId",
+                "value": "={{ $('Build booking knowledge').item.json.emailId }}"
+              },
+              {
+                "name": "conversationId",
+                "value": "={{ $('Build booking knowledge').item.json.conversationId }}"
+              },
+              {
+                "name": "bookingReference",
+                "value": "={{ $('Build booking knowledge').item.json.bookingReference }}"
+              },
+              {
+                "name": "bookingConfirmationNumber",
+                "value": "={{ $('Build booking knowledge').item.json.bookingConfirmationNumber }}"
+              },
+              {
+                "name": "from",
+                "value": "={{ $('Build booking knowledge').item.json.from }}"
+              },
+              {
+                "name": "subject",
+                "value": "={{ $('Build booking knowledge').item.json.subject }}"
+              },
+              {
+                "name": "inferredLanguage",
+                "value": "={{ $('Build booking knowledge').item.json.inferredLanguage }}"
+              },
+              {
+                "name": "emailReceivedAt",
+                "value": "={{ $('Build booking knowledge').item.json.receivedAt }}"
+              },
+              {
+                "name": "environment",
+                "value": "dev"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        1182.5
+      ],
+      "id": "57125b25-b721-4fb6-9268-a201a70258b9",
+      "name": "JSON 2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Microsoft Outlook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Select Relevant Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify booking-related emails",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Relevant Fields": {
+      "main": [
+        [
+          {
+            "node": "Classify booking-related emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify booking-related emails": {
+      "main": [
+        [
+          {
+            "node": "Build booking knowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build booking knowledge": {
+      "main": [
+        [
+          {
+            "node": "If booking-related email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "JSON",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If booking-related email": {
+      "main": [
+        [
+          {
+            "node": "If booking has attachment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not booking-related, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If booking has attachment": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No attachment, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store for PDFs",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "JSON 2",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not implemented yet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Loop done, nothing to do",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Extract from PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from PDF": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store for PDFs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON 2": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store for PDFs",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "ea5095da-80d3-4e62-83b9-8505b48c141b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
+  },
+  "id": "TceuO2eGlvnB50h3",
+  "tags": [
+    {
+      "createdAt": "2025-05-15T22:58:56.006Z",
+      "updatedAt": "2025-05-15T22:58:56.006Z",
+      "id": "xnZ7dohii3rEJcbT",
+      "name": "RAG"
+    }
+  ]
+}
