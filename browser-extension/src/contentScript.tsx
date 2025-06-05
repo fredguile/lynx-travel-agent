@@ -15,6 +15,9 @@ async function onPageRefreshed() {
     const currentUrl = location.href;
     log('onPageRefreshed:', currentUrl);
 
+    // Store current URL in browser storage for global access
+    await sessionStorage.currentUrl.set(currentUrl);
+
     // Skip if we're currently modifying the DOM to prevent infinite loops
     if (isWrappingDOMFields) {
         log('Skipping onPageRefreshed - currently modifying DOM');
@@ -22,7 +25,7 @@ async function onPageRefreshed() {
     }
 
     // Initialize currentBookingRef from storage
-    let currentBookingRef = await sessionStorage.getCurrentBookingRef();
+    let currentBookingRef = await sessionStorage.currentBookingRef.get();
 
     if (currentUrl == 'https://www.lynx-reservations.com/lynx/#FILE_DETAILS') {
         // Retrieve booking reference from read-only fields
@@ -36,7 +39,7 @@ async function onPageRefreshed() {
                 if (quoteNumber.startsWith('FT')) {
                     currentBookingRef = quoteNumber;
                     // Store in browser storage for global access
-                    await sessionStorage.setCurrentBookingRef(currentBookingRef);
+                    await sessionStorage.currentBookingRef.set(currentBookingRef);
                     log('Retrieved booking reference:', currentBookingRef);
                     break;
                 }
@@ -52,7 +55,7 @@ async function onPageRefreshed() {
             // Check if element is already wrapped by looking for our placeholder
             const isAlreadyWrapped = element.closest('[id^="ai-auto-suggest-placeholder-"]') !== null;
             if (!isAlreadyWrapped) {
-                wrapElementWithAutoSuggest(currentUrl, currentBookingRef, element);
+                wrapElementWithAutoSuggest(element);
             }
         }
     }

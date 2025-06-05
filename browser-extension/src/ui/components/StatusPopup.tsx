@@ -3,23 +3,49 @@ import { useState, useEffect } from 'react';
 import { css } from '@compiled/react';
 import { sessionStorage } from '../../sessionStorage';
 
+const COLORS = {
+  SUCCESS_BACKGROUND: '#e8f5e8',
+  WARNING_BACKGROUND: '#fff3cd'
+};
+
 export const StatusPopup = () => {
+  const [currentUrl, setCurrentUrl] = useState<string | null>(null);
   const [currentBookingRef, setCurrentBookingRef] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load initial booking reference
-    const loadBookingRef = async () => {
-      const bookingRef = await sessionStorage.getCurrentBookingRef();
+    // Load initial values
+    const loadInitialValues = async () => {
+      const url = await sessionStorage.currentUrl.get();
+      const bookingRef = await sessionStorage.currentBookingRef.get();
+      setCurrentUrl(url);
       setCurrentBookingRef(bookingRef);
     };
 
-    loadBookingRef();
+    loadInitialValues();
+
+    // Listen for changes to the current URL
+    sessionStorage.currentUrl.onPropertyChange((newUrl: string | null) => {
+      setCurrentUrl(newUrl);
+    });
 
     // Listen for changes to the booking reference
-    sessionStorage.onBookingRefChange((newBookingRef) => {
+    sessionStorage.currentBookingRef.onPropertyChange((newBookingRef: string | null) => {
       setCurrentBookingRef(newBookingRef);
     });
   }, []);
+
+  const renderTableRow = (label: string, value: string | null, defaultMessage: string) => (
+    <tr>
+      <td css={labelCellStyle}>
+        {label}
+      </td>
+      <td css={valueCellStyle} style={{
+        backgroundColor: value ? COLORS.SUCCESS_BACKGROUND : COLORS.WARNING_BACKGROUND
+      }}>
+        {value || defaultMessage}
+      </td>
+    </tr>
+  );
 
   return (
     <div css={containerStyle}>
@@ -33,17 +59,8 @@ export const StatusPopup = () => {
               Value
             </td>
           </tr>
-          <tr>
-            <td css={labelCellStyle}>
-              Booking Reference
-            </td>
-            <td css={css({
-              ...valueCellStyle,
-              backgroundColor: currentBookingRef ? '#e8f5e8' : '#fff3cd'
-            })}>
-              {currentBookingRef || 'No booking reference found'}
-            </td>
-          </tr>
+          {renderTableRow('Current URL', currentUrl, 'No URL found')}
+          {renderTableRow('Booking Reference', currentBookingRef, 'No booking reference found')}
         </tbody>
       </table>
     </div>
@@ -82,8 +99,8 @@ const labelCellStyle = css({
   fontWeight: 'bold'
 });
 
-const valueCellStyle = {
+const valueCellStyle = css({
   padding: '8px',
   border: '1px solid #ddd',
   fontFamily: 'monospace'
-};
+});

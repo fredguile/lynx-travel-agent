@@ -6,11 +6,10 @@ import { RedCross } from './RedCross';
 import { useAIAutoSuggestStore, AIAutoSuggestContainer } from '../state/AIAutoSuggestStore';
 import icon from 'url:../../icons/icon-light-32.png';
 import { createLogger } from '../../utils';
+import { sessionStorage } from '../../sessionStorage';
 
 interface AIAutoSuggestProps {
   wrapperId: number;
-  currentUrl: string;
-  currentBookingRef: string;
   children: ReactElement;
 }
 
@@ -19,7 +18,7 @@ const CROSS_LEFT_OFFSET = 20;
 
 const log = createLogger('aiAutoSuggest');
 
-export const AIAutoSuggest = ({ wrapperId, currentUrl, currentBookingRef, children }: AIAutoSuggestProps) => {
+export const AIAutoSuggest = ({ wrapperId, children }: AIAutoSuggestProps) => {
   const childrenRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -53,16 +52,22 @@ export const AIAutoSuggest = ({ wrapperId, currentUrl, currentBookingRef, childr
     }, HIDE_TIMER_MS);
   }, [setVisible, loading]);
 
-  const onClick = useCallback(() => aiSuggestContent({
-    currentUrl,
-    currentBookingRef,
-    onSuccess: (text: string) => {
-      log('Server response:', text);
-    },
-    onError: (err: Error) => {
-      log('Error posting screenshot:', err);
-    },
-  }), [currentUrl, aiSuggestContent]);
+  const onClick = useCallback(() => {
+    (async () => {
+      const currentUrl = await sessionStorage.currentUrl.get();
+      const currentBookingRef = await sessionStorage.currentBookingRef.get();
+      aiSuggestContent({
+        currentUrl: currentUrl || '',
+        currentBookingRef: currentBookingRef || '',
+        onSuccess: (text: string) => {
+          log('Server response:', text);
+        },
+        onError: (err: Error) => {
+          log('Error posting screenshot:', err);
+        },
+      });
+    })();
+  }, [aiSuggestContent]);
 
   return (
     <AIAutoSuggestContainer scope={`ai-auto-suggest-${wrapperId}`}>
