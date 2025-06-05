@@ -1,66 +1,80 @@
 /// <reference types="@types/firefox-webext-browser"/>
-import { ENDPOINTS } from './constants';
+import { debounce } from 'lodash';
 import { wrapElementWithAutoSuggest } from './ui';
-import { createLogger, isWhitelistedAIField, base64ImageToBlob } from './utils';
+import { createLogger, createContentChangeObserver, findElementLabel, isWhitelistedAIField, waitForElements } from './utils';
+import { sessionStorage } from './sessionStorage';
 
 const log = createLogger('contentScript');
 
 log('Content script loaded');
 
-let currentBookingRef: string | null = null;
+// Flag to prevent infinite loops during our own DOM modifications
+let isWrappingDOMFields = false;
 
 async function onPageRefreshed() {
     const currentUrl = location.href;
-    log('Page changed:', currentUrl);
+    log('onPageRefreshed:', currentUrl);
+
+    // Skip if we're currently modifying the DOM to prevent infinite loops
+    if (isWrappingDOMFields) {
+        log('Skipping onPageRefreshed - currently modifying DOM');
+        return;
+    }
+
+    // Initialize currentBookingRef from storage
+    let currentBookingRef = await sessionStorage.getCurrentBookingRef();
 
     if (currentUrl == 'https://www.lynx-reservations.com/lynx/#FILE_DETAILS') {
-        const response = await browser.runtime.sendMessage({ action: 'capture_screenshot' });
-        const blob = base64ImageToBlob(response.screenshot);
+        // Retrieve booking reference from read-only fields
+        const readOnlyFields = document.evaluate('//*[@class="readOnlyField"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        for (let i = 0; i < readOnlyFields.snapshotLength; i++) {
+            const element = readOnlyFields.snapshotItem(i) as HTMLElement;
+            const label = findElementLabel(element);
 
-        log('analysing screen context', currentUrl);
-
-        const formData = new FormData();
-        formData.append('screenshot', blob, 'screenshot.png');
-        let res = await fetch(`${ENDPOINTS.ANALYSE_BOOKING_REF}?currentUrl=${encodeURIComponent(currentUrl)}`, {
-            method: 'POST',
-            body: formData,
-        });
-        const screenContext = await res.text();
-
-        log('screen context:', screenContext);
-
-        if (!screenContext.includes('No booking reference found')) {
-            currentBookingRef = screenContext;
+            if (label?.includes('File') || label?.includes('Quote Number')) {
+                const quoteNumber = element.innerText;
+                if (quoteNumber.startsWith('FT')) {
+                    currentBookingRef = quoteNumber;
+                    // Store in browser storage for global access
+                    await sessionStorage.setCurrentBookingRef(currentBookingRef);
+                    log('Retrieved booking reference:', currentBookingRef);
+                    break;
+                }
+            }
         }
     }
+
+    // Set flag to indicate we're modifying DOM
+    isWrappingDOMFields = true;
 
     for (const element of document.querySelectorAll('input, textarea') as NodeListOf<HTMLElement>) {
         if (isWhitelistedAIField(currentUrl, element) && currentBookingRef) {
-            wrapElementWithAutoSuggest(currentUrl, currentBookingRef, element);
+            // Check if element is already wrapped by looking for our placeholder
+            const isAlreadyWrapped = element.closest('[id^="ai-auto-suggest-placeholder-"]') !== null;
+            if (!isAlreadyWrapped) {
+                wrapElementWithAutoSuggest(currentUrl, currentBookingRef, element);
+            }
         }
     }
+
+    // Reset flag after DOM modifications are complete
+    isWrappingDOMFields = false;
 }
 
-// Helper to wait for elements to appear in the DOM
-function waitForElements(selectors: string[], callback: () => void, timeout = 3000) {
-    const start = Date.now();
-    const observer = new MutationObserver(() => {
-        const allPresent = selectors.every(sel => document.querySelector(sel));
-        if (allPresent) {
-            observer.disconnect();
-            callback();
-        } else if (Date.now() - start > timeout) {
-            observer.disconnect();
-            callback(); // Optionally call anyway after timeout
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+// Detect page refreshes (F5, refresh button, etc.)
+document.addEventListener('DOMContentLoaded', () => {
+    log('DOMContentLoaded event detected - page refreshed');
+    onPageRefreshed();
+});
 
-    // Initial check in case elements are already present
-    if (selectors.every(sel => document.querySelector(sel))) {
-        observer.disconnect();
-        callback();
-    }
+// Fallback for cases where DOMContentLoaded has already fired
+if (document.readyState === 'loading') {
+    // DOMContentLoaded will fire
+    log('Document still loading, DOMContentLoaded will handle refresh detection');
+} else {
+    // DOMContentLoaded has already fired, run immediately
+    log('Document already loaded, running onPageRefreshed immediately');
+    onPageRefreshed();
 }
 
 // Listen for popstate (back/forward navigation)
@@ -81,5 +95,11 @@ window.addEventListener('popstate', onPageRefreshed);
     } as History[typeof method];
 });
 
-// Initial extraction
-onPageRefreshed();
+// Create content change observer to detect significant content changes (dynamic refreshes)
+createContentChangeObserver(debounce(() => {
+    // Only trigger if we're not currently modifying DOM ourselves
+    if (!isWrappingDOMFields) {
+        log('Significant content change detected - likely dynamic refresh');
+        onPageRefreshed();
+    }
+}, 1000));

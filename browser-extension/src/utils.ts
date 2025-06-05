@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { createPortal } from 'react-dom';
 import debug from 'debug';
@@ -118,12 +119,25 @@ export function findElementLabel(el: HTMLElement): string | null {
 }
 
 /**
+ * Renders a React component directly into the specified container.
+ * @param component The React element to render.
+ * @param container The DOM node to render into.
+ * @returns An object containing the React root.
+ */
+export function renderReactComponent(component: ReactElement, container: HTMLElement): { reactRoot: Root } {
+    // Create a root on the container
+    const reactRoot = createRoot(container);
+    reactRoot.render(component);
+    return { reactRoot };
+}
+
+/**
  * Renders a React component as a portal directly into the specified container (default: document.body).
  * @param component The React element to render.
  * @param container The DOM node to portal into (default: document.body).
  * @returns An object containing the React root.
  */
-export function renderReactPortal(component: React.ReactElement, container: HTMLElement = document.body): { reactRoot: Root } {
+export function renderReactPortal(component: ReactElement, container: HTMLElement = document.body): { reactRoot: Root } {
     // Create a root on the container (body)
     const reactRoot = createRoot(container);
     reactRoot.render(createPortal(component, container));
@@ -148,3 +162,108 @@ export function isElementVisible(el: HTMLElement): boolean {
     }
     return true;
 }
+
+/**
+ * Waits for all specified elements to appear in the DOM before executing a callback.
+ * Uses MutationObserver to watch for DOM changes and executes the callback when all
+ * selectors successfully find their corresponding elements, or after a timeout period.
+ * 
+ * @param selectors - Array of CSS selectors to wait for. All selectors must find elements before callback is executed.
+ * @param callback - Function to execute when all elements are found or timeout is reached.
+ * @param timeout - Maximum time to wait in milliseconds before giving up (default: 3000ms).
+ * 
+ * @example
+ * ```typescript
+ * // Wait for a form and button to appear
+ * waitForElements(['#myForm', '.submit-button'], () => {
+ *   console.log('Both elements are now present');
+ * }, 5000);
+ * ```
+ */
+export function waitForElements(selectors: string[], callback: () => void, timeout = 3000) {
+    const start = Date.now();
+    const observer = new MutationObserver(() => {
+        const allPresent = selectors.every(sel => document.querySelector(sel));
+        if (allPresent) {
+            observer.disconnect();
+            callback();
+        } else if (Date.now() - start > timeout) {
+            observer.disconnect();
+            callback(); // Optionally call anyway after timeout
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Initial check in case elements are already present
+    if (selectors.every(sel => document.querySelector(sel))) {
+        observer.disconnect();
+        callback();
+    }
+}
+
+/**
+ * Creates a MutationObserver to detect significant content changes (dynamic refreshes).
+ * The observer watches for changes that indicate a content refresh, such as:
+ * - Multiple nodes being added/removed
+ * - Changes to readOnlyField elements, inputs, or textareas
+ * 
+ * @param onContentChange - Callback function to execute when significant content changes are detected
+ * @returns The MutationObserver instance that has been started
+ * 
+ * @example
+ * ```typescript
+ * const observer = createContentChangeObserver(() => {
+ *   console.log('Content has changed significantly');
+ *   // Handle the content change
+ * });
+ * 
+ * // Later, if needed:
+ * observer.disconnect();
+ * ```
+ */
+export function createContentChangeObserver(onContentChange: () => void): MutationObserver {
+    const contentObserver = new MutationObserver((mutations) => {
+        let significantChange = false;
+
+        for (const mutation of mutations) {
+            // Check for significant changes that indicate content refresh
+            if (mutation.type === 'childList') {
+                // If multiple nodes were added/removed, likely a content refresh
+                if (mutation.addedNodes.length > 3 || mutation.removedNodes.length > 3) {
+                    significantChange = true;
+                    break;
+                }
+
+                // Check if readOnlyField elements were added/removed (key indicators for this app)
+                for (const node of [...mutation.addedNodes, ...mutation.removedNodes]) {
+                    if (node instanceof Element) {
+                        if (node.classList?.contains('readOnlyField') ||
+                            node.querySelector?.('.readOnlyField') ||
+                            node.tagName === 'INPUT' ||
+                            node.tagName === 'TEXTAREA') {
+                            significantChange = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (significantChange) break;
+        }
+
+        if (significantChange) {
+            onContentChange();
+        }
+    });
+
+    // Start observing body for content changes
+    contentObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: false, // Don't watch attribute changes to avoid noise
+        characterData: false // Don't watch text content changes to avoid noise
+    });
+
+    return contentObserver;
+}
+

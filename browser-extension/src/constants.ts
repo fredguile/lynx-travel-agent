@@ -1,7 +1,6 @@
 import type { WhitelistedAIFields } from './types';
 
 export const ENDPOINTS = {
-    ANALYSE_BOOKING_REF: "http://localhost:5678/webhook/d018c00a-62c2-4ee4-bd5d-62f6e073809b",
     ANALYSE_USER_CLICK: "http://localhost:5678/webhook/1831ad0f-9c9b-4fb3-99e6-1ce8c0857931",
     AI_AUTO_SUGGEST: "http://localhost:5678/webhook/835185f1-a443-49c1-8821-892fdee51424",
 }
