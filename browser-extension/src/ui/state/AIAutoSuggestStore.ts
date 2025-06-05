@@ -84,12 +84,13 @@ const actions = {
       },
 };
 
+export const AIAutoSuggestContainer = createContainer();
+
 export const AIAutoSuggestStore = createStore({
+  name: 'AIAutoSuggestLocalStore',
+  containedBy: AIAutoSuggestContainer,
   initialState,
   actions,
-  name: 'AIAutoSuggestStore',
 });
 
 export const useAIAutoSuggestStore = createHook(AIAutoSuggestStore);
-
-export const AIAutoSuggestContainer = createContainer();

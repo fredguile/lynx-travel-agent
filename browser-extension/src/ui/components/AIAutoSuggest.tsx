@@ -3,10 +3,10 @@ import { ReactElement, useCallback, useEffect, useRef } from 'react';
 import { css } from '@compiled/react';
 
 import { RedCross } from './RedCross';
-import { useAIAutoSuggestStore, AIAutoSuggestContainer } from '../state/AIAutoSuggestStore';
+import { useAIAutoSuggestStore } from '../state/AIAutoSuggestStore';
 import icon from 'url:../../icons/icon-light-32.png';
-import { createLogger } from '../../utils';
 import { sessionStorage } from '../../sessionStorage';
+import { createLogger } from '../../utils';
 
 interface AIAutoSuggestProps {
   wrapperId: number;
@@ -70,7 +70,7 @@ export const AIAutoSuggest = ({ wrapperId, children }: AIAutoSuggestProps) => {
   }, [aiSuggestContent]);
 
   return (
-    <AIAutoSuggestContainer scope={`ai-auto-suggest-${wrapperId}`}>
+    <div css={containerStyle}>
       <div
         id={`ai-auto-suggest-${wrapperId}`}
         css={aiAutoSuggestStyle}
@@ -96,13 +96,18 @@ export const AIAutoSuggest = ({ wrapperId, children }: AIAutoSuggestProps) => {
         {children}
       </div>
       {crossVisible && <RedCross left={crossLeft} />}
-    </AIAutoSuggestContainer>
+    </div>
   );
 };
 
+const containerStyle = css({
+  position: 'relative',
+});
+
 const aiAutoSuggestStyle = css({
   position: 'absolute',
-  top: '5px',
+  top: '-35px',
+  left: '0',
   flexDirection: 'row',
   justifyContent: 'center',
   alignItems: 'center',

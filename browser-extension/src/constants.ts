@@ -10,7 +10,8 @@ export const WHITELISTED_AI_FIELDS: WhitelistedAIFields = {
         'TEXTAREA': ['Default Remark:']
     },
     'https://www.lynx-reservations.com/lynx/#_FLIGHT_INFO_PANEL': {
-        'INPUT': ['Notes:', 'Flight Number', 'Flight Origin', '	Flight Destination', '	Flight Departure Time', 'Flight Arrival Time']
+        'INPUT': ['Notes:', 'Flight Number', 'Flight Origin', 'Flight Destination', 'Flight Departure Time', 'Flight Arrival Time'],
+        'TEXTAREA': ['Notes:']
     },
     'https://www.lynx-reservations.com/lynx/#_FILE_PAX_PANEL': {
         'INPUT': ['Address:', 'Suburb:', 'Post/Zip Code:', 'Phone No:']

@@ -1,5 +1,6 @@
 import { AIAutoSuggest } from './ui/components/AIAutoSuggest';
 import { HTMLElementWrapper } from './ui/components/HTMLElementWrapper';
+import { AIAutoSuggestContainer } from './ui/state/AIAutoSuggestStore';
 import { createLogger, renderReactPortal } from './utils';
 
 const log = createLogger('ui');
@@ -25,9 +26,11 @@ export function wrapElementWithAutoSuggest(element: HTMLElement) {
 
     // Render AIAutoSuggest with the element as children
     renderReactPortal(
-        <AIAutoSuggest wrapperId={wrapperId}>
-            <HTMLElementWrapper element={element} />
-        </AIAutoSuggest>,
+        <AIAutoSuggestContainer scope={`ai-auto-suggest-${wrapperId}`}>
+            <AIAutoSuggest wrapperId={wrapperId}>
+                <HTMLElementWrapper element={element} />
+            </AIAutoSuggest>
+        </AIAutoSuggestContainer>,
         placeholderEl
     );
 
