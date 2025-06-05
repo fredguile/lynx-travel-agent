@@ -1,8 +1,8 @@
 /// <reference types="@types/firefox-webext-browser"/>
 import { debounce } from 'lodash';
+import { sessionStorage } from './sessionStorage';
 import { wrapElementWithAutoSuggest } from './ui';
 import { createLogger, createContentChangeObserver, findElementLabel, isWhitelistedAIField, waitForElements } from './utils';
-import { sessionStorage } from './sessionStorage';
 
 const log = createLogger('contentScript');
 
