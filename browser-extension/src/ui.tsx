@@ -28,7 +28,7 @@ export function wrapElementWithAutoSuggest(element: HTMLElement) {
     renderReactPortal(
         <AIAutoSuggestContainer scope={`ai-auto-suggest-${wrapperId}`}>
             <AIAutoSuggest wrapperId={wrapperId}>
-                <HTMLElementWrapper element={element} />
+                <HTMLElementWrapper wrapperId={wrapperId} element={element} />
             </AIAutoSuggest>
         </AIAutoSuggestContainer>,
         placeholderEl

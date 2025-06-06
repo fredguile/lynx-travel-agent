@@ -11,16 +11,14 @@ const log = createLogger('aiAutoSuggestStore');
 
 interface State {
   visible: boolean;
-  crossVisible: boolean;
-  crossLeft: number;
+  highlight: boolean;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: State = {
   visible: false,
-  crossVisible: false,
-  crossLeft: 0,
+  highlight: false,
   loading: false,
   error: null,
 };
@@ -34,11 +32,10 @@ interface SuggestContentParams {
 
 const actions = {
   setVisible: (visible: boolean) => ({ setState }: StoreActionApi<State>) => setState({ visible }),
-  setCrossLeft: (crossLeft: number) => ({ setState }: StoreActionApi<State>) => setState({ crossLeft }),
   aiSuggestContent:
     ({ currentUrl, currentBookingRef, onSuccess, onError }: SuggestContentParams) =>
       async ({ setState }: StoreActionApi<State>) => {
-        setState({ loading: true, crossVisible: true, error: null });
+        setState({ loading: true, highlight: true, error: null });
 
         try {
           log('taking screenshot', currentUrl);
@@ -46,7 +43,7 @@ const actions = {
           const response = await browser.runtime.sendMessage({ action: 'capture_screenshot' });
           const blob = base64ImageToBlob(response.screenshot);
 
-          setState({ crossVisible: false });
+          setState({ highlight: false });
 
           log('analysing screen context', currentUrl);
 
@@ -57,6 +54,8 @@ const actions = {
             body: formData,
           });
           const screenContext = await res.text();
+
+          log('got screen context', screenContext);
 
           log('requesting ai auto suggest', currentUrl);
 
@@ -79,7 +78,7 @@ const actions = {
           setState({ loading: false, error: err.message || 'Unknown error' });
           onError?.(err);
         } finally {
-          setState({ crossVisible: false });
+          setState({ highlight: false });
         }
       },
 };

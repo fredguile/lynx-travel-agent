@@ -1,8 +1,7 @@
 /** @jsxImportSource @compiled/react */
-import { ReactElement, useCallback, useEffect, useRef } from 'react';
+import { ReactElement, useCallback, useRef } from 'react';
 import { css } from '@compiled/react';
 
-import { RedCross } from './RedCross';
 import { useAIAutoSuggestStore } from '../state/AIAutoSuggestStore';
 import icon from 'url:../../icons/icon-light-32.png';
 import { sessionStorage } from '../../sessionStorage';
@@ -14,7 +13,6 @@ interface AIAutoSuggestProps {
 }
 
 const HIDE_TIMER_MS = 800;
-const CROSS_LEFT_OFFSET = 20;
 
 const log = createLogger('aiAutoSuggest');
 
@@ -23,18 +21,9 @@ export const AIAutoSuggest = ({ wrapperId, children }: AIAutoSuggestProps) => {
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [
-    { visible, crossVisible, crossLeft, loading },
-    { setVisible, setCrossLeft, aiSuggestContent }
+    { visible, loading },
+    { setVisible, aiSuggestContent }
   ] = useAIAutoSuggestStore();
-
-  useEffect(() => {
-    // position cross relative to the children
-    const childrenEl = childrenRef.current;
-    if (childrenEl) {
-      const rect = childrenEl.getBoundingClientRect();
-      setCrossLeft(rect.width + CROSS_LEFT_OFFSET);
-    }
-  }, []);
 
   const handleMouseEnter = useCallback(() => {
     if (hideTimer.current) {
@@ -95,7 +84,6 @@ export const AIAutoSuggest = ({ wrapperId, children }: AIAutoSuggestProps) => {
       >
         {children}
       </div>
-      {crossVisible && <RedCross left={crossLeft} />}
     </div>
   );
 };
