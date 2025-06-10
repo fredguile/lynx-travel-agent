@@ -20,7 +20,7 @@
       "typeVersion": 1,
       "position": [
         -140,
-        1060
+        1020
       ],
       "id": "05dc57e5-c675-47b6-9b76-9eb98f22b663",
       "name": "Microsoft Outlook Trigger",
@@ -28,29 +28,6 @@
         "microsoftOutlookOAuth2Api": {
           "id": "RutuavUZplF8LMED",
           "name": "Pan PAC CM test account "
-        }
-      }
-    },
-    {
-      "parameters": {
-        "model": "gemma3:12b",
-        "options": {
-          "keepAlive": "1h",
-          "format": "json"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
-      "typeVersion": 1,
-      "position": [
-        388,
-        1280
-      ],
-      "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
-      "name": "Ollama Chat Model",
-      "credentials": {
-        "ollamaApi": {
-          "id": "cuAn52puN6Y1j2cv",
-          "name": "Ollama Local"
         }
       }
     },
@@ -120,7 +97,7 @@
       "typeVersion": 3.4,
       "position": [
         80,
-        1060
+        1020
       ],
       "id": "4d5a47c6-6c63-4135-8ed1-a801b97a4555",
       "name": "Select Relevant Fields"
@@ -140,7 +117,7 @@
       "typeVersion": 1.9,
       "position": [
         300,
-        1060
+        1020
       ],
       "id": "959c52e7-182e-41ed-a061-cd36b4179703",
       "name": "Classify booking-related emails",
@@ -155,81 +132,11 @@
       "typeVersion": 2,
       "position": [
         676,
-        1060
+        1020
       ],
       "id": "6408b463-7b76-4909-9100-c65dde890a53",
       "name": "Build booking knowledge",
       "alwaysOutputData": true
-    },
-    {
-      "parameters": {
-        "chunkSize": 2048,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
-      "typeVersion": 1,
-      "position": [
-        1324,
-        880
-      ],
-      "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
-      "name": "Recursive Character Text Splitter"
-    },
-    {
-      "parameters": {
-        "jsonMode": "expressionData",
-        "jsonData": "={{ $json.body }}",
-        "options": {
-          "metadata": {
-            "metadataValues": [
-              {
-                "name": "emailId",
-                "value": "={{ $json.emailId }}"
-              },
-              {
-                "name": "conversationId",
-                "value": "={{ $json.conversationId }}"
-              },
-              {
-                "name": "bookingReference",
-                "value": "={{ $json.bookingReference }}"
-              },
-              {
-                "name": "bookingConfirmationNumber",
-                "value": "={{ $json.bookingConfirmationNumber }}"
-              },
-              {
-                "name": "from",
-                "value": "={{ $json.from }}"
-              },
-              {
-                "name": "subject",
-                "value": "={{ $json.subject }}"
-              },
-              {
-                "name": "inferredLanguage",
-                "value": "={{ $json.inferredLanguage }}"
-              },
-              {
-                "name": "emailReceivedAt",
-                "value": "={{ $json.receivedAt }}"
-              },
-              {
-                "name": "environment",
-                "value": "dev"
-              }
-            ]
-          }
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-      "typeVersion": 1,
-      "position": [
-        1236,
-        682.5
-      ],
-      "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
-      "name": "JSON"
     },
     {
       "parameters": {
@@ -261,29 +168,10 @@
       "typeVersion": 2.2,
       "position": [
         896,
-        1060
+        1020
       ],
       "id": "12b37d1c-c8d8-4927-97f9-3598318a5db3",
       "name": "If booking-related email"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1116,
-        680
-      ],
-      "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
-      "name": "Embeddings OpenAI",
-      "credentials": {
-        "openAiApi": {
-          "id": "oG285fotoH2qC7uA",
-          "name": "OpenAi account"
-        }
-      }
     },
     {
       "parameters": {
@@ -313,44 +201,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1254,
-        1060
+        1194,
+        1020
       ],
       "id": "5ae8e327-0246-492d-9e7a-e2240fd8ccc8",
       "name": "If booking has attachment"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        2712,
-        1180
-      ],
-      "id": "fed834d0-bba7-4a0b-95bd-08c9cd985f28",
-      "name": "Embeddings OpenAI1",
-      "credentials": {
-        "openAiApi": {
-          "id": "oG285fotoH2qC7uA",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chunkSize": 2048,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
-      "typeVersion": 1,
-      "position": [
-        2920,
-        1380
-      ],
-      "id": "bf38bfdc-4a4b-4f5f-a459-88bd62e5d8c0",
-      "name": "Recursive Character Text Splitter1"
     },
     {
       "parameters": {
@@ -387,8 +242,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        2052,
-        1060
+        2208,
+        1020
       ],
       "id": "8002c088-fa72-4360-ba36-2503612c6770",
       "name": "Switch"
@@ -403,8 +258,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1612,
-        960
+        1492,
+        920
       ],
       "id": "b0de4ac4-36f7-4900-a750-342f65ebeff0",
       "name": "Split Out"
@@ -416,8 +271,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1832,
-        960
+        1850,
+        920
       ],
       "id": "c850e9b2-d8a1-4360-88aa-d43be7270a8b",
       "name": "Loop Over Items"
@@ -434,8 +289,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        2272,
-        960
+        2428,
+        920
       ],
       "id": "72dc8302-fede-444d-ab17-c7cc0320545d",
       "name": "Convert to File"
@@ -445,8 +300,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1254,
-        1260
+        1194,
+        1220
       ],
       "id": "e78f3e32-f7e9-40a8-b017-3af7ff05ab94",
       "name": "Not booking-related, do nothing"
@@ -456,8 +311,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1612,
-        1160
+        1492,
+        1120
       ],
       "id": "59c0e29e-c341-421e-b496-95a207969f0b",
       "name": "No attachment, do nothing"
@@ -467,8 +322,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2052,
-        860
+        2208,
+        820
       ],
       "id": "93f978f2-5fa2-485c-9804-c7e892ee22a6",
       "name": "Loop done, nothing to do"
@@ -478,8 +333,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2272,
-        1160
+        2428,
+        1120
       ],
       "id": "6202d754-74db-469b-a4d0-b6427edbfba3",
       "name": "Not implemented yet"
@@ -493,8 +348,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        2492,
-        960
+        2648,
+        920
       ],
       "id": "d6d9aea3-6aa6-4c31-9a82-0fb0922eaf24",
       "name": "Extract from PDF"
@@ -513,8 +368,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        1132,
-        460
+        1728,
+        320
       ],
       "id": "35cafd11-40b9-4450-a09a-dbad0d9905bb",
       "name": "Supabase Vector Store for Emails",
@@ -539,8 +394,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        2728,
-        960
+        2884,
+        920
       ],
       "id": "b99b5216-aac5-4def-a5e6-33caade7bdd0",
       "name": "Supabase Vector Store for PDFs",
@@ -550,6 +405,200 @@
           "name": "Supabase account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emails = JSON.parse($input.first().json?.output);\nreturn { messages: emails.messages.map(msg => `- ${msg}`).join(\"\\n\")  };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1492,
+        520
+      ],
+      "id": "d019fdd2-7987-446b-b920-4b1325a7aa50",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI agent designed to analyze email bodies to extract key facts contained inside. You are receiving several email bodies as single piece of text containing a conversation. Messages in this conversation appear in reversed chronological order. Your task is to extract key facts and summarize them as chronological output following instructions below.\n\n### Instructions:\n1. Build a list of sentences containing key facts of every message of the conversation contained in the input.\n2. For each item of that list, mention traveller name and booking reference when available.\n3. For each item of that list, mention sender and recipient when available.\n4. For each item of that list, mention details of booking requests when available.\n5. Gather all sentences into an array of string following the JSON schema below.\n6. Stick to key informations and facts.\n7. Disregard signatures found in email bodies.\n8. When list is finished, reverse the order to built a chronological output.\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attribute:\n```json\n{\n  \"messages\": <string[]>,  // list of sentences built.\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1116,
+        520
+      ],
+      "id": "3ff14099-c254-4131-976f-f19427f3b2f4",
+      "name": "Summarize email content"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:12b",
+        "options": {
+          "keepAlive": "1h",
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        388,
+        1240
+      ],
+      "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
+      "name": "Ollama Chat Model 1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cuAn52puN6Y1j2cv",
+          "name": "Ollama Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma3:12b",
+        "options": {
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1204,
+        740
+      ],
+      "id": "c5aba24f-c04a-43d6-970f-081908717c9e",
+      "name": "Ollama Chat Model 2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cuAn52puN6Y1j2cv",
+          "name": "Ollama Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1712,
+        540
+      ],
+      "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
+      "name": "Embeddings OpenAI 1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oG285fotoH2qC7uA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2868,
+        1140
+      ],
+      "id": "fed834d0-bba7-4a0b-95bd-08c9cd985f28",
+      "name": "Embeddings OpenAI 2",
+      "credentials": {
+        "openAiApi": {
+          "id": "oG285fotoH2qC7uA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 2048,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        740
+      ],
+      "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
+      "name": "Recursive Character Text Splitter 1"
+    },
+    {
+      "parameters": {
+        "chunkSize": 2048,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        3076,
+        1340
+      ],
+      "id": "bf38bfdc-4a4b-4f5f-a459-88bd62e5d8c0",
+      "name": "Recursive Character Text Splitter 2"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('Code').item.json.messages }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "emailId",
+                "value": "={{ $('Build booking knowledge').first().json.emailId }}"
+              },
+              {
+                "name": "conversationId",
+                "value": "={{ $('Build booking knowledge').first().json.conversationId }}"
+              },
+              {
+                "name": "bookingReference",
+                "value": "={{ $('Build booking knowledge').first().json.bookingReference }}"
+              },
+              {
+                "name": "bookingConfirmationNumber",
+                "value": "={{ $('Build booking knowledge').first().json.bookingConfirmationNumber }}"
+              },
+              {
+                "name": "from",
+                "value": "={{ $('Build booking knowledge').first().json.from }}"
+              },
+              {
+                "name": "subject",
+                "value": "={{ $('Build booking knowledge').first().json.subject }}"
+              },
+              {
+                "name": "emailReceivedAt",
+                "value": "={{ $('Build booking knowledge').first().json.receivedAt }}"
+              },
+              {
+                "name": "environment",
+                "value": "dev"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1832,
+        542.5
+      ],
+      "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
+      "name": "Document Loader 1"
     },
     {
       "parameters": {
@@ -601,11 +650,11 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        2832,
-        1182.5
+        2988,
+        1142.5
       ],
       "id": "57125b25-b721-4fb6-9268-a201a70258b9",
-      "name": "JSON 2"
+      "name": "Document Loader 2"
     }
   ],
   "pinData": {},
@@ -616,17 +665,6 @@
           {
             "node": "Select Relevant Fields",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ollama Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Classify booking-related emails",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -665,28 +703,6 @@
         ]
       ]
     },
-    "Recursive Character Text Splitter": {
-      "ai_textSplitter": [
-        [
-          {
-            "node": "JSON",
-            "type": "ai_textSplitter",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "JSON": {
-      "ai_document": [
-        [
-          {
-            "node": "Supabase Vector Store for Emails",
-            "type": "ai_document",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If booking-related email": {
       "main": [
         [
@@ -696,7 +712,7 @@
             "index": 0
           },
           {
-            "node": "Supabase Vector Store for Emails",
+            "node": "Summarize email content",
             "type": "main",
             "index": 0
           }
@@ -705,17 +721,6 @@
           {
             "node": "Not booking-related, do nothing",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Supabase Vector Store for Emails",
-            "type": "ai_embedding",
             "index": 0
           }
         ]
@@ -734,28 +739,6 @@
           {
             "node": "No attachment, do nothing",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI1": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Supabase Vector Store for PDFs",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recursive Character Text Splitter1": {
-      "ai_textSplitter": [
-        [
-          {
-            "node": "JSON 2",
-            "type": "ai_textSplitter",
             "index": 0
           }
         ]
@@ -830,7 +813,106 @@
         ]
       ]
     },
-    "JSON 2": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize email content": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model 1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify booking-related emails",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model 2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize email content",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI 1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI 2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store for PDFs",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter 1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Document Loader 1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter 2": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Document Loader 2",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader 1": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader 2": {
       "ai_document": [
         [
           {
@@ -848,7 +930,7 @@
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "ea5095da-80d3-4e62-83b9-8505b48c141b",
+  "versionId": "fb481c7e-8896-4833-8c20-932d237d1e4e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"

@@ -20,7 +20,7 @@
       "typeVersion": 1,
       "position": [
         -1280,
-        600
+        660
       ],
       "id": "442f93e4-3289-47f1-898a-aa5575a426fe",
       "name": "Microsoft Outlook Trigger",
@@ -97,7 +97,7 @@
       "typeVersion": 3.4,
       "position": [
         -1060,
-        600
+        660
       ],
       "id": "88f38f8b-42da-4231-b923-2a7f745a8c98",
       "name": "Select Relevant Fields"
@@ -117,7 +117,7 @@
       "typeVersion": 1.9,
       "position": [
         -840,
-        600
+        660
       ],
       "id": "8478bb90-bc78-44c4-8cc8-2420b354d846",
       "name": "Classify booking-related emails",
@@ -132,7 +132,7 @@
       "typeVersion": 2,
       "position": [
         -464,
-        600
+        660
       ],
       "id": "22a4b146-4ffc-4607-b7b5-ef626a5d74e0",
       "name": "Build booking knowledge",
@@ -146,67 +146,11 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        184,
-        420
+        780,
+        380
       ],
       "id": "b53d0349-ad61-4de9-9fac-b23986d665af",
       "name": "Recursive Character Text Splitter"
-    },
-    {
-      "parameters": {
-        "jsonMode": "expressionData",
-        "jsonData": "={{ $json.body }}",
-        "options": {
-          "metadata": {
-            "metadataValues": [
-              {
-                "name": "emailId",
-                "value": "={{ $json.emailId }}"
-              },
-              {
-                "name": "conversationId",
-                "value": "={{ $json.conversationId }}"
-              },
-              {
-                "name": "bookingReference",
-                "value": "={{ $json.bookingReference }}"
-              },
-              {
-                "name": "bookingConfirmationNumber",
-                "value": "={{ $json.bookingConfirmationNumber }}"
-              },
-              {
-                "name": "from",
-                "value": "={{ $json.from }}"
-              },
-              {
-                "name": "subject",
-                "value": "={{ $json.subject }}"
-              },
-              {
-                "name": "inferredLanguage",
-                "value": "={{ $json.inferredLanguage }}"
-              },
-              {
-                "name": "emailReceivedAt",
-                "value": "={{ $json.receivedAt }}"
-              },
-              {
-                "name": "environment",
-                "value": "prod"
-              }
-            ]
-          }
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-      "typeVersion": 1,
-      "position": [
-        96,
-        222.5
-      ],
-      "id": "5f959f45-12e4-4e6b-ab3b-78110484b900",
-      "name": "JSON"
     },
     {
       "parameters": {
@@ -238,31 +182,10 @@
       "typeVersion": 2.2,
       "position": [
         -244,
-        600
+        660
       ],
       "id": "9e25ec31-7043-4735-988f-d14406280557",
       "name": "If booking-related email"
-    },
-    {
-      "parameters": {
-        "options": {
-          "stripNewLines": true
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -24,
-        220
-      ],
-      "id": "f09faf41-c7f8-4545-8b0a-f25aa307ac43",
-      "name": "Embeddings OpenAI",
-      "credentials": {
-        "openAiApi": {
-          "id": "nKrzBiQTtSNGEZqH",
-          "name": "OpenAi account"
-        }
-      }
     },
     {
       "parameters": {
@@ -292,32 +215,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        114,
-        600
+        54,
+        660
       ],
       "id": "b6b64176-28ea-4c5f-a1d6-2df5d6d45b84",
       "name": "If booking has attachment"
-    },
-    {
-      "parameters": {
-        "options": {
-          "stripNewLines": true
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1572,
-        720
-      ],
-      "id": "4d846586-d093-4077-a4bb-d144838cf9a1",
-      "name": "Embeddings OpenAI1",
-      "credentials": {
-        "openAiApi": {
-          "id": "nKrzBiQTtSNGEZqH",
-          "name": "OpenAi account"
-        }
-      }
     },
     {
       "parameters": {
@@ -327,8 +229,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        1780,
-        920
+        1936,
+        980
       ],
       "id": "0456f3f5-7efd-4e6f-8642-bac65ad6a136",
       "name": "Recursive Character Text Splitter1"
@@ -368,8 +270,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        912,
-        600
+        1068,
+        660
       ],
       "id": "c8bc4676-8443-4df9-b10a-8066ceaae2cf",
       "name": "Switch"
@@ -384,8 +286,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        472,
-        500
+        352,
+        560
       ],
       "id": "cb0ebd6b-7005-4824-b1e5-00444e4d489d",
       "name": "Split Out"
@@ -397,8 +299,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        692,
-        500
+        710,
+        560
       ],
       "id": "a0eed458-53f1-472c-8575-f567ce181ee0",
       "name": "Loop Over Items"
@@ -415,8 +317,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        1132,
-        500
+        1288,
+        560
       ],
       "id": "d9b120a5-60d3-47c1-ab3a-fd005a267913",
       "name": "Convert to File"
@@ -426,8 +328,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        114,
-        800
+        54,
+        860
       ],
       "id": "115637df-a0f6-492a-99dd-1880fd6f5c38",
       "name": "Not booking-related, do nothing"
@@ -437,8 +339,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        472,
-        700
+        352,
+        760
       ],
       "id": "a19ae8a6-97fd-43e3-8707-b491817858d3",
       "name": "No attachment, do nothing"
@@ -448,8 +350,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        912,
-        400
+        1068,
+        460
       ],
       "id": "f3c65f0a-862e-4abc-ba31-0fae0aa03082",
       "name": "Loop done, nothing to do"
@@ -459,8 +361,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1132,
-        700
+        1288,
+        760
       ],
       "id": "e7e0a4c9-de39-4de0-bbd3-9de7cfec08db",
       "name": "Not implemented yet"
@@ -474,8 +376,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        1352,
-        500
+        1508,
+        560
       ],
       "id": "038db0a3-be7d-4408-9168-fd8c73d55715",
       "name": "Extract from PDF"
@@ -494,8 +396,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        -8,
-        0
+        588,
+        -40
       ],
       "id": "e2ebd9e8-daf7-495a-82dc-ffc7ea1dfbfa",
       "name": "Supabase Vector Store for Emails",
@@ -520,8 +422,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        1588,
-        500
+        1744,
+        560
       ],
       "id": "0431e511-1271-4b28-89ee-dc221db7cb09",
       "name": "Supabase Vector Store for PDFs",
@@ -529,6 +431,189 @@
         "supabaseApi": {
           "id": "f2dLZpWPKMEpwXW8",
           "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "maxTokens": -1,
+          "responseFormat": "json_object",
+          "timeout": 60000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        880
+      ],
+      "id": "7ff0ee57-4779-4af6-aa9d-0f2fffbb24f7",
+      "name": "OpenAI Chat Model 1",
+      "credentials": {
+        "openAiApi": {
+          "id": "nKrzBiQTtSNGEZqH",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI agent designed to analyze email bodies to extract key facts contained inside. You are receiving several email bodies as single piece of text containing a conversation. Messages in this conversation appear in reversed chronological order. Your task is to extract key facts and summarize them as chronological output following instructions below.\n\n### Instructions:\n1. Build a list of sentences containing key facts of every message of the conversation contained in the input.\n2. For each item of that list, mention traveller name and booking reference when available.\n3. For each item of that list, mention sender and recipient when available.\n4. For each item of that list, mention details of booking requests when available.\n5. Gather all sentences into an array of string following the JSON schema below.\n6. Stick to key informations and facts.\n7. Disregard signatures found in email bodies.\n8. When list is finished, reverse the order to built a chronological output.\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attribute:\n```json\n{\n  \"messages\": <string[]>,  // list of sentences built.\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -24,
+        160
+      ],
+      "id": "fcbfbed1-27ae-49dc-a185-ff04fee8d795",
+      "name": "Summarize email content"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        380
+      ],
+      "id": "0f8541ae-1210-45e0-8540-e7999dadf3a1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "nKrzBiQTtSNGEZqH",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emails = JSON.parse($input.first().json?.output);\nreturn { messages: emails.messages.map(msg => `- ${msg}`).join(\"\\n\")  };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        160
+      ],
+      "id": "3d41ae20-7eec-4a54-9632-1e3e2398e361",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {
+          "stripNewLines": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        572,
+        180
+      ],
+      "id": "f09faf41-c7f8-4545-8b0a-f25aa307ac43",
+      "name": "Embeddings OpenAI 1",
+      "credentials": {
+        "openAiApi": {
+          "id": "nKrzBiQTtSNGEZqH",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.messages }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "emailId",
+                "value": "={{ $('Build booking knowledge').item.json.emailId }}"
+              },
+              {
+                "name": "conversationId",
+                "value": "={{ $('Build booking knowledge').item.json.conversationId }}"
+              },
+              {
+                "name": "bookingReference",
+                "value": "={{ $('Build booking knowledge').item.json.bookingReference }}"
+              },
+              {
+                "name": "bookingConfirmationNumber",
+                "value": "={{ $('Build booking knowledge').item.json.bookingConfirmationNumber }}"
+              },
+              {
+                "name": "from",
+                "value": "={{ $('Build booking knowledge').item.json.from }}"
+              },
+              {
+                "name": "subject",
+                "value": "={{ $('Build booking knowledge').item.json.subject }}"
+              },
+              {
+                "name": "inferredLanguage",
+                "value": "={{ $('Build booking knowledge').item.json.inferredLanguage }}"
+              },
+              {
+                "name": "emailReceivedAt",
+                "value": "={{ $('Build booking knowledge').item.json.receivedAt }}"
+              },
+              {
+                "name": "environment",
+                "value": "prod"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        692,
+        182.5
+      ],
+      "id": "5f959f45-12e4-4e6b-ab3b-78110484b900",
+      "name": "Document Loader 1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "stripNewLines": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1728,
+        780
+      ],
+      "id": "4d846586-d093-4077-a4bb-d144838cf9a1",
+      "name": "Embeddings OpenAI 2",
+      "credentials": {
+        "openAiApi": {
+          "id": "nKrzBiQTtSNGEZqH",
+          "name": "OpenAi account"
         }
       }
     },
@@ -582,39 +667,11 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        1692,
-        722.5
+        1848,
+        782.5
       ],
       "id": "dd58ab8e-b9df-4e2a-8422-096569dc4377",
-      "name": "JSON 2"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4o-mini"
-        },
-        "options": {
-          "maxTokens": -1,
-          "responseFormat": "json_object",
-          "timeout": 60000
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -752,
-        820
-      ],
-      "id": "7ff0ee57-4779-4af6-aa9d-0f2fffbb24f7",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "nKrzBiQTtSNGEZqH",
-          "name": "OpenAi account"
-        }
-      }
+      "name": "Document Loader 2"
     }
   ],
   "pinData": {},
@@ -667,19 +724,8 @@
       "ai_textSplitter": [
         [
           {
-            "node": "JSON",
+            "node": "Document Loader 1",
             "type": "ai_textSplitter",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "JSON": {
-      "ai_document": [
-        [
-          {
-            "node": "Supabase Vector Store for Emails",
-            "type": "ai_document",
             "index": 0
           }
         ]
@@ -694,7 +740,7 @@
             "index": 0
           },
           {
-            "node": "Supabase Vector Store for Emails",
+            "node": "Summarize email content",
             "type": "main",
             "index": 0
           }
@@ -703,17 +749,6 @@
           {
             "node": "Not booking-related, do nothing",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Supabase Vector Store for Emails",
-            "type": "ai_embedding",
             "index": 0
           }
         ]
@@ -737,22 +772,11 @@
         ]
       ]
     },
-    "Embeddings OpenAI1": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Supabase Vector Store for PDFs",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Recursive Character Text Splitter1": {
       "ai_textSplitter": [
         [
           {
-            "node": "JSON 2",
+            "node": "Document Loader 2",
             "type": "ai_textSplitter",
             "index": 0
           }
@@ -828,12 +852,12 @@
         ]
       ]
     },
-    "JSON 2": {
-      "ai_document": [
+    "OpenAI Chat Model 1": {
+      "ai_languageModel": [
         [
           {
-            "node": "Supabase Vector Store for PDFs",
-            "type": "ai_document",
+            "node": "Classify booking-related emails",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -843,8 +867,74 @@
       "ai_languageModel": [
         [
           {
-            "node": "Classify booking-related emails",
+            "node": "Summarize email content",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize email content": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI 1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader 1": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store for Emails",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI 2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store for PDFs",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader 2": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store for PDFs",
+            "type": "ai_document",
             "index": 0
           }
         ]
@@ -855,7 +945,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7e29fa99-5a58-4681-9aad-572b1f510797",
+  "versionId": "3abbdcdd-a4b6-42be-9756-a5eb78f856e6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"
