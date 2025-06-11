@@ -1,6 +1,6 @@
 # panpac-helper-browser-extension
 
-Firefox/Chrome extension to use as helper for Pan PAC day to day tasks.
+Firefox/Chrome extension to use as helper for Pan PAC day-to-day tasks.
 
 > **Notice:** This extension is currently only tested with **Firefox**.
 
@@ -8,6 +8,10 @@ Firefox/Chrome extension to use as helper for Pan PAC day to day tasks.
 
 - [browser-extension](./browser-extension/)
   - **A Firefox/Chrome extension** to assist with Pan PAC day-to-day tasks. Includes build and development instructions for running the extension locally.
+- [docker-compose](./docker-compose/)
+  - **Docker Compose configuration** for running n8n.
+- [lynx-mcp-server](./lynx-mcp-server/)
+  - **TODO: MCP Server for Lynx Reservations**
 - [n8n_templates](./n8n_templates/)
   - **Automation workflow templates** for n8n, including pipelines and chatbot integrations to streamline Pan PAC processes.
 - [supabase](./supabase/)
