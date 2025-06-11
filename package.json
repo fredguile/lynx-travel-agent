@@ -1,0 +1,23 @@
+{
+  "name": "supabase",
+  "packageManager": "yarn@4.6.0",
+  "devDependencies": {
+    "supabase": "2.24.3"
+  },
+  "scripts": {
+    "login": "supabase login",
+    "start": "supabase start",
+    "stop": "supabase stop",
+    "status": "supabase status",
+    "db-link": "supabase link",
+    "db-reset": "supabase db reset",
+    "db-pull": "supabase db pull",
+    "db-migration": "supabase migration",
+    "db-dump": "supabase db dump",
+    "edge-functions": "supabase functions",
+    "secrets": "supabase secrets",
+    "start:dev": "supabase start --port 54322",
+    "stop:dev": "supabase stop --port 54322",
+    "status:dev": "supabase status --port 54322"
+  }
+}

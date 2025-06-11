@@ -1,10 +1,26 @@
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 6
+otp_expiry = 3600
+
+[auth.email.template]
 
 [functions.hybrid_search_function]
 enabled = true
 verify_jwt = true
-import_map = "./functions/hybrid_search_function/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+import_map = "./functions/import_map.json"
 entrypoint = "./functions/hybrid_search_function/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
@@ -13,9 +29,7 @@ entrypoint = "./functions/hybrid_search_function/index.ts"
 [functions.semantic_search_function]
 enabled = true
 verify_jwt = true
-import_map = "./functions/semantic_search_function/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+import_map = "./functions/import_map.json"
 entrypoint = "./functions/semantic_search_function/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
