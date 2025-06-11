@@ -23,12 +23,16 @@ if (!openaiApiKey) {
     throw new Error("OPENAI_API_KEY environment variable is required");
 }
 
+const EMBEDDING_MODEL = "text-embedding-3-small";
+const EMBEDDING_SIZE = 1536;
+
 const TABLE_NAME = "emails";
 const QUERY_NAME = "semantic_search";
+const NUM_RESULTS = 4;
 
 Deno.serve(async (req) => {
     // Grab the user's query from the JSON payload
-    const { query, filterByBookingRef = null, filterByBookingConfirmationId = null } = await req.json();
+    const { query, filterByBookingRef = null, filterByBookingConfirmationNumber = null } = await req.json();
     if (!query) {
         throw new Error("query is required");
     }
@@ -37,8 +41,8 @@ Deno.serve(async (req) => {
 
     const embeddings = new OpenAIEmbeddings({
         apiKey: openaiApiKey,
-        model: 'text-embedding-3-small',
-        dimensions: 1536
+        model: EMBEDDING_MODEL,
+        dimensions: EMBEDDING_SIZE
     });
 
     const vectorStore = new SupabaseVectorStore(embeddings, {
@@ -51,19 +55,25 @@ Deno.serve(async (req) => {
         if (filterByBookingRef) {
             rpc.filter("metadata->>bookingReference::string", "ilike", `%${filterByBookingRef}%`);
         }
-        if (filterByBookingConfirmationId) {
-            rpc.filter("metadata->>bookingConfirmationId::string", "like", `%${filterByBookingConfirmationId}%`);
+        if (filterByBookingConfirmationNumber) {
+            rpc.filter("metadata->>bookingConfirmationNumber::string", "like", `%${filterByBookingConfirmationNumber}%`);
         }
         return rpc;
     }
 
     const results = await vectorStore.similaritySearchWithScore(
         query,
-        2,
+        NUM_RESULTS,
         funcFilterOnBookingRef
     );
 
-    return new Response(JSON.stringify(results.map(([{ pageContent: emailContent, metadata }, score]) => ({ emailContent, metadata, score }))), {
+    return new Response(
+        JSON.stringify(
+            results
+                .filter(([_, score]) => score > 0)
+                .map(([{ pageContent: emailContent, metadata }, score]) => ({ emailContent, metadata, score })
+            )
+        ), {
         headers: {
             'Content-Type': 'application/json'
         }
