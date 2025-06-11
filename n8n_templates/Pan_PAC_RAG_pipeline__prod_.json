@@ -27,7 +27,7 @@
       "credentials": {
         "microsoftOutlookOAuth2Api": {
           "id": "RWkBrCIsVME9Xxgw",
-          "name": "Pan PAC CM prod account "
+          "name": "Pan PAC CM prod account"
         }
       }
     },
@@ -387,9 +387,9 @@
         "mode": "insert",
         "tableName": {
           "__rl": true,
-          "value": "emails_prod",
+          "value": "emails",
           "mode": "list",
-          "cachedResultName": "emails_prod"
+          "cachedResultName": "emails"
         },
         "options": {}
       },
@@ -413,9 +413,9 @@
         "mode": "insert",
         "tableName": {
           "__rl": true,
-          "value": "emails_prod",
+          "value": "emails",
           "mode": "list",
-          "cachedResultName": "emails_prod"
+          "cachedResultName": "emails"
         },
         "options": {}
       },
@@ -945,7 +945,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3abbdcdd-a4b6-42be-9756-a5eb78f856e6",
+  "versionId": "cea0ef9a-2916-4885-8a3f-78f66b9a253a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"

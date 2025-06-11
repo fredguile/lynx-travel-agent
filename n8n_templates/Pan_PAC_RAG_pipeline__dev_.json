@@ -27,7 +27,7 @@
       "credentials": {
         "microsoftOutlookOAuth2Api": {
           "id": "RutuavUZplF8LMED",
-          "name": "Pan PAC CM test account "
+          "name": "Pan PAC CM test account"
         }
       }
     },
@@ -359,9 +359,9 @@
         "mode": "insert",
         "tableName": {
           "__rl": true,
-          "value": "emails_dev",
+          "value": "emails",
           "mode": "list",
-          "cachedResultName": "emails_dev"
+          "cachedResultName": "emails"
         },
         "options": {}
       },
@@ -376,7 +376,7 @@
       "credentials": {
         "supabaseApi": {
           "id": "sAMo7ZrRBZVUj1qR",
-          "name": "Supabase account"
+          "name": "Supabase local"
         }
       }
     },
@@ -385,9 +385,9 @@
         "mode": "insert",
         "tableName": {
           "__rl": true,
-          "value": "emails_dev",
+          "value": "emails",
           "mode": "list",
-          "cachedResultName": "emails_dev"
+          "cachedResultName": "emails"
         },
         "options": {}
       },
@@ -402,7 +402,7 @@
       "credentials": {
         "supabaseApi": {
           "id": "sAMo7ZrRBZVUj1qR",
-          "name": "Supabase account"
+          "name": "Supabase local"
         }
       }
     },
@@ -448,7 +448,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        388,
+        260,
         1240
       ],
       "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
@@ -930,7 +930,7 @@
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "fb481c7e-8896-4833-8c20-932d237d1e4e",
+  "versionId": "6d81f9f3-59eb-454e-89ed-1f4090dbce5c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
