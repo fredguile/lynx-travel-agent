@@ -11,7 +11,7 @@ Firefox/Chrome extension to use as helper for Pan PAC day-to-day tasks.
 - [docker-compose](./docker-compose/)
   - **Docker Compose configuration** for running n8n.
 - [lynx-mcp-server](./lynx-mcp-server/)
-  - **TODO: MCP Server for Lynx Reservations**
+  - **MCP Server for Lynx Reservations written in golang**
 - [n8n_templates](./n8n_templates/)
   - **Automation workflow templates** for n8n, including pipelines and chatbot integrations to streamline Pan PAC processes.
 - [supabase](./supabase/)
