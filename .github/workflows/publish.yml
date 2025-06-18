@@ -19,5 +19,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build lynx-mcp-server -t ghcr.io/lynx-mcp-server:latest
-          docker push ghcr.io/lynx-mcp-server:latest
+          docker build lynx-mcp-server -t ghcr.io/fredguile/lynx-mcp-server:latest
+          docker push ghcr.io/fredguile/lynx-mcp-server:latest
