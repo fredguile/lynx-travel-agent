@@ -48,7 +48,7 @@ services:
       - "127.0.0.1:5678:5678"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.n8n.rule=Host(`${N8N_SUBDOMAIN}.${DOMAIN_NAME}`)
       - traefik.http.routers.n8n.tls=true
       - traefik.http.routers.n8n.entrypoints=web,websecure,websocket
       - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
@@ -62,7 +62,7 @@ services:
       - traefik.http.middlewares.n8n.headers.STSPreload=true
       - traefik.http.routers.n8n.middlewares=n8n@docker
     environment:
-      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_HOST=${N8N_SUBDOMAIN}.${DOMAIN_NAME}
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
@@ -74,7 +74,7 @@ services:
       - DB_POSTGRESDB_PORT=5432
       - DB_POSTGRESDB_USER=${POSTGRES_USER}
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
-      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - WEBHOOK_URL=https://${N8N_SUBDOMAIN}.${DOMAIN_NAME}/
       - N8N_RUNNERS_ENABLED=true
       - N8N_RUNNERS_MODE=internal
       - N8N_RUNNERS_MAX_CONCURRENCY=3
@@ -93,6 +93,31 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+  lynx-mcp-server:
+    image: ghcr.io/fredguile/lynx-mcp-server:latest
+    restart: always
+    ports:
+      - "127.0.0.1:9600:9600"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mcp.rule=Host(`${LYNX_MCP_SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.mcp.tls=true
+      - traefik.http.routers.mcp.entrypoints=web,websecure,websocket
+      - traefik.http.routers.mcp.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.mcp.headers.SSLRedirect=true
+      - traefik.http.middlewares.mcp.headers.STSSeconds=315360000
+      - traefik.http.middlewares.mcp.headers.browserXSSFilter=true
+      - traefik.http.middlewares.mcp.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.mcp.headers.forceSTSHeader=true
+      - traefik.http.middlewares.mcp.headers.SSLHost=${DOMAIN_NAME}
+      - traefik.http.middlewares.mcp.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.mcp.headers.STSPreload=true
+      - traefik.http.routers.mcp.middlewares=mcp@docker
+    environment:
+      - LYNX_USERNAME
+      - LYNX_PASSWORD
+      - LYNX_COMPANY_CODE
 
 volumes:
   db_data:
