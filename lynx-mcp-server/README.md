@@ -14,6 +14,7 @@ The following environment variables are required:
 - `LYNX_USERNAME`: Your Lynx Reservations username
 - `LYNX_PASSWORD`: Your Lynx Reservations password  
 - `LYNX_COMPANY_CODE`: Your Lynx company code
+- `BEARER_TOKEN`: Arbitrary JWT token to secure the server
 
 Use `.env` file to work locally.
 
