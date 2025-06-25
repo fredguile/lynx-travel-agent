@@ -6,7 +6,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { OpenAIEmbeddings } from "npm:@langchain/openai";
 import { SupabaseVectorStore } from "npm:@langchain/community/vectorstores/supabase";
-import { createClient } from 'jsr:@supabase/supabase-js@2.50.0';
+import { createClient } from 'jsr:@supabase/supabase-js@2.50.2';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 if (!supabaseUrl) {
@@ -32,7 +32,7 @@ const NUM_RESULTS = 4;
 
 Deno.serve(async (req) => {
     // Grab the user's query from the JSON payload
-    const { query, filterByBookingRef = null, filterByBookingConfirmationNumber = null } = await req.json();
+    const { query, filterByFileReference = null, filterByBookingConfirmationNumber = null } = await req.json();
     if (!query) {
         throw new Error("query is required");
     }
@@ -52,8 +52,8 @@ Deno.serve(async (req) => {
     });
 
     const funcFilterOnBookingRef = (rpc: any) => {
-        if (filterByBookingRef) {
-            rpc.filter("metadata->>bookingReference::string", "ilike", `%${filterByBookingRef}%`);
+        if (filterByFileReference) {
+            rpc.filter("metadata->>fileReference::string", "ilike", `%${filterByFileReference}%`);
         }
         if (filterByBookingConfirmationNumber) {
             rpc.filter("metadata->>bookingConfirmationNumber::string", "like", `%${filterByBookingConfirmationNumber}%`);
