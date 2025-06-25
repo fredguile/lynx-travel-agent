@@ -9,13 +9,17 @@ import (
 	"strings"
 	"time"
 
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
+
 	"github.com/mark3labs/mcp-go/client"
 	"github.com/mark3labs/mcp-go/client/transport"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
+var clientConfig = config.NewClientConfig()
+
 func main() {
-	sseURL := flag.String("url", "http://localhost:9600/sse", "URL for SSE transport (e.g. 'http://localhost:8080/sse')")
+	sseURL := flag.String("url", "http://127.0.0.1:9600/sse", "URL for SSE transport (e.g. 'http://127.0.0.1:9600/sse')")
 	toolCommand := flag.String("command", "", "Command of a remote tool to execute")
 	flag.Parse()
 
@@ -29,20 +33,22 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	fmt.Println("Initializing SSE client...")
+	fmt.Println("Initializing SSE client with authentication...")
 
-	// Create client based on transport type
-	var c *client.Client
-	var err error
-
-	// Create HTTP transport
-	sseTransport, err := transport.NewSSE(*sseURL)
-	if err != nil {
-		log.Fatalf("Failed to create SSE transport: %v", err)
+	// Prepare authentication headers
+	options := []transport.ClientOption{}
+	if clientConfig.BearerToken != "" {
+		headers := map[string]string{
+			"Authorization": "Bearer " + clientConfig.BearerToken,
+		}
+		options = append(options, transport.WithHeaders(headers))
 	}
 
-	// Create client with the transport
-	c = client.NewClient(sseTransport)
+	// Create SSE transport with authentication headers
+	c, err := client.NewSSEMCPClient(*sseURL, options...)
+	if err != nil {
+		log.Fatalf("Failed to create SSE client: %v", err)
+	}
 
 	// Start the client
 	if err := c.Start(ctx); err != nil {
@@ -52,7 +58,7 @@ func main() {
 	initRequest := mcp.InitializeRequest{}
 	initRequest.Params.ProtocolVersion = mcp.LATEST_PROTOCOL_VERSION
 	initRequest.Params.ClientInfo = mcp.Implementation{
-		Name:    "MCP-Go Simple Client Example",
+		Name:    "MCP-Go SSE Client Example",
 		Version: "1.0.0",
 	}
 	initRequest.Params.Capabilities = mcp.ClientCapabilities{}

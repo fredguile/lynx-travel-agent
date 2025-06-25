@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	JSESSIONID  = "JSESSIONID"
-	AUTH_URL    = "/lynx/service/security.rpc"
-	COOKIE_PATH = "/lynx"
+	JSESSIONID           = "JSESSIONID"
+	AUTH_URL             = "/lynx/service/security.rpc"
+	COOKIE_PATH          = "/lynx"
+	AUTHORIZATION_HEADER = "Authorization"
 )
 
 type SessionContext struct {
@@ -127,5 +128,31 @@ func CreateAuthCookie(lynxConfig config.LynxServerConfig, session *SessionContex
 		Path:     COOKIE_PATH,
 		Expires:  time.Time{},
 		HttpOnly: true,
+	}
+}
+
+// BearerAuthMiddleware creates middleware that checks for Authorization header
+func BearerAuthMiddleware(expectedToken string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			authHeader := r.Header.Get(AUTHORIZATION_HEADER)
+			if authHeader == "" {
+				http.Error(w, "Authorization header required", http.StatusUnauthorized)
+				return
+			}
+
+			if !strings.HasPrefix(authHeader, "Bearer ") {
+				http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
+				return
+			}
+
+			token := strings.TrimPrefix(authHeader, "Bearer ")
+			if token != expectedToken {
+				http.Error(w, "Invalid token", http.StatusUnauthorized)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
 	}
 }
