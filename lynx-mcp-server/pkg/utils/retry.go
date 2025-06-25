@@ -110,6 +110,24 @@ func RetryHTTPRequest(ctx context.Context, client *http.Client, req *http.Reques
 			return resp, bodyStr, nil
 		}
 
+		// Check for GWT error responses that start with "//EX"
+		if resp.StatusCode == http.StatusOK && len(bodyStr) > 0 && strings.HasPrefix(bodyStr, "//EX") {
+			// Parse the GWT error response to extract the error message
+			errorMessage, err := ParseResponseError(bodyStr)
+			if err != nil {
+				// If we can't parse the error, return the raw body as error
+				lastErr = fmt.Errorf("attempt %d: GWT error response (unparseable): %s", attempt+1, bodyStr)
+			} else {
+				// Return the parsed error message
+				lastErr = fmt.Errorf("attempt %d: GWT error: %s", attempt+1, errorMessage)
+			}
+			lastResp = resp
+			lastBodyStr = bodyStr
+
+			// GWT errors are not retryable, so return immediately
+			return resp, "", lastErr
+		}
+
 		// If we reach here, the request was successful but didn't meet our success criteria
 		lastErr = fmt.Errorf("attempt %d: unexpected response (status: %d, body: %s)", attempt+1, resp.StatusCode, bodyStr)
 		lastResp = resp

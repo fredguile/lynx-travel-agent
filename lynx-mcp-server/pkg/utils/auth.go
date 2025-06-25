@@ -110,6 +110,7 @@ func makeAuthRequest(lynxConfig config.LynxServerConfig) (*SessionContext, error
 	// Extract JSESSIONID from cookies
 	for _, cookie := range resp.Cookies() {
 		if cookie.Name == JSESSIONID {
+			fmt.Printf("Using JSESSIONID: %s\n", cookie.Value)
 			return &SessionContext{
 				jsessionID: cookie.Value,
 				expiresAt:  time.Now().Add(lynxConfig.AuthCookieDuration),

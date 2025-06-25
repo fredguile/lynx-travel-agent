@@ -28,7 +28,7 @@ type GWTFileSearchArgs struct {
 }
 
 func BuildGWTFileSearchBody(args *GWTFileSearchArgs) string {
-	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|A8333F3FD1D30F0D6E4CA6922A3BACAA|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|6|1|0|1|6|7|50|8|6|0|9|0|0|6|", args.RemoteHost, args.PartyName)
+	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|6|1|0|1|7|6|50|8|6|0|9|0|0|6|", args.RemoteHost, args.PartyName)
 }
 
 // ParseResponseBody parses a GWT response body and extracts the data array.
@@ -63,6 +63,55 @@ func ParseResponseBody(responseBody string) ([]interface{}, error) {
 	}
 
 	return dataArray, nil
+}
+
+// ParseResponseError parses a GWT error response body and extracts the error message.
+// Returns the parsed error message as a string.
+func ParseResponseError(responseBody string) (string, error) {
+	// Remove the "//EX" prefix if present
+	body := strings.TrimPrefix(responseBody, "//EX")
+
+	// Parse the main array structure
+	parsedArray, err := parseGWTArray(body)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse error array: %w", err)
+	}
+
+	// Check if we have enough items
+	if len(parsedArray) < 3 {
+		return "", fmt.Errorf("error response array too short, expected at least 3 items, got %d", len(parsedArray))
+	}
+
+	// The third item (index 2) contains the error details array
+	errorItem := parsedArray[2]
+
+	// Check if the third item is an array
+	errorArray, ok := errorItem.([]interface{})
+	if !ok {
+		return "", fmt.Errorf("third item is not an array, got %T", errorItem)
+	}
+
+	// Check if we have enough items in the error array
+	if len(errorArray) < 2 {
+		return "", fmt.Errorf("error details array too short, expected at least 2 items, got %d", len(errorArray))
+	}
+
+	// The error message might be split across multiple elements due to commas in the message
+	// Start from index 1 (after the exception class name) and concatenate all string elements
+	var errorMessageParts []string
+	for i := 1; i < len(errorArray); i++ {
+		if msgPart, ok := errorArray[i].(string); ok {
+			errorMessageParts = append(errorMessageParts, msgPart)
+		}
+	}
+
+	if len(errorMessageParts) == 0 {
+		return "", fmt.Errorf("no error message found in error array")
+	}
+
+	// Join the message parts and unescape
+	errorMessage := strings.Join(errorMessageParts, ", ")
+	return unescapeGWTErrorString(errorMessage), nil
 }
 
 // parseGWTArray parses a GWT array format and returns the elements
@@ -168,4 +217,31 @@ func parseGWTElement(element string) (interface{}, error) {
 
 	// Return as string if nothing else matches
 	return element, nil
+}
+
+// unescapeGWTErrorString removes surrounding double quotes and converts unicode escape sequences
+func unescapeGWTErrorString(s string) string {
+	// Remove surrounding double quotes if present
+	s = strings.Trim(s, "\"")
+
+	// Replace unicode escape sequences like \x27 with actual characters
+	// This is a simple implementation - in a more robust version you might want to use regex
+	var result strings.Builder
+	for i := 0; i < len(s); i++ {
+		if i+3 < len(s) && s[i] == '\\' && s[i+1] == 'x' {
+			// Found \x sequence, try to parse the hex value
+			hexStr := s[i+2 : i+4]
+			if val, err := strconv.ParseUint(hexStr, 16, 8); err == nil {
+				result.WriteByte(byte(val))
+				i += 3 // Skip the \x and the two hex digits
+			} else {
+				// If parsing fails, keep the original sequence
+				result.WriteByte(s[i])
+			}
+		} else {
+			result.WriteByte(s[i])
+		}
+	}
+
+	return result.String()
 }
