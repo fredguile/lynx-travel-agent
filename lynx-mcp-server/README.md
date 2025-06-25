@@ -35,5 +35,5 @@ docker run --env-file .env -p 9600:9600 lynx-mcp-server
 ## How to test
 
 ```sh
-go run ./client
+go run ./client --command "file_search_by_party_name --partyName=LASTNAME"
 ```
