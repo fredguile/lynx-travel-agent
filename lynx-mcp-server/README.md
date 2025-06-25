@@ -2,9 +2,11 @@
 
 Golang server that implements the MCP (Model Control Protocol) for interacting with Lynx Reservations system.
 
+Latest docker image is automatically published to https://ghcr.io/fredguile/lynx-mcp-server.
+
 ## Prerequisites
 
-- Go 1.23.2 or later
+- Go 1.23.10 or later
 - Docker
 
 ## Environment Variables
