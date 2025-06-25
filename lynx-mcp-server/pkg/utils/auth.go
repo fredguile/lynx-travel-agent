@@ -146,8 +146,9 @@ func BearerAuthMiddleware(expectedToken string) func(http.Handler) http.Handler 
 				return
 			}
 
-			token := strings.TrimPrefix(authHeader, "Bearer ")
-			if token != expectedToken {
+			token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+			expectedTokenTrimmed := strings.TrimSpace(expectedToken)
+			if token != expectedTokenTrimmed {
 				http.Error(w, "Invalid token", http.StatusUnauthorized)
 				return
 			}
