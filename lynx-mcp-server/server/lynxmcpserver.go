@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
 	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/tools"
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -20,17 +23,28 @@ const (
 )
 
 func main() {
-	log.Printf("Starting SSE server on %s/see", PORT)
+	// Load configuration
+	serverConfig := config.NewMCPServerConfig()
+
+	log.Printf("Starting SSE server on %s/see", serverConfig.Port)
 
 	mcpServer := NewMCPServer()
 	sse := server.NewSSEServer(mcpServer)
+
+	// Create custom HTTP server with BearerAuthMiddleware
+	httpServer := &http.Server{
+		Handler: utils.BearerAuthMiddleware(serverConfig.BearerToken)(sse),
+	}
+
+	// Use WithHTTPServer to inject our custom server
+	sse = server.NewSSEServer(mcpServer, server.WithHTTPServer(httpServer))
 
 	// Create a channel to listen for errors coming from the server
 	serverErrors := make(chan error, 1)
 
 	// Start the server in a goroutine
 	go func() {
-		serverErrors <- sse.Start(PORT)
+		serverErrors <- sse.Start(":" + serverConfig.Port)
 	}()
 
 	// Create a channel to listen for OS signals
