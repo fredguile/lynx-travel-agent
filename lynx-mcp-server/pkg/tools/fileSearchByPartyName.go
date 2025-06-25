@@ -28,12 +28,12 @@ const (
 
 // FileSearchResult represents a single file search result
 type FileSearchResult struct {
-	CompanyCode string `json:"companyCode"`
-	Currency    string `json:"currency"`
-	FileNumber  string `json:"fileNumber"`
-	PartyName   string `json:"partyName"`
-	Status      string `json:"status"`
-	Date        string `json:"date"`
+	CompanyCode   string `json:"companyCode"`
+	Currency      string `json:"currency"`
+	FileReference string `json:"fileReference"`
+	PartyName     string `json:"partyName"`
+	Status        string `json:"status"`
+	Date          string `json:"date"`
 }
 
 // FileSearchResponse represents the structured response for file search
@@ -114,12 +114,12 @@ func parseFileSearchResult(parsedData []interface{}) *FileSearchResult {
 	// Ensure parsedData is a slice/array
 	if len(parsedData) >= 9 {
 		return &FileSearchResult{
-			CompanyCode: toString(parsedData[2]),
-			Currency:    toString(parsedData[4]),
-			FileNumber:  toString(parsedData[5]),
-			PartyName:   toString(parsedData[6]),
-			Status:      toString(parsedData[7]),
-			Date:        toString(parsedData[8]),
+			CompanyCode:   toString(parsedData[2]),
+			Currency:      toString(parsedData[4]),
+			FileReference: toString(parsedData[5]),
+			PartyName:     toString(parsedData[6]),
+			Status:        toString(parsedData[7]),
+			Date:          toString(parsedData[8]),
 		}
 	}
 
