@@ -108,7 +108,7 @@
         "text": "=Here is my email content:\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking.\n   - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n   - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Extract File Reference (if available)**: If the email contains a file reference, extract it and include it in the response. File reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n3. **Extract Booking Confirmation Number (if available)**: If the email contains a booking confirmation number, extract it and include it in the response. Booking confirmnation number is a plain string containing numerical characters, no spaces. Don't mistake it with he file reference that is an alphanumerical string starting with the \"FT\" prefix.\n\n4. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"fileReference\": \"<string>\",  // Optional. If a file reference is found, provide it; otherwise, return an empty string.\n  \"bookingConfirmationNumber\": \"<string>\", // Optional. If a booking confirmation number is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"en\", \"fr\", \"es\").\n}",
+          "systemMessage": "You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking.\n   - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n   - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Extract File Reference (if available)**: If the email contains a file reference, extract it and include it in the response. File reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n3. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"fileReference\": \"<string>\",  // Optional. If a file reference is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"english\", \"french\").\n}",
           "maxIterations": 1,
           "returnIntermediateSteps": false
         }
@@ -126,7 +126,7 @@
     },
     {
       "parameters": {
-        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nfunction parseAttachments(items) {\n  const results = [];\n\n  for (const item of items) {\n    if (typeof item?.binary === 'object') {\n      for (const key of Object.keys(item.binary)) {\n          results.push({\n              json: {\n                  fileName: item.binary[key].fileName\n              },\n              binary: {\n                  data: item.binary[key],\n              }\n          });\n      }\n    }\n  }\n  \n  return results;\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst from = typeof $('Microsoft Outlook Trigger').first().json.from === 'object' ? $('Microsoft Outlook Trigger').first().json.from.emailAddress.name + '<' + $('Microsoft Outlook Trigger').first().json.from.emailAddress.address + '>' :\n    typeof $('Microsoft Outlook Trigger').first().json.internetMessageId === 'string' ? $('Microsoft Outlook Trigger').first().json.internetMessageId : 'UNKNOWN SENDER';\n\nconst hasAttachments = $('Microsoft Outlook Trigger').first().json.hasAttachments;\n\nconst attachements = hasAttachments ? parseAttachments( $('Microsoft Outlook Trigger').all()) : [];\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Microsoft Outlook Trigger').first().json.id,\n  conversationId: $('Microsoft Outlook Trigger').first().json.conversationId,\n  fileReference: input.fileReference,\n  bookingConfirmationNumber: input.bookingConfirmationNumber,\n  receivedAt: $('Microsoft Outlook Trigger').first().json.receivedDateTime,\n  from,\n  subject: $('Microsoft Outlook Trigger').first().json.subject,\n  body: stripHtmlTags($('Microsoft Outlook Trigger').first().json.body.content),\n  hasAttachments,\n  attachements,\n};\n\nreturn bookingKnowledge;"
+        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nfunction parseAttachments(items) {\n  const results = [];\n\n  for (const item of items) {\n    if (typeof item?.binary === 'object') {\n      for (const key of Object.keys(item.binary)) {\n          results.push({\n              json: {\n                  fileName: item.binary[key].fileName\n              },\n              binary: {\n                  data: item.binary[key],\n              }\n          });\n      }\n    }\n  }\n  \n  return results;\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst from = typeof $('Microsoft Outlook Trigger').first().json.from === 'object' ? $('Microsoft Outlook Trigger').first().json.from.emailAddress.name + '<' + $('Microsoft Outlook Trigger').first().json.from.emailAddress.address + '>' :\n    typeof $('Microsoft Outlook Trigger').first().json.internetMessageId === 'string' ? $('Microsoft Outlook Trigger').first().json.internetMessageId : 'UNKNOWN SENDER';\n\nconst hasAttachments = $('Microsoft Outlook Trigger').first().json.hasAttachments;\n\nconst attachements = hasAttachments ? parseAttachments( $('Microsoft Outlook Trigger').all()) : [];\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Microsoft Outlook Trigger').first().json.id,\n  conversationId: $('Microsoft Outlook Trigger').first().json.conversationId,\n  fileReference: input.fileReference,\n  receivedAt: $('Microsoft Outlook Trigger').first().json.receivedDateTime,\n  from,\n  subject: $('Microsoft Outlook Trigger').first().json.subject,\n  body: stripHtmlTags($('Microsoft Outlook Trigger').first().json.body.content),\n  hasAttachments,\n  attachements,\n};\n\nreturn bookingKnowledge;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -560,10 +560,6 @@
                 "value": "={{ $('Build booking knowledge').item.json.fileReference }}"
               },
               {
-                "name": "bookingConfirmationNumber",
-                "value": "={{ $('Build booking knowledge').item.json.bookingConfirmationNumber }}"
-              },
-              {
                 "name": "from",
                 "value": "={{ $('Build booking knowledge').item.json.from }}"
               },
@@ -635,10 +631,6 @@
               {
                 "name": "fileReference",
                 "value": "={{ $('Build booking knowledge').item.json.fileReference }}"
-              },
-              {
-                "name": "bookingConfirmationNumber",
-                "value": "={{ $('Build booking knowledge').item.json.bookingConfirmationNumber }}"
               },
               {
                 "name": "from",
@@ -945,7 +937,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ad7fa315-f97a-4a47-90e1-c42ff20d94e0",
+  "versionId": "380da45a-080f-4969-8371-56084a91d90f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"
