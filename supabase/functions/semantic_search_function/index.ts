@@ -32,7 +32,7 @@ const NUM_RESULTS = 4;
 
 Deno.serve(async (req) => {
     // Grab the user's query from the JSON payload
-    const { query, filterByFileReference = null, filterByBookingConfirmationNumber = null } = await req.json();
+    const { query, filterByFileReference = null } = await req.json();
     if (!query) {
         throw new Error("query is required");
     }
@@ -54,9 +54,6 @@ Deno.serve(async (req) => {
     const funcFilterOnBookingRef = (rpc: any) => {
         if (filterByFileReference) {
             rpc.filter("metadata->>fileReference::string", "ilike", `%${filterByFileReference}%`);
-        }
-        if (filterByBookingConfirmationNumber) {
-            rpc.filter("metadata->>bookingConfirmationNumber::string", "like", `%${filterByBookingConfirmationNumber}%`);
         }
         return rpc;
     }

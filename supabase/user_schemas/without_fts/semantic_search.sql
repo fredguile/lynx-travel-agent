@@ -1,6 +1,4 @@
-  drop function if exists semantic_search(vector,integer,jsonb);
-
-  create or replace function semantic_search(
+create or replace function semantic_search(
     query_embedding vector(1536),
     match_count int DEFAULT null,
     filter jsonb DEFAULT '{}'::jsonb
@@ -27,3 +25,4 @@
     limit match_count;
   end;
   $$;
+  
