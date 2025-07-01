@@ -181,9 +181,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supabase@npm:2.26.9":
-  version: 2.26.9
-  resolution: "supabase@npm:2.26.9::__archiveUrl=https%3A%2F%2Fpackages.atlassian.com%2Fapi%2Fnpm%2Fnpm-remote%2Fsupabase%2F-%2Fsupabase-2.26.9.tgz"
+"supabase@npm:2.30.4":
+  version: 2.30.4
+  resolution: "supabase@npm:2.30.4::__archiveUrl=https%3A%2F%2Fpackages.atlassian.com%2Fapi%2Fnpm%2Fnpm-remote%2Fsupabase%2F-%2Fsupabase-2.30.4.tgz"
   dependencies:
     bin-links: "npm:^5.0.0"
     https-proxy-agent: "npm:^7.0.2"
@@ -191,7 +191,7 @@ __metadata:
     tar: "npm:7.4.3"
   bin:
     supabase: bin/supabase
-  checksum: 10c0/2e96e5aad4e47fa323db335b6d4f64f74bc9c5f5a46e16bf96beb9ba088b3884d6626738ec7e0492ebabca73931eeedb544c087cafa8f9500331abf113d32a19
+  checksum: 10c0/ea403ba3cd840c9462c5ecb9c76c8f54fa89a5a9ad79bc728c65cc4c8f2d904fa04a7e82edd69a78028c8b938b9df534f01b7109185e9169825eb9f23ef108a2
   languageName: node
   linkType: hard
 
@@ -199,7 +199,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "supabase@workspace:."
   dependencies:
-    supabase: "npm:2.26.9"
+    supabase: "npm:2.30.4"
   languageName: unknown
   linkType: soft
 
