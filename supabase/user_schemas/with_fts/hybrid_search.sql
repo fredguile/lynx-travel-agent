@@ -44,10 +44,10 @@ as $$
 #variable_conflict use_column
 begin
   return query 
-  execute format('select id, content, metadata, ts_rank(to_tsvector(content), plainto_tsquery($1)) as similarity
+  execute format('select id, content, metadata, ts_rank(to_tsvector(content), phraseto_tsquery($1)) as similarity
     from emails
     where metadata @> $3
-    and to_tsvector(content) @@ plainto_tsquery($1)
+    and to_tsvector(content) @@ phraseto_tsquery($1)
     order by similarity desc
     limit $2'
   ) using query_text, match_count, filter;

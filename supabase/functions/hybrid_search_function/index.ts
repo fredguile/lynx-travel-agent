@@ -6,6 +6,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { OpenAIEmbeddings } from "npm:@langchain/openai";
 import { createClient, SupabaseClient } from 'jsr:@supabase/supabase-js@2.50.2';
+import { CohereClient } from "npm:cohere-ai";
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 if (!supabaseUrl) {
@@ -22,6 +23,11 @@ if (!openaiApiKey) {
   throw new Error("OPENAI_API_KEY environment variable is required");
 }
 
+const cohereApiKey = Deno.env.get('COHERE_API_KEY');
+if (!cohereApiKey) {
+  throw new Error("COHERE_API_KEY environment variable is required");
+}
+
 const EMBEDDING_MODEL = "text-embedding-3-small";
 const EMBEDDING_SIZE = 1536;
 
@@ -34,6 +40,58 @@ interface SearchResult {
   pageContent: string;
   metadata: any;
   score?: number;
+}
+
+interface RerankedResult {
+  index: number;
+  relevanceScore: number;
+}
+
+async function rerankWithCohere(
+  query: string,
+  documents: SearchResult[]
+): Promise<SearchResult[]> {
+  if (documents.length === 0) {
+    return documents;
+  }
+
+  const cohere = new CohereClient({
+    token: cohereApiKey,
+  });
+
+  try {
+    const rerankResponse = await cohere.rerank({
+      query: query,
+      documents: documents.map(doc => doc.pageContent),
+      topN: documents.length,
+      model: "rerank-english-v3.0",
+    });
+
+    // Create a map of original index to reranked result
+    const rerankedMap = new Map<number, RerankedResult>();
+    rerankResponse.results.forEach((result: any) => {
+      rerankedMap.set(result.index, {
+        index: result.index,
+        relevanceScore: result.relevanceScore
+      });
+    });
+
+    // Reorder documents based on Cohere's reranking
+    const rerankedDocuments = documents.map((doc, originalIndex) => {
+      const reranked = rerankedMap.get(originalIndex);
+      return {
+        ...doc,
+        score: reranked ? reranked.relevanceScore : doc.score || 0
+      };
+    });
+
+    // Sort by Cohere's relevance score
+    return rerankedDocuments.sort((a, b) => (b.score || 0) - (a.score || 0));
+  } catch (error) {
+    console.error("Cohere reranking failed:", error);
+    // Fallback to original ranking if Cohere fails
+    return documents.sort((a, b) => (b.score || 0) - (a.score || 0));
+  }
 }
 
 async function customHybridSearch(
@@ -92,7 +150,10 @@ async function customHybridSearch(
     });
   }
 
-  return Array.from(allResults.values()).sort((a, b) => (b.score || 0) - (a.score || 0));
+  const combinedResults = Array.from(allResults.values());
+  
+  // Apply Cohere reranking to improve the final ranking
+  return await rerankWithCohere(query, combinedResults);
 }
 
 Deno.serve(async (req) => {
