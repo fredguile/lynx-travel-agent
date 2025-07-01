@@ -111,7 +111,7 @@
       "parameters": {
         "toolDescription": "HTTP endpoint to retrieve knowledge from the RAG database. Accept 2 parameters: \"query\" and \"filterByFileReference\".",
         "method": "POST",
-        "url": "https://tzdazzxqjilbkrxufnbu.supabase.co/functions/v1/semantic_search_function",
+        "url": "https://tzdazzxqjilbkrxufnbu.supabase.co/functions/v1/hybrid_search_function",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBearerAuth",
         "sendBody": true,
@@ -218,7 +218,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "76d42daa-8763-4504-b606-8fcc297499bf",
+  "versionId": "ad3e2d7c-0732-4f1f-ae43-a032f393711d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"
@@ -226,10 +226,10 @@
   "id": "vsixNDufqpq0QqsX",
   "tags": [
     {
-      "name": "MCP",
-      "id": "phhzWu7Nkq9Kn27w",
       "createdAt": "2025-06-25T16:48:43.129Z",
-      "updatedAt": "2025-06-25T16:48:43.129Z"
+      "updatedAt": "2025-06-25T16:48:43.129Z",
+      "id": "phhzWu7Nkq9Kn27w",
+      "name": "MCP"
     },
     {
       "createdAt": "2025-06-02T14:15:22.742Z",
