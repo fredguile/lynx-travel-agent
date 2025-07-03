@@ -7,8 +7,32 @@ import (
 )
 
 const (
-	GWT_CONTENT_TYPE = "text/x-gwt-rpc; charset=utf-8"
+	GWT_CONTENT_TYPE             = "text/x-gwt-rpc; charset=utf-8"
+	GWT_TYPE_LONG                = "java.lang.Long"
+	GWT_TYPE_ARRAY               = "java.util.ArrayList"
+	GWT_TYPE_FILE_SEARCH_RESULTS = "com.lynxtraveltech.client.shared.model.FileSearchResults"
 )
+
+type GWTArrayResult struct {
+	Size  int
+	Items []interface{}
+}
+
+type GWTFileSearchResult struct {
+	CompanyCode      string
+	ClientIdentifier string
+	ClientReference  string
+	Currency         string
+	FileIdentifier   string
+	FileReference    string
+	PartyName        string
+	Status           string
+	TravelDate       string
+}
+
+type GWTLongResult struct {
+	value int64
+}
 
 type GWTLoginArgs struct {
 	RemoteHost  string
@@ -33,7 +57,7 @@ func BuildGWTFileSearchBody(args *GWTFileSearchArgs) string {
 
 // ParseResponseBody parses a GWT response body and extracts the data array.
 // Returns the parsed data as a slice of interface{} containing the array elements.
-func ParseResponseBody(responseBody string) ([]interface{}, error) {
+func ParseGWTResponseBody(responseBody string) (any, error) {
 	// Remove the "//OK" prefix if present
 	body := strings.TrimPrefix(responseBody, "//OK")
 
@@ -43,26 +67,67 @@ func ParseResponseBody(responseBody string) ([]interface{}, error) {
 		return nil, fmt.Errorf("failed to parse main array: %w", err)
 	}
 
-	// Reverse the order of items
-	for i, j := 0, len(parsedArray)-1; i < j; i, j = i+1, j-1 {
-		parsedArray[i], parsedArray[j] = parsedArray[j], parsedArray[i]
+	// check that parsedArray has at least 4 items
+	if len(parsedArray) < 4 {
+		return nil, fmt.Errorf("response body should contain at least 4 items, got %d", len(parsedArray))
 	}
 
-	// Check if we have enough items
-	if len(parsedArray) < 3 {
-		return nil, fmt.Errorf("response array too short, expected at least 3 items, got %d", len(parsedArray))
+	// check that last element of parsedArray contains protocol version 7
+	if parsedArray[len(parsedArray)-1] != 7 {
+		return nil, fmt.Errorf("response body should contain protocol version 7, got %d", parsedArray[len(parsedArray)-1])
 	}
 
-	// The third item (index 2) contains the actual data array
-	dataItem := parsedArray[2]
-
-	// Check if the third item is an array
-	dataArray, ok := dataItem.([]interface{})
+	// check that last last last element of parsedArray is an array, extract it as dataArray
+	dataArray, ok := parsedArray[len(parsedArray)-3].([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("third item is not an array, got %T", dataItem)
+		return nil, fmt.Errorf("response body should contain a data array, got %T", parsedArray[len(parsedArray)-3])
 	}
 
-	return dataArray, nil
+	var result any
+	resultIndex := 0
+
+	for i := len(parsedArray) - 4; i >= 0; i-- {
+		// if parsedArray[i] is a number, either it's zero and we should skip it or it is a one-based oneBasedIndex mapping into dataArray
+		if oneBasedIndex, ok := parsedArray[i].(int); ok {
+			// Ignore 0 aka nil values
+			if oneBasedIndex == 0 {
+				continue
+			}
+
+			currentValue := dataArray[oneBasedIndex-1]
+
+			// 1. Parse array structure
+			if currentStringValue, ok := currentValue.(string); ok && strings.HasPrefix(currentStringValue, GWT_TYPE_ARRAY) {
+				// Compute array size
+				i--
+				result = GWTArrayResult{
+					Size:  parsedArray[i].(int),
+					Items: make([]interface{}, parsedArray[i].(int)),
+				}
+			}
+
+			// 2. Parse iterable file search result structure
+			if currentStringValue, ok := currentValue.(string); ok && strings.HasPrefix(currentStringValue, GWT_TYPE_FILE_SEARCH_RESULTS) {
+				item := GWTFileSearchResult{
+					CompanyCode:      dataArray[parsedArray[i-1].(int)-1].(string),
+					ClientIdentifier: parsedArray[i-2].(string),
+					ClientReference:  dataArray[parsedArray[i-3].(int)-1].(string),
+					Currency:         dataArray[parsedArray[i-4].(int)-1].(string),
+					FileIdentifier:   parsedArray[i-5].(string),
+					FileReference:    dataArray[parsedArray[i-6].(int)-1].(string),
+					PartyName:        dataArray[parsedArray[i-8].(int)-1].(string),
+					Status:           dataArray[parsedArray[i-9].(int)-1].(string),
+					TravelDate:       dataArray[parsedArray[i-10].(int)-1].(string),
+				}
+
+				result.(GWTArrayResult).Items[resultIndex] = item
+				i = i - 10
+				resultIndex++
+			}
+		}
+	}
+
+	return result, nil
 }
 
 // ParseResponseError parses a GWT error response body and extracts the error message.
@@ -126,18 +191,20 @@ func parseGWTArray(arrayStr string) ([]interface{}, error) {
 	var result []interface{}
 	var current strings.Builder
 	var inString bool
+	var quoteChar byte
 	var depth int
 
 	for i := 0; i < len(arrayStr); i++ {
 		char := arrayStr[i]
 
 		switch char {
-		case '\'':
+		case '\'', '"':
 			if !inString {
 				inString = true
-			} else {
+				quoteChar = char
+			} else if char == quoteChar {
 				// Check if it's an escaped quote
-				if i+1 < len(arrayStr) && arrayStr[i+1] == '\'' {
+				if i+1 < len(arrayStr) && arrayStr[i+1] == char {
 					current.WriteByte(char)
 					i++ // Skip the next quote
 				} else {
@@ -192,11 +259,16 @@ func parseGWTArray(arrayStr string) ([]interface{}, error) {
 func parseGWTElement(element string) (interface{}, error) {
 	element = strings.TrimSpace(element)
 
-	// Check if it's a quoted string
-	if strings.HasPrefix(element, "'") && strings.HasSuffix(element, "'") {
+	// Check if it's a quoted string (single or double quotes)
+	if (strings.HasPrefix(element, "'") && strings.HasSuffix(element, "'")) ||
+		(strings.HasPrefix(element, "\"") && strings.HasSuffix(element, "\"")) {
 		// Remove quotes and unescape
 		content := element[1 : len(element)-1]
-		content = strings.ReplaceAll(content, "''", "'")
+		if strings.HasPrefix(element, "'") {
+			content = strings.ReplaceAll(content, "''", "'")
+		} else {
+			content = strings.ReplaceAll(content, "\"\"", "\"")
+		}
 		return content, nil
 	}
 
