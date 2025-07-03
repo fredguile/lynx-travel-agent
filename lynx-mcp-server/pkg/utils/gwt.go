@@ -51,8 +51,9 @@ type GWTFileSearchArgs struct {
 	PartyName  string
 }
 
+// BuildGWTFileSearchBody constructs the GWT-RPC file search body with the given party name, including quotations
 func BuildGWTFileSearchBody(args *GWTFileSearchArgs) string {
-	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|6|1|0|1|7|6|50|8|6|0|9|0|0|6|", args.RemoteHost, args.PartyName)
+	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|6|1|1|1|7|6|50|8|6|0|9|0|0|6|", args.RemoteHost, args.PartyName)
 }
 
 // ParseResponseBody parses a GWT response body and extracts the data array.
