@@ -20,10 +20,72 @@ const (
 	TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION                string = "Retrieve file from party name"
 	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME             string = "partyName"
 	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME_DESCRIPTION string = "Party name"
-)
 
-const (
-	FILE_SEARCH_URL = "/lynx/service/file.rpc"
+	// Complete tool schema including input and output (output schema inlined)
+	TOOL_FILE_SEARCH_SCHEMA = `{
+		"type": "object",
+		"description": "Retrieve file from party name",
+		"properties": {
+			"partyName": {
+				"type": "string",
+				"description": "Party name"
+			}
+		},
+		"required": ["partyName"],
+		"outputSchema": {
+			"type": "object",
+			"properties": {
+				"count": {
+					"type": "integer",
+					"description": "Number of results found"
+				},
+				"results": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"companyCode": {
+								"type": "string",
+								"description": "Company code"
+							},
+							"clientReference": {
+								"type": "string",
+								"description": "Client reference"
+							},
+							"currency": {
+								"type": "string",
+								"description": "Currency code"
+							},
+							"fileIdentifier": {
+								"type": "string",
+								"description": "File identifier"
+							},
+							"fileReference": {
+								"type": "string",
+								"description": "File reference"
+							},
+							"partyName": {
+								"type": "string",
+								"description": "Party name"
+							},
+							"status": {
+								"type": "string",
+								"description": "File status"
+							},
+							"travelDate": {
+								"type": "string",
+								"description": "Travel date"
+							}
+						},
+						"required": ["companyCode", "clientReference", "currency", "fileIdentifier", "fileReference", "partyName", "status", "travelDate"]
+					}
+				}
+			},
+			"required": ["count", "results"]
+		}
+	}`
+
+	LYNX_FILE_SEARCH_URL string = "/lynx/service/file.rpc"
 )
 
 // FileSearchResponse represents the structured response for file search
@@ -66,7 +128,7 @@ func HandleFileSearchByPartyName(
 	body := utils.BuildGWTFileSearchBody(&utils.GWTFileSearchArgs{
 		PartyName: partyName,
 	})
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, FILE_SEARCH_URL), strings.NewReader(body))
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_SEARCH_URL), strings.NewReader(body))
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create file search request: %w", err)
@@ -94,13 +156,7 @@ func HandleFileSearchByPartyName(
 		return nil, fmt.Errorf("failed to parse file search response: %w", err)
 	}
 
-	// Convert to JSON for MCP response
-	jsonData, err := json.Marshal(fileSearchResponse)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal response to JSON: %w", err)
-	}
-
-	return mcp.NewToolResultText(string(jsonData)), nil
+	return utils.NewToolResultJSON(fileSearchResponse), nil
 }
 
 // parseFileSearchResponse converts the parsed GWT data into structured FileSearchResponse object
@@ -133,4 +189,9 @@ func parseFileSearchResponse(responseBody any) (*FileSearchResponse, error) {
 	} else {
 		return nil, fmt.Errorf("invalid GWTArrayResult")
 	}
+}
+
+// GetFileSearchSchema returns the complete JSON schema for the file search tool
+func GetFileSearchSchema() json.RawMessage {
+	return json.RawMessage(TOOL_FILE_SEARCH_SCHEMA)
 }

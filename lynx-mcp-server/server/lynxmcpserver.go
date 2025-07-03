@@ -107,12 +107,10 @@ func NewMCPServer() *server.MCPServer {
 		server.WithHooks(hooks),
 	)
 
-	mcpServer.AddTool(mcp.NewTool(string(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME),
-		mcp.WithDescription(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION),
-		mcp.WithString(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME,
-			mcp.Description(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME_DESCRIPTION),
-			mcp.Required(),
-		),
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		string(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME),
+		tools.TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION,
+		tools.GetFileSearchSchema(),
 	), tools.HandleFileSearchByPartyName)
 
 	return mcpServer
