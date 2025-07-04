@@ -35,7 +35,9 @@ docker run --env-file .env -p 9600:9600 lynx-mcp-server
 ## How to test
 
 ```sh
-go run ./client --command 'file_search_by_party_name --partyName=LASTNAME'
+go run ./cmd/lynxmcpserver.go
 
-go run ./client --command 'retrieve_itinerary --fileIdentifier=IDENTIFIER'
+go run ./cmd/lynxmcpclient.go --command 'file_search_by_party_name --partyName=LASTNAME'
+
+go run ./cmd/lynxmcpclient.go --command 'retrieve_itinerary --fileIdentifier=IDENTIFIER'
 ```
