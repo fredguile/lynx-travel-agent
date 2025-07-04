@@ -113,5 +113,11 @@ func NewMCPServer() *server.MCPServer {
 		tools.GetFileSearchSchema(),
 	), tools.HandleFileSearchByPartyName)
 
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		string(tools.TOOL_RETRIEVE_ITINERARY),
+		tools.TOOL_RETRIEVE_ITINERARY_DESCRIPTION,
+		tools.GetRetrieveItinerarySchema(),
+	), tools.HandleRetrieveItinerary)
+
 	return mcpServer
 }

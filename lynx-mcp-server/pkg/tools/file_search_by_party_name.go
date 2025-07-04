@@ -7,13 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
 	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/mcp"
 )
-
-var lynxConfig = config.NewLynxServerConfig()
 
 const (
 	TOOL_FILE_SEARCH_BY_PARTY_NAME                            string = "file_search_by_party_name"
@@ -21,7 +18,6 @@ const (
 	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME             string = "partyName"
 	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME_DESCRIPTION string = "Party name"
 
-	// Complete tool schema including input and output (output schema inlined)
 	TOOL_FILE_SEARCH_SCHEMA = `{
 		"type": "object",
 		"description": "Retrieve file from party name",

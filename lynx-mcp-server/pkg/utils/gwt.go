@@ -11,6 +11,7 @@ const (
 	GWT_TYPE_LONG                = "java.lang.Long"
 	GWT_TYPE_ARRAY               = "java.util.ArrayList"
 	GWT_TYPE_FILE_SEARCH_RESULTS = "com.lynxtraveltech.client.shared.model.FileSearchResults"
+	GWT_TYPE_FILE_SUMMARY        = "com.lynxtraveltech.client.shared.model.FileSummary"
 )
 
 type GWTArrayResult struct {
@@ -28,10 +29,6 @@ type GWTFileSearchResult struct {
 	PartyName        string
 	Status           string
 	TravelDate       string
-}
-
-type GWTLongResult struct {
-	value int64
 }
 
 type GWTLoginArgs struct {
@@ -54,6 +51,15 @@ type GWTFileSearchArgs struct {
 // BuildGWTFileSearchBody constructs the GWT-RPC file search body with the given party name, including quotations
 func BuildGWTFileSearchBody(args *GWTFileSearchArgs) string {
 	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|6|1|1|1|7|6|50|8|6|0|9|0|0|6|", args.RemoteHost, args.PartyName)
+}
+
+type GWTRetrieveItineraryArgs struct {
+	RemoteHost     string
+	FileIdentifier string
+}
+
+func BuildGWTRetrieveItineraryBody(args *GWTRetrieveItineraryArgs) string {
+	return fmt.Sprintf("7|0|6|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|retrieveItinerary|J|Z|1|2|3|4|4|5|6|6|6|%s|0|0|0|", args.RemoteHost, args.FileIdentifier)
 }
 
 // ParseResponseBody parses a GWT response body and extracts the data array.
@@ -85,6 +91,7 @@ func ParseGWTResponseBody(responseBody string) (any, error) {
 	}
 
 	var result any
+	// var nestedArray any
 	resultIndex := 0
 
 	for i := len(parsedArray) - 4; i >= 0; i-- {
@@ -99,11 +106,20 @@ func ParseGWTResponseBody(responseBody string) (any, error) {
 
 			// 1. Parse array structure
 			if currentStringValue, ok := currentValue.(string); ok && strings.HasPrefix(currentStringValue, GWT_TYPE_ARRAY) {
-				// Compute array size
-				i--
-				result = GWTArrayResult{
-					Size:  parsedArray[i].(int),
-					Items: make([]interface{}, parsedArray[i].(int)),
+				if i == len(parsedArray)-4 {
+					// Compute array size
+					i--
+					result = GWTArrayResult{
+						Size:  parsedArray[i].(int),
+						Items: make([]interface{}, parsedArray[i].(int)),
+					}
+				} else {
+					// // Compute array size
+					// i--
+					// nestedArray = GWTArrayResult{
+					// 	Size:  parsedArray[i].(int),
+					// 	Items: make([]interface{}, parsedArray[i].(int)),
+					// }
 				}
 			}
 
