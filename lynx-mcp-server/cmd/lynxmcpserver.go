@@ -110,8 +110,14 @@ func NewMCPServer() *server.MCPServer {
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
 		string(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME),
 		tools.TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION,
-		tools.GetFileSearchSchema(),
+		tools.GetFileSearchByPartyNameSchema(),
 	), tools.HandleFileSearchByPartyName)
+
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		string(tools.TOOL_FILE_SEARCH_BY_FILE_REFERENCE),
+		tools.TOOL_FILE_SEARCH_BY_FILE_REFERENCE_DESCRIPTION,
+		tools.GetFileSearchByFileReferenceSchema(),
+	), tools.HandleFileSearchByFileReference)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
 		string(tools.TOOL_RETRIEVE_ITINERARY),

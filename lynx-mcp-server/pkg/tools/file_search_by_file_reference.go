@@ -13,21 +13,21 @@ import (
 )
 
 const (
-	TOOL_FILE_SEARCH_BY_PARTY_NAME                            string = "file_search_by_party_name"
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION                string = "Retrieve file from party name"
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME             string = "partyName"
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME_DESCRIPTION string = "Party name"
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE                                string = "file_search_by_file_reference"
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_DESCRIPTION                    string = "Retrieve file from file reference"
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_ARG_FILE_REFERENCE             string = "fileReference"
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_ARG_FILE_REFERENCE_DESCRIPTION string = "File reference"
 
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_SCHEMA = `{
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_SCHEMA = `{
 		"type": "object",
-		"description": "Retrieve file from party name",
+		"description": "Retrieve file from file reference",
 		"properties": {
-			"partyName": {
+			"fileReference": {
 				"type": "string",
-				"description": "Party name"
+				"description": "File reference"
 			}
 		},
-		"required": ["partyName"],
+		"required": ["fileReference"],
 		"outputSchema": {
 			"type": "object",
 			"properties": {
@@ -81,10 +81,10 @@ const (
 		}
 	}`
 
-	LYNX_FILE_SEARCH_BY_PARTY_NAME_URL string = "/lynx/service/file.rpc"
+	LYNX_FILE_SEARCH_BY_FILE_REFERENCE_URL string = "/lynx/service/file.rpc"
 )
 
-func HandleFileSearchByPartyName(
+func HandleFileSearchByFileReference(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
@@ -97,16 +97,16 @@ func HandleFileSearchByPartyName(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
-	partyName, ok := arguments["partyName"].(string)
+	fileReference, ok := arguments["fileReference"].(string)
 
 	if !ok {
-		return nil, fmt.Errorf("invalid number arguments")
+		return nil, fmt.Errorf("invalid file reference arguments")
 	}
 
-	body := utils.BuildGWTFileSearchBody(&utils.GWTFileSearchArgs{
-		PartyName: partyName,
+	body := utils.BuildGWTFileSearchByFileReferenceBody(&utils.GWTFileSearchByFileReferenceArgs{
+		FileReference: fileReference,
 	})
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_SEARCH_BY_PARTY_NAME_URL), strings.NewReader(body))
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_SEARCH_BY_FILE_REFERENCE_URL), strings.NewReader(body))
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create file search request: %w", err)
@@ -129,7 +129,7 @@ func HandleFileSearchByPartyName(
 	}
 
 	// Convert parsed data to structured format
-	fileSearchResponse, err := parseFileSearchResponse(responseBody)
+	fileSearchResponse, err := parseFileSearchByFileReferenceResponse(responseBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse file search response: %w", err)
 	}
@@ -137,8 +137,8 @@ func HandleFileSearchByPartyName(
 	return utils.NewToolResultJSON(fileSearchResponse), nil
 }
 
-// parseFileSearchResponse converts the parsed GWT data into structured FileSearchResponse object
-func parseFileSearchResponse(responseBody any) (*FileSearchResponse, error) {
+// parseFileSearchByFileReferenceResponse converts the parsed GWT data into structured FileSearchResponse object
+func parseFileSearchByFileReferenceResponse(responseBody any) (*FileSearchResponse, error) {
 	if gwtArrayResult, ok := responseBody.(utils.GWTArrayResult); ok {
 		fileSearchResponse := FileSearchResponse{
 			Count:   gwtArrayResult.Size,
@@ -169,7 +169,7 @@ func parseFileSearchResponse(responseBody any) (*FileSearchResponse, error) {
 	}
 }
 
-// GetFileSearchByPartyNameSchema returns the complete JSON schema for the file search tool
-func GetFileSearchByPartyNameSchema() json.RawMessage {
-	return json.RawMessage(TOOL_FILE_SEARCH_BY_PARTY_NAME_SCHEMA)
+// GetFileSearchByFileReferenceSchema returns the complete JSON schema for the file search by file reference tool
+func GetFileSearchByFileReferenceSchema() json.RawMessage {
+	return json.RawMessage(TOOL_FILE_SEARCH_BY_FILE_REFERENCE_SCHEMA)
 }

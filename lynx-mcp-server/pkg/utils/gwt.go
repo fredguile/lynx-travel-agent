@@ -53,6 +53,16 @@ func BuildGWTFileSearchBody(args *GWTFileSearchArgs) string {
 	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|6|1|1|1|7|6|50|8|6|0|9|0|0|6|", args.RemoteHost, args.PartyName)
 }
 
+type GWTFileSearchByFileReferenceArgs struct {
+	RemoteHost    string
+	FileReference string
+}
+
+// BuildGWTFileSearchByFileReferenceBody constructs the GWT-RPC file search body with the given file reference, including quotations
+func BuildGWTFileSearchByFileReferenceBody(args *GWTFileSearchByFileReferenceArgs) string {
+	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|search|com.lynxtraveltech.client.shared.model.FileSearchCriteria/1867541444||%s|PARTY_NAME|DD MMM YYYY|1|2|3|4|1|5|5|6|7|1|1|1|6|6|50|8|6|0|9|0|0|6|", args.RemoteHost, args.FileReference)
+}
+
 type GWTRetrieveItineraryArgs struct {
 	RemoteHost     string
 	FileIdentifier string

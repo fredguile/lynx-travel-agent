@@ -39,5 +39,7 @@ go run ./cmd/lynxmcpserver.go
 
 go run ./cmd/lynxmcpclient.go --command 'file_search_by_party_name --partyName=LASTNAME'
 
+go run ./cmd/lynxmcpclient.go --command 'file_search_by_file_reference --fileReference=FTXXXXXXXXX'
+
 go run ./cmd/lynxmcpclient.go --command 'retrieve_itinerary --fileIdentifier=IDENTIFIER'
 ```
