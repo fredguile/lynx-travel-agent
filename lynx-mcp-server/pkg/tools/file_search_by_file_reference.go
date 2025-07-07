@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/gwt"
 	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -103,7 +104,7 @@ func HandleFileSearchByFileReference(
 		return nil, fmt.Errorf("invalid file reference arguments")
 	}
 
-	body := utils.BuildGWTFileSearchByFileReferenceBody(&utils.GWTFileSearchByFileReferenceArgs{
+	body := gwt.BuildFileSearchByFileReferenceGWTBody(&gwt.FileSearchByFileReferenceArgs{
 		FileReference: fileReference,
 	})
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_SEARCH_BY_FILE_REFERENCE_URL), strings.NewReader(body))
@@ -112,7 +113,7 @@ func HandleFileSearchByFileReference(
 		return nil, fmt.Errorf("failed to create file search request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", utils.GWT_CONTENT_TYPE)
+	req.Header.Set("Content-Type", gwt.CONTENT_TYPE)
 	req.AddCookie(utils.CreateAuthCookie(lynxConfig, session))
 
 	// Use retry utility with exponential backoff
@@ -123,50 +124,12 @@ func HandleFileSearchByFileReference(
 	defer resp.Body.Close()
 
 	// Parse the GWT response body
-	responseBody, err := utils.ParseGWTResponseBody(bodyStr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse GWT response: %w", err)
-	}
-
-	// Convert parsed data to structured format
-	fileSearchResponse, err := parseFileSearchByFileReferenceResponse(responseBody)
+	fileSearchResponseBody, err := gwt.ParseFileSearchResponseBody(bodyStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse file search response: %w", err)
 	}
 
-	return utils.NewToolResultJSON(fileSearchResponse), nil
-}
-
-// parseFileSearchByFileReferenceResponse converts the parsed GWT data into structured FileSearchResponse object
-func parseFileSearchByFileReferenceResponse(responseBody any) (*FileSearchResponse, error) {
-	if gwtArrayResult, ok := responseBody.(utils.GWTArrayResult); ok {
-		fileSearchResponse := FileSearchResponse{
-			Count:   gwtArrayResult.Size,
-			Results: make([]FileSearchResult, gwtArrayResult.Size),
-		}
-
-		for i, item := range gwtArrayResult.Items {
-			if gwtFileSearchResult, ok := item.(utils.GWTFileSearchResult); ok {
-				fileSearchResult := FileSearchResult{
-					CompanyCode:     gwtFileSearchResult.CompanyCode,
-					ClientReference: gwtFileSearchResult.ClientReference,
-					Currency:        gwtFileSearchResult.Currency,
-					FileIdentifier:  gwtFileSearchResult.FileIdentifier,
-					FileReference:   gwtFileSearchResult.FileReference,
-					PartyName:       gwtFileSearchResult.PartyName,
-					Status:          gwtFileSearchResult.Status,
-					TravelDate:      gwtFileSearchResult.TravelDate,
-				}
-				fileSearchResponse.Results[i] = fileSearchResult
-			} else {
-				return nil, fmt.Errorf("invalid GWTFileSearchResult")
-			}
-		}
-
-		return &fileSearchResponse, nil
-	} else {
-		return nil, fmt.Errorf("invalid GWTArrayResult")
-	}
+	return utils.NewToolResultJSON(fileSearchResponseBody), nil
 }
 
 // GetFileSearchByFileReferenceSchema returns the complete JSON schema for the file search by file reference tool

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/gwt"
 	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -72,21 +73,6 @@ const (
 	LYNX_RETRIEVE_ITINERARY_URL string = "/lynx/service/file.rpc"
 )
 
-type RetrieveItinerary struct {
-	TotalBuyPrice  string             `json:"totalBuyPrice"`
-	TotalSellPrice string             `json:"totalSellPrice"`
-	Count          int                `json:"count"`
-	Products       []ItineraryProduct `json:"products"`
-}
-
-type ItineraryProduct struct {
-	Supplier    string `json:"supplier"`
-	ProductName string `json:"productName"`
-	Date        string `json:"date"`
-	Location    string `json:"location"`
-	Status      string `json:"status"`
-}
-
 func HandleRetrieveItinerary(
 	ctx context.Context,
 	request mcp.CallToolRequest,
@@ -103,10 +89,10 @@ func HandleRetrieveItinerary(
 	fileIdentifier, ok := arguments["fileIdentifier"].(string)
 
 	if !ok {
-		return nil, fmt.Errorf("invalid number arguments")
+		return nil, fmt.Errorf("invalid file identifier arguments")
 	}
 
-	body := utils.BuildGWTRetrieveItineraryBody(&utils.GWTRetrieveItineraryArgs{
+	body := gwt.BuildRetrieveItineraryGWTBody(&gwt.RetrieveItineraryArgs{
 		FileIdentifier: fileIdentifier,
 	})
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_RETRIEVE_ITINERARY_URL), strings.NewReader(body))
@@ -115,7 +101,7 @@ func HandleRetrieveItinerary(
 		return nil, fmt.Errorf("failed to create retrieve itinerary request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", utils.GWT_CONTENT_TYPE)
+	req.Header.Set("Content-Type", gwt.CONTENT_TYPE)
 	req.AddCookie(utils.CreateAuthCookie(lynxConfig, session))
 
 	// Use retry utility with exponential backoff
@@ -126,22 +112,12 @@ func HandleRetrieveItinerary(
 	defer resp.Body.Close()
 
 	// Parse the GWT response body
-	responseBody, err := utils.ParseGWTResponseBody(bodyStr)
+	retrieveItineraryResponseBody, err := gwt.ParseGWTRetrieveItineraryResponseBody(bodyStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse GWT response: %w", err)
+		return nil, fmt.Errorf("failed to parse retrieve itinerary response: %w", err)
 	}
 
-	// Convert parsed data to structured format
-	fileSearchResponse, err := parseRetrieveItineraryResponse(responseBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse file search response: %w", err)
-	}
-
-	return utils.NewToolResultJSON(fileSearchResponse), nil
-}
-
-func parseRetrieveItineraryResponse(responseBody any) (*RetrieveItinerary, error) {
-	return nil, fmt.Errorf("not yet implemented")
+	return utils.NewToolResultJSON(retrieveItineraryResponseBody), nil
 }
 
 // GetRetrieveItinerarySchema returns the complete JSON schema for the retrieve itinerary tool

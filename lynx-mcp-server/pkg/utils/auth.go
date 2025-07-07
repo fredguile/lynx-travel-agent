@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/gwt"
 )
 
 const (
@@ -69,21 +70,21 @@ func makeAuthRequest(lynxConfig config.LynxServerConfig) (*SessionContext, error
 		Jar: jar,
 	}
 
-	args := &GWTLoginArgs{
+	args := &gwt.GWTLoginArgs{
 		RemoteHost:  lynxConfig.RemoteHost,
 		CompanyCode: lynxConfig.CompanyCode,
 		Username:    lynxConfig.Username,
 		Password:    lynxConfig.Password,
 	}
 
-	body := BuildGWTLoginBody(args)
+	body := gwt.BuildGWTLoginBody(args)
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, AUTH_URL), strings.NewReader(body))
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create auth request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", GWT_CONTENT_TYPE)
+	req.Header.Set("Content-Type", gwt.CONTENT_TYPE)
 
 	resp, err := client.Do(req)
 

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/gwt"
 )
 
 // RetryConfig holds configuration for retry behavior
@@ -113,7 +115,7 @@ func RetryHTTPRequest(ctx context.Context, client *http.Client, req *http.Reques
 		// Check for GWT error responses that start with "//EX"
 		if resp.StatusCode == http.StatusOK && len(bodyStr) > 0 && strings.HasPrefix(bodyStr, "//EX") {
 			// Parse the GWT error response to extract the error message
-			errorMessage, err := ParseResponseError(bodyStr)
+			errorMessage, err := gwt.ParseResponseError(bodyStr)
 			if err != nil {
 				// If we can't parse the error, return the raw body as error
 				lastErr = fmt.Errorf("attempt %d: GWT error response (unparseable): %s", attempt+1, bodyStr)
