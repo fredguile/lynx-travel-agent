@@ -112,7 +112,7 @@ func HandleRetrieveItinerary(
 	defer resp.Body.Close()
 
 	// Parse the GWT response body
-	retrieveItineraryResponseBody, err := gwt.ParseGWTRetrieveItineraryResponseBody(bodyStr)
+	retrieveItineraryResponseBody, err := gwt.ParseRetrieveItineraryResponseBody(bodyStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse retrieve itinerary response: %w", err)
 	}

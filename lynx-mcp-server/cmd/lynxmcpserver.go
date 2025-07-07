@@ -125,5 +125,11 @@ func NewMCPServer() *server.MCPServer {
 		tools.GetRetrieveItinerarySchema(),
 	), tools.HandleRetrieveItinerary)
 
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		string(tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE),
+		tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_DESCRIPTION,
+		tools.GetFileDocumentsByTransactioReferenceSchema(),
+	), tools.HandleFileDocumentsByTransactionReference)
+
 	return mcpServer
 }

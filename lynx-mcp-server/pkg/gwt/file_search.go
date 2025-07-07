@@ -95,9 +95,8 @@ func ParseFileSearchResponseBody(responseBody string) (*FileSearchResponseArray,
 		Count:   arraySize,
 		Results: make([]FileSearchResult, arraySize),
 	}
-	resultIndex := 0
 
-	for i := len(parsedArray) - 6; i >= 0; i-- {
+	for i, resultIndex := len(parsedArray)-6, 0; i >= 0; i-- {
 		if oneBasedIndex, ok := parsedArray[i].(int); ok {
 			// Ignore 0 aka nil values
 			if oneBasedIndex == 0 {

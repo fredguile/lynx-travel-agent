@@ -1,0 +1,115 @@
+package gwt
+
+import (
+	"fmt"
+	"strings"
+)
+
+type FileDocumentsByTransactionReferenceArgs struct {
+	RemoteHost            string
+	FileIdentifier        string
+	TransactionIdentifier string
+}
+
+func BuildFileDocumentsByTransactionReferenceGWTBody(args *FileDocumentsByTransactionReferenceArgs) string {
+	return fmt.Sprintf("7|0|8|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|getFileDocumentsAsList|J|java.lang.Long/4227064769|I|java.lang.String/2004016611|1|2|3|4|4|5|6|7|8|%s|6|%s|1|0|", args.RemoteHost, args.FileIdentifier, args.TransactionIdentifier)
+}
+
+type FileDocumentsResponseArray struct {
+	Count   int            `json:"count"`
+	Results []FileDocument `json:"results"`
+}
+
+type FileDocument struct {
+	FileIdentifier        string `json:"fileIdentifier"`
+	TransactionIdentifier string `json:"transactionIdentifier"`
+	DocumentIdentifier    string `json:"documentIdentifier"`
+	DocumentName          string `json:"documentName"`
+	DocumentType          string `json:"documentType"`
+	Content               string `json:"content"`
+	AttachedFile          string `json:"attachedFile"`
+}
+
+// ParseFileDocumentsListResponseBody parses a GWT response in context of listing file documents
+// Returns the parsed data as FileDocumentsResponseArray containing the array elements.
+func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResponseArray, error) {
+	// Remove the "//OK" prefix if present
+	body := strings.TrimPrefix(responseBody, "//OK")
+
+	// Parse the main array structure
+	parsedArray, err := parseGWTArray(body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse main array: %w", err)
+	}
+
+	// check that parsedArray has at least 4 items
+	if len(parsedArray) < 4 {
+		return nil, fmt.Errorf("response body should contain at least 4 items, got %d", len(parsedArray))
+	}
+
+	// check that last element of parsedArray contains protocol version 7
+	if parsedArray[len(parsedArray)-1] != 7 {
+		return nil, fmt.Errorf("response body should contain protocol version 7, got %d", parsedArray[len(parsedArray)-1])
+	}
+
+	// check that last last last element of parsedArray is an array, extract it as dataArray
+	dataArray, ok := parsedArray[len(parsedArray)-3].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("response body should contain a data array, got %T", parsedArray[len(parsedArray)-3])
+	}
+
+	// check that last last last element of parsedArray is our starting point, a GWT_TYPE_ARRAY
+	oneBasedIndex, ok := parsedArray[len(parsedArray)-4].(int)
+	if !ok {
+		return nil, fmt.Errorf("expected one-based index, got %T", parsedArray[len(parsedArray)-4])
+	}
+
+	mappedFirstStringValue, ok := dataArray[oneBasedIndex-1].(string)
+	if !ok {
+		return nil, fmt.Errorf("expected string value, got %T", dataArray[oneBasedIndex-1])
+	}
+
+	if !strings.HasPrefix(mappedFirstStringValue, GWT_TYPE_ARRAY) {
+		return nil, fmt.Errorf("first item should be an array, got %T", mappedFirstStringValue)
+	}
+
+	// check that our GWT_TYPE_ARRAY has a size
+	arraySize, ok := parsedArray[len(parsedArray)-5].(int)
+	if !ok {
+		return nil, fmt.Errorf("first array item should have a size, got %T", parsedArray[len(parsedArray)-5])
+	}
+
+	fileDocumentsResponse := FileDocumentsResponseArray{
+		Count:   arraySize,
+		Results: make([]FileDocument, arraySize),
+	}
+
+	for i, resultIndex := len(parsedArray)-6, 0; i >= 0; i-- {
+		if oneBasedIndex, ok := parsedArray[i].(int); ok {
+			// Ignore 0 aka nil values
+			if oneBasedIndex == 0 {
+				continue
+			}
+
+			currentValue := dataArray[oneBasedIndex-1]
+
+			if currentStringValue, ok := currentValue.(string); ok && strings.HasPrefix(currentStringValue, GWT_TYPE_DOCUMENT_DETAILS) {
+				fileDocument := FileDocument{
+					TransactionIdentifier: parsedArray[i-2].(string),
+					Content:               unescapeGWTString(dataArray[parsedArray[i-11].(int)-1].(string)),
+					DocumentType:          dataArray[parsedArray[i-13].(int)-1].(string),
+					FileIdentifier:        parsedArray[i-14].(string),
+					DocumentName:          dataArray[parsedArray[i-15].(int)-1].(string),
+					AttachedFile:          dataArray[parsedArray[i-16].(int)-1].(string),
+					DocumentIdentifier:    dataArray[parsedArray[i-17].(int)-1].(string),
+				}
+
+				fileDocumentsResponse.Results[resultIndex] = fileDocument
+				i = i - 17
+				resultIndex++
+			}
+		}
+	}
+
+	return &fileDocumentsResponse, nil
+}

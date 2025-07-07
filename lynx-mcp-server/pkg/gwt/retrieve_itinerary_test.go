@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestParseGWTRetrieveItineraryResponseBody(t *testing.T) {
+func TestParseRetrieveItineraryResponseBody(t *testing.T) {
 	tests := []struct {
 		name           string
 		responseBody   string
@@ -155,7 +155,7 @@ func TestParseGWTRetrieveItineraryResponseBody(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := ParseGWTRetrieveItineraryResponseBody(tt.responseBody)
+			result, err := ParseRetrieveItineraryResponseBody(tt.responseBody)
 
 			if tt.expectedError {
 				if err == nil {
@@ -271,7 +271,7 @@ func TestParseGWTRetrieveItineraryResponseBody_ErrorCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := ParseGWTRetrieveItineraryResponseBody(tt.responseBody)
+			_, err := ParseRetrieveItineraryResponseBody(tt.responseBody)
 
 			if tt.expectedError && err == nil {
 				t.Errorf("Expected error but got none")

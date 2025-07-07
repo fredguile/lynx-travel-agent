@@ -38,7 +38,7 @@ type ItineraryTransactionSummary struct {
 
 // ParseGWTFileSearchResponseBody parses a GWT response in context of retrieve itinerary.
 // Returns the parsed data as RetrieveItineraryResponseArray containing the array elements.
-func ParseGWTRetrieveItineraryResponseBody(responseBody string) (*RetrieveItineraryResponseArray, error) {
+func ParseRetrieveItineraryResponseBody(responseBody string) (*RetrieveItineraryResponseArray, error) {
 	// Remove the "//OK" prefix if present
 	body := strings.TrimPrefix(responseBody, "//OK")
 
@@ -106,7 +106,7 @@ func ParseGWTRetrieveItineraryResponseBody(responseBody string) (*RetrieveItiner
 
 			if currentStringValue, ok := currentValue.(string); ok &&
 				(strings.HasPrefix(currentStringValue, GWT_TYPE_BIGDECIMAL) ||
-					strings.HasPrefix(currentStringValue, GWT_TYPE_DATE) ||
+					strings.HasPrefix(currentStringValue, GWT_TYPE_SQL_DATE) ||
 					strings.HasPrefix(currentStringValue, GWT_TYPE_DOUBLE) ||
 					strings.HasPrefix(currentStringValue, GWT_TYPE_LONG) ||
 					strings.HasPrefix(currentStringValue, GWT_TYPE_STRING)) {
