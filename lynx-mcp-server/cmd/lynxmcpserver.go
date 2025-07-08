@@ -100,8 +100,8 @@ func NewMCPServer() *server.MCPServer {
 	mcpServer := server.NewMCPServer(
 		"lynx-mcp-server",
 		"1.0.0",
-		server.WithResourceCapabilities(true, true),
-		server.WithPromptCapabilities(true),
+		server.WithResourceCapabilities(false, false),
+		server.WithPromptCapabilities(false),
 		server.WithToolCapabilities(true),
 		server.WithLogging(),
 		server.WithHooks(hooks),
