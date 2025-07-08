@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE             string = "file_documents_by_transaction_reference"
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_DESCRIPTION string = "Retrieve file documents from transaction reference"
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_SCHEMA      string = `{
+	TOOL_RETRIEVE_FILE_DOCUMENTS             string = "retrieve_file_documents"
+	TOOL_RETRIEVE_FILE_DOCUMENTS_DESCRIPTION string = "Retrieve file documents from transaction reference"
+	TOOL_RETRIEVE_FILE_DOCUMENTS_SCHEMA      string = `{
 		"type": "object",
 		"description": "Retrieve file documents from transaction reference",
 		"properties": {
@@ -65,7 +65,7 @@ const (
 								"type": "string",
 								"description": "Content"
 							},
-							"attachedFile": {
+							"attachmentUrl": {
 								"type": "string",
 								"description": "Attached file"
 							}
@@ -81,7 +81,7 @@ const (
 	LYNX_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_URL string = "/lynx/service/file.rpc"
 )
 
-func HandleFileDocumentsByTransactionReference(
+func HandleRetrieveFileDocuments(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
@@ -97,12 +97,12 @@ func HandleFileDocumentsByTransactionReference(
 
 	fileIdentifier, ok := arguments["fileIdentifier"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid file identifier argument")
+		return nil, fmt.Errorf("invalid file identifier argument: %v", arguments["fileIdentifier"])
 	}
 
 	transactionIdentifier, ok := arguments["transactionIdentifier"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid transaction identifier argument")
+		return nil, fmt.Errorf("invalid transaction identifier argument: %v", arguments["transactionIdentifier"])
 	}
 
 	body := gwt.BuildFileDocumentsByTransactionReferenceGWTBody(&gwt.FileDocumentsByTransactionReferenceArgs{
@@ -135,6 +135,7 @@ func HandleFileDocumentsByTransactionReference(
 	return utils.NewToolResultJSON(fielDocumentsListResponseBody), nil
 }
 
-func GetFileDocumentsByTransactioReferenceSchema() json.RawMessage {
-	return json.RawMessage(TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_SCHEMA)
+// GetRetrieveFileDocumentsSchema returns the complete JSON schema for the retrieve file documents tool
+func GetRetrieveFileDocumentsSchema() json.RawMessage {
+	return json.RawMessage(TOOL_RETRIEVE_FILE_DOCUMENTS_SCHEMA)
 }

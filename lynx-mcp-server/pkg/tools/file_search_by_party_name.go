@@ -95,10 +95,10 @@ func HandleFileSearchByPartyName(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
-	partyName, ok := arguments["partyName"].(string)
 
+	partyName, ok := arguments["partyName"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid number arguments")
+		return nil, fmt.Errorf("invalid partyName argument: %v", arguments["partyName"])
 	}
 
 	body := gwt.BuildFileSearchByPartyNameGWTBody(&gwt.FileSearchByPartyNameArgs{

@@ -25,7 +25,7 @@ type FileDocumentSaveDetailsArgs struct {
 	AttachmentURL         string
 }
 
-func BuildFileDocumentSaveDetailsGWTBody(args *FileDocumentSaveDetailsArgs) string {
+func BuildFileDocumentSaveGWTBody(args *FileDocumentSaveDetailsArgs) string {
 	return fmt.Sprintf("7|0|10|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|saveFileDocumentsDetails|com.lynxtraveltech.common.gui.shared.model.DocumentDetails/2779362264|java.lang.Long/4227064769|%s|%s|%s|%s|1|2|3|4|1|5|5|6|%s|1|A|0|0|0|FO6_|7|8|0|%s|9|10|0|", args.RemoteHost, args.Content, args.Type, args.Name, args.AttachmentURL, args.TransactionIdentifier, args.FileIdentifier)
 }
 
@@ -41,7 +41,7 @@ type FileDocument struct {
 	DocumentName          string `json:"documentName"`
 	DocumentType          string `json:"documentType"`
 	Content               string `json:"content"`
-	AttachedFile          string `json:"attachedFile"`
+	AttachmentUrl         string `json:"attachmentUrl"`
 }
 
 // ParseFileDocumentsListResponseBody parses a GWT response in context of listing file documents
@@ -105,8 +105,8 @@ func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResp
 
 	for i, resultIndex := len(parsedArray)-6, 0; i >= 0; i-- {
 		if oneBasedIndex, ok := parsedArray[i].(int); ok {
-			// Ignore 0 aka nil values
-			if oneBasedIndex == 0 {
+			// Ignore values that don't match a oneBasedIndex
+			if oneBasedIndex <= 0 || oneBasedIndex >= len(dataArray) {
 				continue
 			}
 
@@ -119,12 +119,15 @@ func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResp
 					DocumentType:          dataArray[parsedArray[i-13].(int)-1].(string),
 					FileIdentifier:        parsedArray[i-14].(string),
 					DocumentName:          dataArray[parsedArray[i-15].(int)-1].(string),
-					AttachedFile:          dataArray[parsedArray[i-16].(int)-1].(string),
 					DocumentIdentifier:    dataArray[parsedArray[i-17].(int)-1].(string),
 				}
 
+				if oneBasedIndex, ok := parsedArray[i-16].(int); ok && oneBasedIndex > 0 {
+					fileDocument.AttachmentUrl = dataArray[parsedArray[i-16].(int)-1].(string)
+				}
+
 				fileDocumentsResponse.Results[resultIndex] = fileDocument
-				i = i - 17
+				i -= 17
 				resultIndex++
 			}
 		}
@@ -133,9 +136,9 @@ func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResp
 	return &fileDocumentsResponse, nil
 }
 
-// ParseFileDocumentSaveDetailsResponseBody parsed a GWT response in content of saving document details
+// ParseFileDocumentSaveResponseBody parsed a GWT response in content of saving document details
 // Returns nil if successful
-func ParseFileDocumentSaveDetailsResponseBody(responseBody string) error {
+func ParseFileDocumentSaveResponseBody(responseBody string) error {
 	// Ensure response starts with "//OK"
 	if !strings.HasPrefix(responseBody, "//OK") {
 		return fmt.Errorf("response body missing //OK")

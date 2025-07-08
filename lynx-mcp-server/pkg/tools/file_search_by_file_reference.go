@@ -95,10 +95,10 @@ func HandleFileSearchByFileReference(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
-	fileReference, ok := arguments["fileReference"].(string)
 
+	fileReference, ok := arguments["fileReference"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid file reference arguments")
+		return nil, fmt.Errorf("invalid file reference argument: %v", arguments["fileReference"])
 	}
 
 	body := gwt.BuildFileSearchByFileReferenceGWTBody(&gwt.FileSearchByFileReferenceArgs{

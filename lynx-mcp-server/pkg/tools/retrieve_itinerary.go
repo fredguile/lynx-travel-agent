@@ -83,10 +83,10 @@ func HandleRetrieveItinerary(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
-	fileIdentifier, ok := arguments["fileIdentifier"].(string)
 
+	fileIdentifier, ok := arguments["fileIdentifier"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid file identifier arguments")
+		return nil, fmt.Errorf("invalid file identifier argument: %v", arguments["fileIdentifier"])
 	}
 
 	body := gwt.BuildRetrieveItineraryGWTBody(&gwt.RetrieveItineraryArgs{

@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	TOOL_FILE_DOCUMENT_SAVE_DETAILS             string = "file_document_save_details"
-	TOOL_FILE_DOCUMENT_SAVE_DETAILS_DESCRIPTION string = "Save file document details"
-	TOOL_FILE_DOCUMENT_SAVE_DETAILS_SCHEMA      string = `{
+	TOOL_FILE_DOCUMENT_SAVE             string = "file_document_save"
+	TOOL_FILE_DOCUMENT_SAVE_DESCRIPTION string = "Save file document details"
+	TOOL_FILE_DOCUMENT_SAVE_SCHEMA      string = `{
 		"type": "object",
 		"description": "Save file document details",
 		"properties": {
@@ -54,7 +54,7 @@ const (
 	LYNX_FILE_DOCUMENT_SAVE_DETAILS_URL string = "/lynx/service/file.rpc"
 )
 
-func HandleFileDocumentSaveDetails(
+func HandleFileDocumentSave(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
@@ -98,7 +98,7 @@ func HandleFileDocumentSaveDetails(
 		return nil, fmt.Errorf("invalid attachmentUrl argument: %v", arguments["attachmentUrl"])
 	}
 
-	body := gwt.BuildFileDocumentSaveDetailsGWTBody(&gwt.FileDocumentSaveDetailsArgs{
+	body := gwt.BuildFileDocumentSaveGWTBody(&gwt.FileDocumentSaveDetailsArgs{
 		RemoteHost:            lynxConfig.RemoteHost,
 		FileIdentifier:        fileIdentifier,
 		TransactionIdentifier: transactionIdentifier,
@@ -125,7 +125,7 @@ func HandleFileDocumentSaveDetails(
 	defer resp.Body.Close()
 
 	// Parse the GWT response body
-	err = gwt.ParseFileDocumentSaveDetailsResponseBody(bodyStr)
+	err = gwt.ParseFileDocumentSaveResponseBody(bodyStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse file document save details response: %w", err)
 	}
@@ -134,5 +134,5 @@ func HandleFileDocumentSaveDetails(
 }
 
 func GetFileDocumentSaveDetailsSchema() json.RawMessage {
-	return json.RawMessage(TOOL_FILE_DOCUMENT_SAVE_DETAILS_SCHEMA)
+	return json.RawMessage(TOOL_FILE_DOCUMENT_SAVE_SCHEMA)
 }

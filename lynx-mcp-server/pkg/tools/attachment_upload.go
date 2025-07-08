@@ -17,10 +17,10 @@ import (
 
 const (
 	ATTACHMENT_UPLOAD             string = "attachment_upload"
-	ATTACHMENT_UPLOAD_DESCRIPTION string = "Upload an attachment to use for a file document"
+	ATTACHMENT_UPLOAD_DESCRIPTION string = "Upload attachment for using with file document"
 	ATTACHMENT_UPLOAD_SCHEMA      string = `{
 		"type": "object",
-		"description": "Upload an attachment to use for a file document",
+		"description": "Upload an attachment for using with file document",
 		"properties": {
 			"binary": {
 				"type": "string",
@@ -64,17 +64,20 @@ func HandleAttachmentUpload(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
+
 	binaryAsBase64, ok := arguments["binary"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid binary argument")
+		return nil, fmt.Errorf("invalid binary argument: %v", arguments["binary"])
 	}
+
 	identifer, ok := arguments["identifer"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid identifier argument")
+		return nil, fmt.Errorf("invalid identifier argument: %v", arguments["identifer"])
 	}
+
 	fileName, ok := arguments["fileName"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid file name argument")
+		return nil, fmt.Errorf("invalid file name argument: %v", arguments["fileName"])
 	}
 
 	// Create a buffer to write multipart data

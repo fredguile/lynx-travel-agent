@@ -151,10 +151,10 @@ func NewMCPServer() *server.MCPServer {
 	), tools.HandleRetrieveItinerary)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE,
-		tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_DESCRIPTION,
-		tools.GetFileDocumentsByTransactioReferenceSchema(),
-	), tools.HandleFileDocumentsByTransactionReference)
+		tools.TOOL_RETRIEVE_FILE_DOCUMENTS,
+		tools.TOOL_RETRIEVE_FILE_DOCUMENTS_DESCRIPTION,
+		tools.GetRetrieveFileDocumentsSchema(),
+	), tools.HandleRetrieveFileDocuments)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
 		tools.ATTACHMENT_UPLOAD,
@@ -163,10 +163,10 @@ func NewMCPServer() *server.MCPServer {
 	), tools.HandleAttachmentUpload)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		tools.TOOL_FILE_DOCUMENT_SAVE_DETAILS,
-		tools.TOOL_FILE_DOCUMENT_SAVE_DETAILS_DESCRIPTION,
+		tools.TOOL_FILE_DOCUMENT_SAVE,
+		tools.TOOL_FILE_DOCUMENT_SAVE_DESCRIPTION,
 		tools.GetFileDocumentSaveDetailsSchema(),
-	), tools.HandleFileDocumentSaveDetails)
+	), tools.HandleFileDocumentSave)
 
 	return mcpServer
 }
