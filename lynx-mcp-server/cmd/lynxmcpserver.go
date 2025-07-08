@@ -105,6 +105,7 @@ func NewMCPServer() *server.MCPServer {
 		server.WithToolCapabilities(true),
 		server.WithLogging(),
 		server.WithHooks(hooks),
+		server.WithRecovery(),
 	)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
