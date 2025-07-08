@@ -13,12 +13,9 @@ import (
 )
 
 const (
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE                                       string = "file_documents_by_transaction_reference"
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_DESCRIPTION                           string = "Retrieve file documents from transaction reference"
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_ARG_TRANSACTION_REFERENCE             string = "transactionReference"
-	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_ARG_TRANSACTION_REFERENCE_DESCRIPTION string = "Transaction reference"
-
-	TOOL_FILE__DOCUMENTS_BY_TRANSACTION_REFERENCE_SCHEMA = `{
+	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE             string = "file_documents_by_transaction_reference"
+	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_DESCRIPTION string = "Retrieve file documents from transaction reference"
+	TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_SCHEMA      string = `{
 		"type": "object",
 		"description": "Retrieve file documents from transaction reference",
 		"properties": {
@@ -97,6 +94,7 @@ func HandleFileDocumentsByTransactionReference(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
+
 	fileIdentifier, ok := arguments["fileIdentifier"].(string)
 	if !ok {
 		return nil, fmt.Errorf("invalid file identifier argument")
@@ -108,6 +106,7 @@ func HandleFileDocumentsByTransactionReference(
 	}
 
 	body := gwt.BuildFileDocumentsByTransactionReferenceGWTBody(&gwt.FileDocumentsByTransactionReferenceArgs{
+		RemoteHost:            lynxConfig.RemoteHost,
 		FileIdentifier:        fileIdentifier,
 		TransactionIdentifier: transactionIdentifier,
 	})
@@ -137,5 +136,5 @@ func HandleFileDocumentsByTransactionReference(
 }
 
 func GetFileDocumentsByTransactioReferenceSchema() json.RawMessage {
-	return json.RawMessage(TOOL_FILE__DOCUMENTS_BY_TRANSACTION_REFERENCE_SCHEMA)
+	return json.RawMessage(TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_SCHEMA)
 }

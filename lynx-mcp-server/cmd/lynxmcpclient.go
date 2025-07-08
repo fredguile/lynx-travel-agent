@@ -49,12 +49,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\nCommand arguments:\n")
-		fmt.Fprintf(os.Stderr, "  --fileBinary                    Include demo PDF file as base64-encoded fileBinary argument\n")
-		fmt.Fprintf(os.Stderr, "  --argName=value                 Named arguments for the tool\n")
-		fmt.Fprintf(os.Stderr, "  \"quoted value\"                  Positional arguments for the tool\n")
-		fmt.Fprintf(os.Stderr, "\nExamples:\n")
-		fmt.Fprintf(os.Stderr, "  %s --url http://localhost:9600/sse --command \"file_document_upload --fileBinary --fileName=test.pdf --fileIdentifier=123\"\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s --url http://localhost:9600/sse --command \"some_tool --fileBinary --param1=value1\"\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  --binary                    Include demo PDF file as base64-encoded binary argument\n")
+		fmt.Fprintf(os.Stderr, "  --argName=value             Named arguments for the tool (inline value)\n")
+		fmt.Fprintf(os.Stderr, "  --argName \"value with spaces\" Named arguments for the tool (separate value)\n")
+		fmt.Fprintf(os.Stderr, "  \"quoted value\"              Positional arguments for the tool\n")
+		fmt.Fprintf(os.Stderr, "\nExample:\n")
+		fmt.Fprintf(os.Stderr, "  %s --url http://localhost:9600/sse --command \"some_tool --binary --param1=value1 --param2 \\\"value with spaces\\\"\"\n", os.Args[0])
 	}
 
 	sseURL := flag.String("url", "http://127.0.0.1:9600/sse", "URL for SSE transport (e.g. 'http://127.0.0.1:9600/sse')")
@@ -161,14 +161,14 @@ func main() {
 
 		// Convert arguments to a map
 		args := make(map[string]interface{})
-		hasFileBinary := false
+		hasBinary := false
 
 		for i, arg := range toolArgs {
 			switch v := arg.(type) {
 			case string:
-				// Check if this is the --fileBinary flag
-				if v == "--fileBinary" {
-					hasFileBinary = true
+				// Check if this is the --binary flag
+				if v == "--binary" {
+					hasBinary = true
 					continue
 				}
 				args[fmt.Sprintf("arg%d", i)] = v
@@ -180,22 +180,22 @@ func main() {
 			}
 		}
 
-		// If --fileBinary was specified, add the encoded file content
-		if hasFileBinary {
-			fileBinaryBase64, err := readDemoFileAsBase64()
+		// If --binary was specified, add the encoded file content
+		if hasBinary {
+			binaryBase64, err := readDemoFileAsBase64()
 			if err != nil {
 				log.Printf("Failed to read demo file: %v", err)
 				os.Exit(1)
 			}
-			args["fileBinary"] = fileBinaryBase64
-			fmt.Println("Added fileBinary argument with demo PDF content")
+			args["binary"] = binaryBase64
+			fmt.Println("Added binary argument using demo PDF content")
 		}
 
-		// Create a copy of args for logging with obfuscated fileBinary
+		// Create a copy of args for logging with obfuscated binary
 		logArgs := make(map[string]interface{})
 		for k, v := range args {
-			if k == "fileBinary" {
-				logArgs[k] = "<PDF_BINARY>"
+			if k == "binary" {
+				logArgs[k] = "<BINARY>"
 			} else {
 				logArgs[k] = v
 			}
@@ -227,6 +227,8 @@ func parseCommand(cmd string) []interface{} {
 	var current string
 	var inQuote bool
 	var quoteChar rune
+	var expectingValue bool
+	var currentArgName string
 
 	for i := 0; i < len(cmd); i++ {
 		r := rune(cmd[i])
@@ -241,8 +243,16 @@ func parseCommand(cmd string) []interface{} {
 						argValue := current[idx+1:]
 						result = append(result, map[string]string{argName: argValue})
 					} else {
+						// This is a flag without a value, expect the next token to be the value
+						currentArgName = current[2:] // Remove the -- prefix
+						expectingValue = true
 						result = append(result, current)
 					}
+				} else if expectingValue {
+					// This is the value for the previous argument
+					result = append(result, map[string]string{currentArgName: current})
+					expectingValue = false
+					currentArgName = ""
 				} else {
 					result = append(result, current)
 				}
@@ -271,8 +281,12 @@ func parseCommand(cmd string) []interface{} {
 				argValue := current[idx+1:]
 				result = append(result, map[string]string{argName: argValue})
 			} else {
+				// This is a flag without a value at the end
 				result = append(result, current)
 			}
+		} else if expectingValue {
+			// This is the value for the previous argument
+			result = append(result, map[string]string{currentArgName: current})
 		} else {
 			result = append(result, current)
 		}

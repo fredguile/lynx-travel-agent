@@ -15,6 +15,20 @@ func BuildFileDocumentsByTransactionReferenceGWTBody(args *FileDocumentsByTransa
 	return fmt.Sprintf("7|0|8|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|getFileDocumentsAsList|J|java.lang.Long/4227064769|I|java.lang.String/2004016611|1|2|3|4|4|5|6|7|8|%s|6|%s|1|0|", args.RemoteHost, args.FileIdentifier, args.TransactionIdentifier)
 }
 
+type FileDocumentSaveDetailsArgs struct {
+	RemoteHost            string
+	FileIdentifier        string
+	TransactionIdentifier string
+	Name                  string
+	Content               string
+	Type                  string
+	AttachmentURL         string
+}
+
+func BuildFileDocumentSaveDetailsGWTBody(args *FileDocumentSaveDetailsArgs) string {
+	return fmt.Sprintf("7|0|10|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|saveFileDocumentsDetails|com.lynxtraveltech.common.gui.shared.model.DocumentDetails/2779362264|java.lang.Long/4227064769|%s|%s|%s|%s|1|2|3|4|1|5|5|6|%s|1|A|0|0|0|FO6_|7|8|0|%s|9|10|0|", args.RemoteHost, args.Content, args.Type, args.Name, args.AttachmentURL, args.TransactionIdentifier, args.FileIdentifier)
+}
+
 type FileDocumentsResponseArray struct {
 	Count   int            `json:"count"`
 	Results []FileDocument `json:"results"`
@@ -33,7 +47,12 @@ type FileDocument struct {
 // ParseFileDocumentsListResponseBody parses a GWT response in context of listing file documents
 // Returns the parsed data as FileDocumentsResponseArray containing the array elements.
 func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResponseArray, error) {
-	// Remove the "//OK" prefix if present
+	// Ensure response starts with "//OK"
+	if !strings.HasPrefix(responseBody, "//OK") {
+		return nil, fmt.Errorf("response body missing //OK")
+	}
+
+	// Remove the "//OK" prefix
 	body := strings.TrimPrefix(responseBody, "//OK")
 
 	// Parse the main array structure
@@ -112,4 +131,15 @@ func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResp
 	}
 
 	return &fileDocumentsResponse, nil
+}
+
+// ParseFileDocumentSaveDetailsResponseBody parsed a GWT response in content of saving document details
+// Returns nil if successful
+func ParseFileDocumentSaveDetailsResponseBody(responseBody string) error {
+	// Ensure response starts with "//OK"
+	if !strings.HasPrefix(responseBody, "//OK") {
+		return fmt.Errorf("response body missing //OK")
+	}
+
+	return nil
 }

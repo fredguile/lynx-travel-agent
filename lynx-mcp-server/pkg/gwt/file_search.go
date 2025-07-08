@@ -45,6 +45,11 @@ type FileSearchResult struct {
 // ParseFileSearchResponseBody parses a GWT response in context of file search.
 // Returns the parsed data as FileSearchResponseArray containing the array elements.
 func ParseFileSearchResponseBody(responseBody string) (*FileSearchResponseArray, error) {
+	// Ensure response starts with "//OK"
+	if !strings.HasPrefix(responseBody, "//OK") {
+		return nil, fmt.Errorf("response body missing //OK")
+	}
+
 	// Remove the "//OK" prefix if present
 	body := strings.TrimPrefix(responseBody, "//OK")
 

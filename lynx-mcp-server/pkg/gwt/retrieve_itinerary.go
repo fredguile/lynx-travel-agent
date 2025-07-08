@@ -39,6 +39,11 @@ type ItineraryTransactionSummary struct {
 // ParseGWTFileSearchResponseBody parses a GWT response in context of retrieve itinerary.
 // Returns the parsed data as RetrieveItineraryResponseArray containing the array elements.
 func ParseRetrieveItineraryResponseBody(responseBody string) (*RetrieveItineraryResponseArray, error) {
+	// Ensure response starts with "//OK"
+	if !strings.HasPrefix(responseBody, "//OK") {
+		return nil, fmt.Errorf("response body missing //OK")
+	}
+
 	// Remove the "//OK" prefix if present
 	body := strings.TrimPrefix(responseBody, "//OK")
 

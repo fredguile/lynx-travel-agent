@@ -41,7 +41,11 @@ go run ./cmd/lynxmcpclient.go --command 'file_search_by_party_name --partyName=L
 
 go run ./cmd/lynxmcpclient.go --command 'file_search_by_file_reference --fileReference=FTXXXXXXXXX'
 
-go run ./cmd/lynxmcpclient.go --command 'retrieve_itinerary --fileIdentifier=IDENTIFIER'
+go run ./cmd/lynxmcpclient.go --command 'retrieve_itinerary --fileIdentifier=XXX'
 
-go run ./cmd/lynxmcpclient.go --command 'file_document_upload --fileBinary --fileIdentifier=XXX --fileName=demo.pdf'
+go run ./cmd/lynxmcpclient.go --command 'file_documents_by_transaction_reference --fileIdentifier=XXX --transactionIdentifier=XXX'
+
+go run ./cmd/lynxmcpclient.go --command 'attachment_upload --binary --identifier=YYY --fileName=attachment.pdf'
+
+go run ./cmd/lynxmcpclient.go --command 'file_document_save_details --fileIdentifier=XXX --transactionIdentifier=XXX --name=document --content "<span>test</span>" --type=SUPP --attachmentUrl=/documents/file/f16476987/d20250709064401.pdf'
 ```

@@ -14,12 +14,9 @@ import (
 )
 
 const (
-	TOOL_FILE_SEARCH_BY_PARTY_NAME                            string = "file_search_by_party_name"
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION                string = "Retrieve file from party name"
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME             string = "partyName"
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_ARG_PARTY_NAME_DESCRIPTION string = "Party name"
-
-	TOOL_FILE_SEARCH_BY_PARTY_NAME_SCHEMA = `{
+	TOOL_FILE_SEARCH_BY_PARTY_NAME             string = "file_search_by_party_name"
+	TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION string = "Retrieve file from party name"
+	TOOL_FILE_SEARCH_BY_PARTY_NAME_SCHEMA      string = `{
 		"type": "object",
 		"description": "Retrieve file from party name",
 		"properties": {
@@ -105,7 +102,8 @@ func HandleFileSearchByPartyName(
 	}
 
 	body := gwt.BuildFileSearchByPartyNameGWTBody(&gwt.FileSearchByPartyNameArgs{
-		PartyName: partyName,
+		RemoteHost: lynxConfig.RemoteHost,
+		PartyName:  partyName,
 	})
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_SEARCH_BY_PARTY_NAME_URL), strings.NewReader(body))
 

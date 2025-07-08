@@ -16,49 +16,42 @@ import (
 )
 
 const (
-	TOOL_FILE_DOCUMENT_UPLOAD                                 string = "file_document_upload"
-	TOOL_FILE_DOCUMENT_UPLOAD_DESCRIPTION                     string = "Upload a file document (to use for transaction)"
-	TOOL_FILE_DOCUMENT_UPLOAD_ARG_FILE_BINARY64               string = "fileBinary"
-	TOOL_FILE_DOCUMENT_UPLOAD_ARG_FILE_BINARY64_DESCRIPTION   string = "Base64-encoded file binary"
-	TOOL_FILE_DOCUMENT_UPLOAD_ARG_FILE_IDENTIFIER             string = "fileIdentifier"
-	TOOL_FILE_DOCUMENT_UPLOAD_ARG_FILE_IDENTIFIER_DESCRIPTION string = "File identifier"
-	TOOL_FILE_DOCUMENT_UPLOAD_ARG_FILE_NAME                   string = "fileName"
-	TOOL_FILE_DOCUMENT_UPLOAD_ARG_FILE_NAME_DESCRIPTION       string = "File name"
-
-	TOOL_FILE_DOCUMENT_UPLOAD_SCHEMA = `{
+	ATTACHMENT_UPLOAD             string = "attachment_upload"
+	ATTACHMENT_UPLOAD_DESCRIPTION string = "Upload an attachment to use for a file document"
+	ATTACHMENT_UPLOAD_SCHEMA      string = `{
 		"type": "object",
-		"description": "Upload a file document (to use for transaction)",
+		"description": "Upload an attachment to use for a file document",
 		"properties": {
-			"fileBinary": {
+			"binary": {
 				"type": "string",
-				"description": "Base64-encoded file binary"
+				"description": "Base64-encoded binary"
 			},
-			"fileIdentifier": {
+			"identifer": {
 				"type": "string",
-				"description": "File identifier"
+				"description": "Unique identifier"
 			},
 			"fileName": {
 				"type": "string",
 				"description": "File name"
 			}
 		},
-		"required": ["fileBinary", "fileIdentifier", "fileName"],
+		"required": ["binary", "identifer", "fileName"],
 		"outputSchema": {
 			"type": "object",
 			"properties": {
-				"fileUrl": {
+				"attachmentUrl": {
 					"type": "string",
-					"description": "File URL on lynx server"
+					"description": "Attachment URL on server"
 				}
 			},
-			"required": ["fileUrl"]
+			"required": ["attachmentUrl"]
 		}
 	}`
 
-	LYNX_FILE_DOCUMENT_UPLOAD_URL string = "/lynx/fileDocumentUpload"
+	LYNX_ATTACHMENT_UPLOAD_URL string = "/lynx/fileDocumentUpload"
 )
 
-func HandleFileDocumentUpload(
+func HandleAttachmentUpload(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
@@ -71,13 +64,13 @@ func HandleFileDocumentUpload(
 	client := &http.Client{}
 
 	arguments := request.GetArguments()
-	fileBinaryAsBase64, ok := arguments["fileBinary"].(string)
+	binaryAsBase64, ok := arguments["binary"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid file binary argument")
+		return nil, fmt.Errorf("invalid binary argument")
 	}
-	fileIdentifier, ok := arguments["fileIdentifier"].(string)
+	identifer, ok := arguments["identifer"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid file identifier argument")
+		return nil, fmt.Errorf("invalid identifier argument")
 	}
 	fileName, ok := arguments["fileName"].(string)
 	if !ok {
@@ -93,12 +86,12 @@ func HandleFileDocumentUpload(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create fileId field: %w", err)
 	}
-	fileIdField.Write([]byte(fileIdentifier))
+	fileIdField.Write([]byte(identifer))
 
 	// Decode base64 data
-	fileData, err := base64.StdEncoding.DecodeString(fileBinaryAsBase64)
+	fileData, err := base64.StdEncoding.DecodeString(binaryAsBase64)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode base64 file data: %w", err)
+		return nil, fmt.Errorf("failed to decode base64 data: %w", err)
 	}
 
 	// Add file part
@@ -111,9 +104,9 @@ func HandleFileDocumentUpload(
 	// Close the multipart writer
 	writer.Close()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_DOCUMENT_UPLOAD_URL), &requestBody)
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_ATTACHMENT_UPLOAD_URL), &requestBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create file document upload request: %w", err)
+		return nil, fmt.Errorf("failed to create attachment upload request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -122,7 +115,7 @@ func HandleFileDocumentUpload(
 	// Execute the request
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute file document upload request: %w", err)
+		return nil, fmt.Errorf("failed to execute attachment upload request: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -135,26 +128,26 @@ func HandleFileDocumentUpload(
 
 	// Check if request was successful
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("file document upload failed with status %d: %s", resp.StatusCode, bodyStr)
+		return nil, fmt.Errorf("Attachment upload failed with status %d: %s", resp.StatusCode, bodyStr)
 	}
 
-	fileUrl, err := parseResponseBody(bodyStr)
+	attachmentUrl, err := parseResponseBody(bodyStr)
 
 	if err != nil {
-		return nil, fmt.Errorf("Invalid file upload response: %w", err)
+		return nil, fmt.Errorf("Invalid attachment upload response: %w", err)
 	}
 
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			&mcp.TextContent{
 				Type: "text",
-				Text: fmt.Sprintf(`{"fileUrl": "%s"}`, fileUrl),
+				Text: fmt.Sprintf(`{"attachmentUrl": "%s"}`, attachmentUrl),
 			},
 		},
 	}, nil
 }
 
-// Parse response body to extract the file URL
+// Parse response body to extract the attachment URL
 // Expected format: "SUCCESS:/documents/file/f16476987/d20250708231038.pdf:\n"
 func parseResponseBody(responseBody string) (string, error) {
 	if !strings.HasPrefix(responseBody, "SUCCESS:") {
@@ -175,13 +168,13 @@ func parseResponseBody(responseBody string) (string, error) {
 
 	// Validate that we have a URL path
 	if urlPart == "" || !strings.HasPrefix(urlPart, "/") {
-		return "", fmt.Errorf("invalid file URL in response: %s", responseBody)
+		return "", fmt.Errorf("invalid attachment URL in response: %s", responseBody)
 	}
 
 	return urlPart, nil
 }
 
-// GetFileSearchByPartyNameSchema returns the complete JSON schema for the file search tool
-func GetFileDocumentUploadSchema() json.RawMessage {
-	return json.RawMessage(TOOL_FILE_DOCUMENT_UPLOAD_SCHEMA)
+// GetAttachmentUploadSchema returns the complete JSON schema for the file search tool
+func GetAttachmentUploadSchema() json.RawMessage {
+	return json.RawMessage(ATTACHMENT_UPLOAD_SCHEMA)
 }

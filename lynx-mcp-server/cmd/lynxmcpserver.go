@@ -133,34 +133,40 @@ func NewMCPServer() *server.MCPServer {
 	)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		string(tools.TOOL_FILE_SEARCH_BY_PARTY_NAME),
+		tools.TOOL_FILE_SEARCH_BY_PARTY_NAME,
 		tools.TOOL_FILE_SEARCH_BY_PARTY_NAME_DESCRIPTION,
 		tools.GetFileSearchByPartyNameSchema(),
 	), tools.HandleFileSearchByPartyName)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		string(tools.TOOL_FILE_SEARCH_BY_FILE_REFERENCE),
+		tools.TOOL_FILE_SEARCH_BY_FILE_REFERENCE,
 		tools.TOOL_FILE_SEARCH_BY_FILE_REFERENCE_DESCRIPTION,
 		tools.GetFileSearchByFileReferenceSchema(),
 	), tools.HandleFileSearchByFileReference)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		string(tools.TOOL_RETRIEVE_ITINERARY),
+		tools.TOOL_RETRIEVE_ITINERARY,
 		tools.TOOL_RETRIEVE_ITINERARY_DESCRIPTION,
 		tools.GetRetrieveItinerarySchema(),
 	), tools.HandleRetrieveItinerary)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		string(tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE),
+		tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE,
 		tools.TOOL_FILE_DOCUMENTS_BY_TRANSACTION_REFERENCE_DESCRIPTION,
 		tools.GetFileDocumentsByTransactioReferenceSchema(),
 	), tools.HandleFileDocumentsByTransactionReference)
 
 	mcpServer.AddTool(mcp.NewToolWithRawSchema(
-		string(tools.TOOL_FILE_DOCUMENT_UPLOAD),
-		tools.TOOL_FILE_DOCUMENT_UPLOAD_DESCRIPTION,
-		tools.GetFileDocumentUploadSchema(),
-	), tools.HandleFileDocumentUpload)
+		tools.ATTACHMENT_UPLOAD,
+		tools.ATTACHMENT_UPLOAD_DESCRIPTION,
+		tools.GetAttachmentUploadSchema(),
+	), tools.HandleAttachmentUpload)
+
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		tools.TOOL_FILE_DOCUMENT_SAVE_DETAILS,
+		tools.TOOL_FILE_DOCUMENT_SAVE_DETAILS_DESCRIPTION,
+		tools.GetFileDocumentSaveDetailsSchema(),
+	), tools.HandleFileDocumentSaveDetails)
 
 	return mcpServer
 }

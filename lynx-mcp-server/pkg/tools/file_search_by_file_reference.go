@@ -14,12 +14,9 @@ import (
 )
 
 const (
-	TOOL_FILE_SEARCH_BY_FILE_REFERENCE                                string = "file_search_by_file_reference"
-	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_DESCRIPTION                    string = "Retrieve file from file reference"
-	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_ARG_FILE_REFERENCE             string = "fileReference"
-	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_ARG_FILE_REFERENCE_DESCRIPTION string = "File reference"
-
-	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_SCHEMA = `{
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE             string = "file_search_by_file_reference"
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_DESCRIPTION string = "Retrieve file from file reference"
+	TOOL_FILE_SEARCH_BY_FILE_REFERENCE_SCHEMA      string = `{
 		"type": "object",
 		"description": "Retrieve file from file reference",
 		"properties": {
@@ -105,6 +102,7 @@ func HandleFileSearchByFileReference(
 	}
 
 	body := gwt.BuildFileSearchByFileReferenceGWTBody(&gwt.FileSearchByFileReferenceArgs{
+		RemoteHost:    lynxConfig.RemoteHost,
 		FileReference: fileReference,
 	})
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_SEARCH_BY_FILE_REFERENCE_URL), strings.NewReader(body))

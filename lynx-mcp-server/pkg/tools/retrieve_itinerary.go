@@ -14,12 +14,9 @@ import (
 )
 
 const (
-	TOOL_RETRIEVE_ITINERARY                         string = "retrieve_itinerary"
-	TOOL_RETRIEVE_ITINERARY_DESCRIPTION             string = "Retrieve itinerary of a file"
-	TOOL_RETRIEVE_ITINERARY_ARG_FILE_ID             string = "fileIdentifier"
-	TOOL_RETRIEVE_ITINERARY_ARG_FILE_ID_DESCRIPTION string = "File identifier"
-
-	TOOL_RETRIEVE_ITINERARY_SCHEMA = `{
+	TOOL_RETRIEVE_ITINERARY             string = "retrieve_itinerary"
+	TOOL_RETRIEVE_ITINERARY_DESCRIPTION string = "Retrieve itinerary of a file"
+	TOOL_RETRIEVE_ITINERARY_SCHEMA      string = `{
 		"type": "object",
 		"description": "Retrieve file itinerary from file identifier",
 		"properties": {
@@ -93,6 +90,7 @@ func HandleRetrieveItinerary(
 	}
 
 	body := gwt.BuildRetrieveItineraryGWTBody(&gwt.RetrieveItineraryArgs{
+		RemoteHost:     lynxConfig.RemoteHost,
 		FileIdentifier: fileIdentifier,
 	})
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_RETRIEVE_ITINERARY_URL), strings.NewReader(body))
