@@ -15,10 +15,10 @@ import (
 
 const (
 	TOOL_RETRIEVE_ITINERARY             string = "retrieve_itinerary"
-	TOOL_RETRIEVE_ITINERARY_DESCRIPTION string = "Retrieve itinerary of a file"
+	TOOL_RETRIEVE_ITINERARY_DESCRIPTION string = "Retrieve file itinerary"
 	TOOL_RETRIEVE_ITINERARY_SCHEMA      string = `{
 		"type": "object",
-		"description": "Retrieve file itinerary from file identifier",
+		"description": "Retrieve file itinerary",
 		"properties": {
 			"fileIdentifier": {
 				"type": "string",
