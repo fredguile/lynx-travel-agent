@@ -1,7 +1,10 @@
+//go:build server
+
 package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -72,13 +75,34 @@ func NewMCPServer() *server.MCPServer {
 	hooks := &server.Hooks{}
 
 	hooks.AddBeforeAny(func(ctx context.Context, id any, method mcp.MCPMethod, message any) {
-		fmt.Printf("beforeAny: %s, %v, %v\n", method, id, message)
+		if method == "tools/call" {
+			if callToolRequest, ok := message.(*mcp.CallToolRequest); ok {
+				logToolCall("beforeAny", callToolRequest, nil)
+			}
+		} else {
+			// For non-tool calls, use the original logging
+			fmt.Printf("beforeAny: %s, %v, %v\n", method, id, message)
+		}
 	})
 	hooks.AddOnSuccess(func(ctx context.Context, id any, method mcp.MCPMethod, message any, result any) {
-		fmt.Printf("onSuccess: %s, %v, %v, %v\n", method, id, message, result)
+		if method == "tools/call" {
+			if callToolRequest, ok := message.(*mcp.CallToolRequest); ok {
+				logToolCall("onSuccess", callToolRequest, nil)
+			}
+		} else {
+			// For non-tool calls, use the original logging
+			fmt.Printf("onSuccess: %s, %v, %v, %v\n", method, id, message, result)
+		}
 	})
 	hooks.AddOnError(func(ctx context.Context, id any, method mcp.MCPMethod, message any, err error) {
-		fmt.Printf("onError: %s, %v, %v, %v\n", method, id, message, err)
+		if method == "tools/call" {
+			if callToolRequest, ok := message.(*mcp.CallToolRequest); ok {
+				logToolCall("onError", callToolRequest, err)
+			}
+		} else {
+			// For non-tool calls, use the original logging
+			fmt.Printf("onError: %s, %v, %v, %v\n", method, id, message, err)
+		}
 	})
 	hooks.AddBeforeInitialize(func(ctx context.Context, id any, message *mcp.InitializeRequest) {
 		fmt.Printf("beforeInitialize: %v, %v\n", id, message)
@@ -90,11 +114,11 @@ func NewMCPServer() *server.MCPServer {
 	hooks.AddAfterInitialize(func(_ context.Context, id any, message *mcp.InitializeRequest, result *mcp.InitializeResult) {
 		fmt.Printf("afterInitialize: %v, %v, %v\n", id, message, result)
 	})
+	hooks.AddBeforeCallTool(func(ctx context.Context, id any, message *mcp.CallToolRequest) {
+		logToolCall("beforeCallTool", message, nil)
+	})
 	hooks.AddAfterCallTool(func(ctx context.Context, id any, message *mcp.CallToolRequest, result *mcp.CallToolResult) {
 		fmt.Printf("afterCallTool: %v, %v, %v\n", id, message, result)
-	})
-	hooks.AddBeforeCallTool(func(ctx context.Context, id any, message *mcp.CallToolRequest) {
-		fmt.Printf("beforeCallTool: %v, %v\n", id, message)
 	})
 
 	mcpServer := server.NewMCPServer(
@@ -132,5 +156,41 @@ func NewMCPServer() *server.MCPServer {
 		tools.GetFileDocumentsByTransactioReferenceSchema(),
 	), tools.HandleFileDocumentsByTransactionReference)
 
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		string(tools.TOOL_FILE_DOCUMENT_UPLOAD),
+		tools.TOOL_FILE_DOCUMENT_UPLOAD_DESCRIPTION,
+		tools.GetFileDocumentUploadSchema(),
+	), tools.HandleFileDocumentUpload)
+
 	return mcpServer
+}
+
+// logToolCall logs tool calls with special handling for fileBinary arguments
+func logToolCall(prefix string, message *mcp.CallToolRequest, err error) {
+	// Get tool name and arguments
+	toolName := message.Params.Name
+	arguments := message.GetArguments()
+
+	// Create a copy of arguments for logging, replacing fileBinary with --BINARY--
+	logArguments := make(map[string]interface{})
+	for key, value := range arguments {
+		if key == "fileBinary" {
+			logArguments[key] = "-BINARY-"
+		} else {
+			logArguments[key] = value
+		}
+	}
+
+	// Convert arguments to JSON for logging
+	argsJSON, err := json.Marshal(logArguments)
+	if err != nil {
+		log.Printf("Error marshaling arguments: %v", err)
+		argsJSON = []byte("{}")
+	}
+
+	if err != nil {
+		fmt.Printf("%s: call tool %s, Arguments: %s, Error: %v\n", prefix, toolName, string(argsJSON), err)
+	} else {
+		log.Printf("%s: call tool %s, Arguments: %s\n", prefix, toolName, string(argsJSON))
+	}
 }

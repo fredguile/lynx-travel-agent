@@ -42,4 +42,6 @@ go run ./cmd/lynxmcpclient.go --command 'file_search_by_party_name --partyName=L
 go run ./cmd/lynxmcpclient.go --command 'file_search_by_file_reference --fileReference=FTXXXXXXXXX'
 
 go run ./cmd/lynxmcpclient.go --command 'retrieve_itinerary --fileIdentifier=IDENTIFIER'
+
+go run ./cmd/lynxmcpclient.go --command 'file_document_upload --fileBinary --fileIdentifier=XXX --fileName=demo.pdf'
 ```

@@ -1,9 +1,13 @@
+//go:build client
+
 package main
 
 import (
 	"context"
+	"encoding/base64"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -18,7 +22,41 @@ import (
 
 var clientConfig = config.NewClientConfig()
 
+// readDemoFileAsBase64 reads the demo PDF file and returns its base64 encoded content
+func readDemoFileAsBase64() (string, error) {
+	filePath := "assets/dummy.pdf"
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open demo file %s: %w", filePath, err)
+	}
+	defer file.Close()
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		return "", fmt.Errorf("failed to read demo file %s: %w", filePath, err)
+	}
+
+	encodedData := base64.StdEncoding.EncodeToString(fileData)
+	return encodedData, nil
+}
+
 func main() {
+	// Set custom usage message
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s [flags] --command \"tool_name [arguments]\"\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Flags:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nCommand arguments:\n")
+		fmt.Fprintf(os.Stderr, "  --fileBinary                    Include demo PDF file as base64-encoded fileBinary argument\n")
+		fmt.Fprintf(os.Stderr, "  --argName=value                 Named arguments for the tool\n")
+		fmt.Fprintf(os.Stderr, "  \"quoted value\"                  Positional arguments for the tool\n")
+		fmt.Fprintf(os.Stderr, "\nExamples:\n")
+		fmt.Fprintf(os.Stderr, "  %s --url http://localhost:9600/sse --command \"file_document_upload --fileBinary --fileName=test.pdf --fileIdentifier=123\"\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s --url http://localhost:9600/sse --command \"some_tool --fileBinary --param1=value1\"\n", os.Args[0])
+	}
+
 	sseURL := flag.String("url", "http://127.0.0.1:9600/sse", "URL for SSE transport (e.g. 'http://127.0.0.1:9600/sse')")
 	toolCommand := flag.String("command", "", "Command of a remote tool to execute")
 	flag.Parse()
@@ -123,9 +161,16 @@ func main() {
 
 		// Convert arguments to a map
 		args := make(map[string]interface{})
+		hasFileBinary := false
+
 		for i, arg := range toolArgs {
 			switch v := arg.(type) {
 			case string:
+				// Check if this is the --fileBinary flag
+				if v == "--fileBinary" {
+					hasFileBinary = true
+					continue
+				}
 				args[fmt.Sprintf("arg%d", i)] = v
 			case map[string]string:
 				// Convert map[string]string to map[string]interface{}
@@ -135,7 +180,27 @@ func main() {
 			}
 		}
 
-		fmt.Printf("Calling tool named \"%s\" with args: %+v\n", toolName, args)
+		// If --fileBinary was specified, add the encoded file content
+		if hasFileBinary {
+			fileBinaryBase64, err := readDemoFileAsBase64()
+			if err != nil {
+				log.Printf("Failed to read demo file: %v", err)
+				os.Exit(1)
+			}
+			args["fileBinary"] = fileBinaryBase64
+			fmt.Println("Added fileBinary argument with demo PDF content")
+		}
+
+		// Create a copy of args for logging with obfuscated fileBinary
+		logArgs := make(map[string]interface{})
+		for k, v := range args {
+			if k == "fileBinary" {
+				logArgs[k] = "<PDF_BINARY>"
+			} else {
+				logArgs[k] = v
+			}
+		}
+		fmt.Printf("Calling tool named \"%s\" with args: %+v\n", toolName, logArgs)
 
 		toolRequest := mcp.CallToolRequest{
 			Params: mcp.CallToolParams{
