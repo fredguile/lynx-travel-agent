@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
+	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/client"
 	"github.com/mark3labs/mcp-go/client/transport"
@@ -215,7 +216,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("Tool execution result: %+v\n", result)
+		fmt.Println("Tool execution result:")
+		fmt.Println(utils.FormatJSONResult(result))
 	}
 
 	fmt.Println("Client initialized successfully. Shutting down...")
