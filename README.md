@@ -4,6 +4,13 @@ Firefox/Chrome extension to use as helper for Pan PAC day-to-day tasks.
 
 > **Notice:** This extension is currently only tested with **Firefox**.
 
+## Terms of use
+
+
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. See [LICENSE](LICENSE) for details.
+
 ## Table of Content
 
 - [browser-extension](./browser-extension/)
