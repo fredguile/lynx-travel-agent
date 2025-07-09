@@ -103,8 +103,8 @@ func ParseFileSearchResponseBody(responseBody string) (*FileSearchResponseArray,
 
 	for i, resultIndex := len(parsedArray)-6, 0; i >= 0; i-- {
 		if oneBasedIndex, ok := parsedArray[i].(int); ok {
-			// Ignore 0 aka nil values
-			if oneBasedIndex == 0 {
+			// Ignore values that don't match a oneBasedIndex
+			if oneBasedIndex <= 0 || oneBasedIndex >= len(dataArray) {
 				continue
 			}
 
@@ -112,7 +112,6 @@ func ParseFileSearchResponseBody(responseBody string) (*FileSearchResponseArray,
 
 			if currentStringValue, ok := currentValue.(string); ok && strings.HasPrefix(currentStringValue, GWT_TYPE_FILE_SEARCH_RESULTS) {
 				fileSearchResult := FileSearchResult{
-					CompanyCode:      dataArray[parsedArray[i-1].(int)-1].(string),
 					ClientIdentifier: parsedArray[i-2].(string),
 					ClientReference:  dataArray[parsedArray[i-3].(int)-1].(string),
 					Currency:         dataArray[parsedArray[i-4].(int)-1].(string),
@@ -121,6 +120,10 @@ func ParseFileSearchResponseBody(responseBody string) (*FileSearchResponseArray,
 					PartyName:        unescapeGWTString(dataArray[parsedArray[i-8].(int)-1].(string)),
 					Status:           dataArray[parsedArray[i-9].(int)-1].(string),
 					TravelDate:       dataArray[parsedArray[i-10].(int)-1].(string),
+				}
+
+				if companyCodeIdx, ok := parsedArray[i-1].(int); ok && companyCodeIdx > 0 && companyCodeIdx <=  len(dataArray) {
+					fileSearchResult.CompanyCode =  dataArray[companyCodeIdx-1].(string)
 				}
 
 				fileSearchResponse.Results[resultIndex] = fileSearchResult
