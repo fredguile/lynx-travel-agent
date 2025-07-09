@@ -125,6 +125,9 @@ func unescapeGWTString(s string) string {
 	// Remove surrounding double quotes if present
 	s = strings.Trim(s, "\"")
 
+	// Replace escaped double quotes with actual double quotes
+	s = strings.ReplaceAll(s, "\\\"", "\"")
+
 	// Replace unicode escape sequences like \x27 with actual characters
 	// This is a simple implementation - in a more robust version you might want to use regex
 	var result strings.Builder
