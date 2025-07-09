@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -108,7 +109,7 @@ func RetryHTTPRequest(ctx context.Context, client *http.Client, req *http.Reques
 		// Check success conditions: status OK, has body, and body starts with "//OK"
 		if resp.StatusCode == http.StatusOK && len(bodyStr) > 0 && strings.HasPrefix(bodyStr, "//OK") {
 			// Success! Return the response and body
-			fmt.Printf("Success! Response: %s\n", bodyStr)
+			log.Printf("RetryHTTPRequest Success! (attempt=%d)\n", attempt)
 			return resp, bodyStr, nil
 		}
 
@@ -118,10 +119,10 @@ func RetryHTTPRequest(ctx context.Context, client *http.Client, req *http.Reques
 			errorMessage, err := gwt.ParseResponseError(bodyStr)
 			if err != nil {
 				// If we can't parse the error, return the raw body as error
-				lastErr = fmt.Errorf("attempt %d: GWT error response (unparseable): %s", attempt+1, bodyStr)
+				lastErr = fmt.Errorf("RetryHTTPRequest attempt %d: GWT error response (unparseable): %s", attempt+1, bodyStr)
 			} else {
 				// Return the parsed error message
-				lastErr = fmt.Errorf("attempt %d: GWT error: %s", attempt+1, errorMessage)
+				lastErr = fmt.Errorf("RetryHTTPRequest attempt %d: GWT error: %s", attempt+1, errorMessage)
 			}
 			lastResp = resp
 			lastBodyStr = bodyStr
@@ -131,7 +132,7 @@ func RetryHTTPRequest(ctx context.Context, client *http.Client, req *http.Reques
 		}
 
 		// If we reach here, the request was successful but didn't meet our success criteria
-		lastErr = fmt.Errorf("attempt %d: unexpected response (status: %d, body: %s)", attempt+1, resp.StatusCode, bodyStr)
+		lastErr = fmt.Errorf("RetryHTTPRequest attempt %d: unexpected response (status: %d, body: %s)", attempt+1, resp.StatusCode, bodyStr)
 		lastResp = resp
 		lastBodyStr = bodyStr
 

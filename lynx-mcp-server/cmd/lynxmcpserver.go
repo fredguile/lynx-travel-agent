@@ -5,7 +5,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -81,7 +80,7 @@ func NewMCPServer() *server.MCPServer {
 			}
 		} else {
 			// For non-tool calls, use the original logging
-			fmt.Printf("beforeAny: %s, %v, %v\n", method, id, message)
+			log.Printf("beforeAny: %s, %v, %v", method, id, message)
 		}
 	})
 	hooks.AddOnSuccess(func(ctx context.Context, id any, method mcp.MCPMethod, message any, result any) {
@@ -91,7 +90,7 @@ func NewMCPServer() *server.MCPServer {
 			}
 		} else {
 			// For non-tool calls, use the original logging
-			fmt.Printf("onSuccess: %s, %v, %v, %v\n", method, id, message, result)
+			log.Printf("onSuccess: %s, %v, %v, %v", method, id, message, result)
 		}
 	})
 	hooks.AddOnError(func(ctx context.Context, id any, method mcp.MCPMethod, message any, err error) {
@@ -101,24 +100,24 @@ func NewMCPServer() *server.MCPServer {
 			}
 		} else {
 			// For non-tool calls, use the original logging
-			fmt.Printf("onError: %s, %v, %v, %v\n", method, id, message, err)
+			log.Printf("onError: %s, %v, %v, %v", method, id, message, err)
 		}
 	})
 	hooks.AddBeforeInitialize(func(ctx context.Context, id any, message *mcp.InitializeRequest) {
-		fmt.Printf("beforeInitialize: %v, %v\n", id, message)
+		log.Printf("beforeInitialize: %v, %v", id, message)
 	})
 	hooks.AddOnRequestInitialization(func(ctx context.Context, id any, message any) error {
-		fmt.Printf("AddOnRequestInitialization: %v\n", id)
+		log.Printf("AddOnRequestInitialization: %v", id)
 		return nil
 	})
 	hooks.AddAfterInitialize(func(_ context.Context, id any, message *mcp.InitializeRequest, result *mcp.InitializeResult) {
-		fmt.Printf("afterInitialize: %v, %v, %v\n", id, message, result)
+		log.Printf("afterInitialize: %v, %v, %v", id, message, result)
 	})
 	hooks.AddBeforeCallTool(func(ctx context.Context, id any, message *mcp.CallToolRequest) {
 		logToolCall("beforeCallTool", message, nil)
 	})
 	hooks.AddAfterCallTool(func(ctx context.Context, id any, message *mcp.CallToolRequest, result *mcp.CallToolResult) {
-		fmt.Printf("afterCallTool: %v, %v, %v\n", id, message, result)
+		logToolCall("afterCallTool", message, nil)
 	})
 
 	mcpServer := server.NewMCPServer(
@@ -195,8 +194,8 @@ func logToolCall(prefix string, message *mcp.CallToolRequest, loggedErr error) {
 	}
 
 	if loggedErr != nil {
-		fmt.Printf("%s: call tool %s, Arguments: %s, Error: %v\n", prefix, toolName, string(argsJSON), err)
+		log.Printf("%s: call tool %s, Arguments: %s, Error: %v", prefix, toolName, string(argsJSON), err)
 	} else {
-		log.Printf("%s: call tool %s, Arguments: %s\n", prefix, toolName, string(argsJSON))
+		log.Printf("%s: call tool %s, Arguments: %s", prefix, toolName, string(argsJSON))
 	}
 }

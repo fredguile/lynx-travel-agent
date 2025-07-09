@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
@@ -111,7 +112,7 @@ func makeAuthRequest(lynxConfig config.LynxServerConfig) (*SessionContext, error
 	// Extract JSESSIONID from cookies
 	for _, cookie := range resp.Cookies() {
 		if cookie.Name == JSESSIONID {
-			fmt.Printf("Using JSESSIONID: %s\n", cookie.Value)
+			log.Printf("Using JSESSIONID: %s\n", cookie.Value)
 			return &SessionContext{
 				jsessionID: cookie.Value,
 				expiresAt:  time.Now().Add(lynxConfig.AuthCookieDuration),
