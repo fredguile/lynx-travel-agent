@@ -172,7 +172,7 @@ func NewMCPServer() *server.MCPServer {
 }
 
 // logToolCall logs tool calls with special handling for fileBinary arguments
-func logToolCall(prefix string, message *mcp.CallToolRequest, err error) {
+func logToolCall(prefix string, message *mcp.CallToolRequest, loggedErr error) {
 	// Get tool name and arguments
 	toolName := message.Params.Name
 	arguments := message.GetArguments()
@@ -194,7 +194,7 @@ func logToolCall(prefix string, message *mcp.CallToolRequest, err error) {
 		argsJSON = []byte("{}")
 	}
 
-	if err != nil {
+	if loggedErr != nil {
 		fmt.Printf("%s: call tool %s, Arguments: %s, Error: %v\n", prefix, toolName, string(argsJSON), err)
 	} else {
 		log.Printf("%s: call tool %s, Arguments: %s\n", prefix, toolName, string(argsJSON))

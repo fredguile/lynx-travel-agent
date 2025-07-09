@@ -24,33 +24,35 @@ func parseGWTArray(arrayStr string) ([]interface{}, error) {
 	for i := 0; i < len(arrayStr); i++ {
 		char := arrayStr[i]
 
-		switch char {
-		case '\'', '"':
-			if !inString {
-				inString = true
-				quoteChar = char
-			} else if char == quoteChar {
-				// Check if it's an escaped quote
-				if i+1 < len(arrayStr) && arrayStr[i+1] == char {
-					current.WriteByte(char)
-					i++ // Skip the next quote
-				} else {
+		if inString {
+			current.WriteByte(char)
+			if char == quoteChar {
+				// Count the number of consecutive backslashes before this quote
+				bsCount := 0
+				for j := i - 1; j >= 0 && arrayStr[j] == '\\'; j-- {
+					bsCount++
+				}
+				if bsCount%2 == 0 {
+					// Even number of backslashes: not escaped
 					inString = false
 				}
 			}
+			continue
+		}
+
+		switch char {
+		case '\'', '"':
+			inString = true
+			quoteChar = char
 			current.WriteByte(char)
 		case '[':
-			if !inString {
-				depth++
-			}
+			depth++
 			current.WriteByte(char)
 		case ']':
-			if !inString {
-				depth--
-			}
+			depth--
 			current.WriteByte(char)
 		case ',':
-			if !inString && depth == 0 {
+			if depth == 0 {
 				// End of current element
 				element := strings.TrimSpace(current.String())
 				if element != "" {
@@ -142,27 +144,6 @@ func unescapeGWTString(s string) string {
 		}
 	}
 
-	return result.String()
-}
-
-// convertHexEscapes converts hex escape sequences like \x26 to their actual characters
-func convertHexEscapes(s string) string {
-	var result strings.Builder
-	for i := 0; i < len(s); i++ {
-		if i+3 < len(s) && s[i] == '\\' && s[i+1] == 'x' {
-			// Found \x sequence, try to parse the hex value
-			hexStr := s[i+2 : i+4]
-			if val, err := strconv.ParseUint(hexStr, 16, 8); err == nil {
-				result.WriteByte(byte(val))
-				i += 3 // Skip the \x and the two hex digits
-			} else {
-				// If parsing fails, keep the original sequence
-				result.WriteByte(s[i])
-			}
-		} else {
-			result.WriteByte(s[i])
-		}
-	}
 	return result.String()
 }
 
