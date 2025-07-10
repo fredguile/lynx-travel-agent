@@ -1,6 +1,6 @@
 # lynx-travel-agent
 
-A pet project for building the best AI agent to work with lynx-reservations. Work in progress. Usage of RAG knowledge paired with helpful Firefox/Chrome browser extension.
+A pet project building the best AI agent to work with lynx-reservations. Work in progress. Usage of RAG knowledge paired with helpful Firefox/Chrome browser extension.
 
 > **Notice:** Extension is currently only tested with **Firefox**.
 
