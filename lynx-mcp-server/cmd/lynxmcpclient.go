@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/config"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/client"
 	"github.com/mark3labs/mcp-go/client/transport"

@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/utils"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 

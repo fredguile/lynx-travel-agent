@@ -1,0 +1,261 @@
+{
+  "name": "Lynx Travel Agent Auto Suggest (dev - experiment)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "12ad90c0-beb8-44e8-b46e-373d7f4809ea",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        480
+      ],
+      "id": "b39154bc-7ed6-4fee-a0ac-7c4be8a2e8a7",
+      "name": "Webhook",
+      "webhookId": "12ad90c0-beb8-44e8-b46e-373d7f4809ea"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I have a booking request {{ $('Webhook').item.json.body.currentBookingRef }}. {{ $('Webhook').item.json.body.screenContext.dataPurpose }}. What should I write into that field?\n",
+        "options": {
+          "systemMessage": "You are an AI agent designed to suggest the content of a field a travel booking agent is currently working on. The agent provides as input: their booking reference and the meaning of the field they are looking for a suggested content. \n\n### Instructions:\n1. Always use connected knowledge to find infos about that booking reference. Formulate a short query to retrieve the requested information.\n\n2. The travel agent is sending as input the information that should be retrieved from connected knowledge. If you're unable to retrieve such information, output sentence that this cannot be retrieved at this time.",
+          "maxIterations": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -224,
+        480
+      ],
+      "id": "f8aeb241-a091-4512-9a5a-009e0e19102c",
+      "name": "AI Agent",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": "qwen3:1.7b",
+        "options": {
+          "keepAlive": "1h"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -196,
+        700
+      ],
+      "id": "4c26aaf2-ab2f-492d-9c75-01935543e18e",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cuAn52puN6Y1j2cv",
+          "name": "Ollama LOCAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        152,
+        480
+      ],
+      "id": "8a1a11a9-d997-46a2-98bf-31d0bc72cf73",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract main keywords (max 5) describing my search below:\n\n- {{ $json.body.screenContext.fieldPurpose }}\n- {{ $json.body.screenContext.dataPurpose }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI agent designed to extract the main keywords describing the human search.\n\n### Instructions:\nOutput a list of max 5 keywords describing the human search.\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"keywords\": <string[]>,  // Required. List of keywords.\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -820,
+        480
+      ],
+      "id": "f0d5d1b9-1a8a-4007-b32b-6d0421bbf650",
+      "name": "Extract Keywords"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:12b",
+        "options": {
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -732,
+        700
+      ],
+      "id": "5084e999-5d0a-437f-aecb-b3bb6df14566",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cuAn52puN6Y1j2cv",
+          "name": "Ollama LOCAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\nreturn JSON.parse($input.first().json.output);\n} catch {\n  return { keywords: [] }\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -444,
+        480
+      ],
+      "id": "0d0ab5be-db77-45af-b00e-a1cceb62fd62",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "toolDescription": "RAG Semantic Search requires 2 parameters: \n- \"query\" containing keywords for the semantic search\n- \"filterByBookingRef\" containing the bookign reference",
+        "method": "POST",
+        "url": "http://host.docker.internal:54321/functions/v1/semantic_search_function",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=query",
+              "value": "={{ $('Code').item.json.keywords.join(\" \") }}"
+            },
+            {
+              "name": "filterByBookingRef",
+              "value": "={{ $('Webhook').item.json.body.currentBookingRef }}"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        680
+      ],
+      "id": "b6592e26-9d06-4bf0-90e9-7c2ce68a376a",
+      "name": "RAG_Semantic_Search",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "XecWP8nPbADhoZRy",
+          "name": "Bearer token for \"semantic_search_function\" LOCAL"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract Keywords",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Keywords": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG_Semantic_Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b2b84336-1a54-40cd-992f-4e403873096e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
+  },
+  "id": "h7yxfVTugy8dAYz7",
+  "tags": []
+}

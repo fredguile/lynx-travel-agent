@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/tools"
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/utils"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/config"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/tools"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/utils"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"

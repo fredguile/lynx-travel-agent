@@ -70,7 +70,7 @@ export const AIAutoSuggest = ({ wrapperId, children }: AIAutoSuggestProps) => {
         <img
           src={icon}
           css={iconStyle}
-          alt="Pan PAC AI Helper"
+          alt="Lynx Travel Agent"
         />
         <a css={linkStyle} onClick={onClick}>
           {loading ? 'Loading...' : 'Suggest content'}

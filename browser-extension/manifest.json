@@ -1,16 +1,16 @@
 {
-  "description": "Pan PAC helper extension to AI autocomplete usual day to day tasks. Firefox only for now.",
+  "description": "Firefox/Chrome extension to use as Lynx Travel Agent.",
   "manifest_version": 2,
-  "name": "Pan PAC AI Helper",
+  "name": "Lynx Travel Agent",
   "version": "1.0",
-  "homepage_url": "https://github.com/fredguile/panpac-helper-browser-extension",
+  "homepage_url": "https://github.com/fredguile/lynx-travel-agent",
   "icons": {
     "128": "src/icons/icon-light-128.png",
     "48": "src/icons/icon-light-48.png",
     "32": "src/icons/icon-light-32.png"
   },
   "browser_action": {
-    "default_title": "Pan PAC AI Helper",
+    "default_title": "Lynx Travel Agent",
     "default_popup": "src/popup.html",
     "default_icon": {
       "128": "src/icons/icon-light-128.png",

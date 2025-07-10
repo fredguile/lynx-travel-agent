@@ -9,6 +9,6 @@ create table emails (
   constraint emails_pkey primary key (id)
 ) TABLESPACE pg_default;
 
-comment on table emails IS 'Pan PAC emails knowledge';
+comment on table emails IS 'Lynx Travel Agent emails knowledge';
 
 create index emails_embedding_idx on emails using hnsw (embedding vector_cosine_ops);

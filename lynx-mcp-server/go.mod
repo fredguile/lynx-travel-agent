@@ -1,4 +1,4 @@
-module dodmcdund.cc/panpac-helper/lynxmcpserver
+module dodmcdund.cc/lynx-travel-agent/lynxmcpserver
 
 go 1.23.10
 

@@ -1,7 +1,6 @@
 # Docker Compose Setup
 
-This directory contains Docker Compose configurations for running the Pan PAC
-helper services with automated workflows and integrations.
+This directory contains Docker Compose configurations for running the Lynx Travel Agent services with automated workflows and integrations.
 
 ## Overview
 

@@ -1,4 +1,4 @@
-# panpac-helper-n8n-templates
+# n8n-templates
 
 N8n templates required for the browser extension.
 

@@ -1,5 +1,5 @@
 {
-  "name": "Pan PAC RAG pipeline (prod)",
+  "name": "Lynx Travel Agent RAG pipeline (prod)",
   "nodes": [
     {
       "parameters": {
@@ -651,6 +651,14 @@
               {
                 "name": "environment",
                 "value": "prod"
+              },
+              {
+                "name": "attachmentFileName",
+                "value": "={{ $('Switch').first().binary.data.fileName }}"
+              },
+              {
+                "name": "attachmentMimeType",
+                "value": "={{ $(\"Switch\").first().binary.data.mimeType }}"
               }
             ]
           }
@@ -937,7 +945,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "380da45a-080f-4969-8371-56084a91d90f",
+  "versionId": "1893b17e-33d3-4c1b-9db2-df8a6e0cf03f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"

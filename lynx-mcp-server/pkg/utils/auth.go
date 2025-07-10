@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/config"
-	"dodmcdund.cc/panpac-helper/lynxmcpserver/pkg/gwt"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/config"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/gwt"
 )
 
 const (

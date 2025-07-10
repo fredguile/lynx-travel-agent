@@ -1,6 +1,6 @@
-# panpac-supabase
+# supabase
 
-Supabase assets and configuration for the Pan PAC extension.
+Supabase assets and configuration for the Lynx Travel Agent.
 
 ## Prerequisites
 
@@ -9,10 +9,8 @@ The `vector` extension must be enabled.
 ## Folder Structure
 
 - `functions/`: Contains Supabase edge functions for search capabilities.
-  - `semantic_search_function/`: TypeScript/Deno code for
-    semantic search.
-  - `hybrid_search_function/`: TypeScript/Deno code for hybrid search (currently
-    not in use).
+  - `semantic_search_function/`: TypeScript/Deno code for semantic search.
+  - `hybrid_search_function/`: TypeScript/Deno code for hybrid search.
 
 - `migrations/`: Contains database migration files that track schema changes over time.
   These files are automatically generated and managed by Supabase CLI to ensure

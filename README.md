@@ -1,11 +1,10 @@
-# panpac-helper-browser-extension
+# lynx-travel-agent
 
-Firefox/Chrome extension to use as helper for Pan PAC day-to-day tasks.
+A pet project for building the best AI agent to work with lynx-reservations. Work in progress. Usage of RAG knowledge paired with helpful Firefox/Chrome browser extension.
 
-> **Notice:** This extension is currently only tested with **Firefox**.
+> **Notice:** Extension is currently only tested with **Firefox**.
 
 ## Terms of use
-
 
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -14,15 +13,15 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-Sh
 ## Table of Content
 
 - [browser-extension](./browser-extension/)
-  - **A Firefox/Chrome extension** to assist with Pan PAC day-to-day tasks. Includes build and development instructions for running the extension locally.
+  - **Firefox/Chrome extension** to use as Lynx Travel Agent. Includes build and development instructions for running the extension locally.
 - [docker-compose](./docker-compose/)
   - **Docker Compose configuration** for running n8n.
 - [lynx-mcp-server](./lynx-mcp-server/)
   - **MCP Server for Lynx Reservations written in golang**
 - [n8n_templates](./n8n_templates/)
-  - **Automation workflow templates** for n8n, including pipelines and chatbot integrations to streamline Pan PAC processes.
+  - **Automation workflow templates** for n8n, including RAG pipeline and chatbot integration.
 - [supabase](./supabase/)
-  - **Backend and database resources** for Pan PAC, featuring serverless functions (for hybrid and semantic search), and SQL schemas (with and without full-text search) to support advanced data operations.
+  - **Backend and database resources** on Supabase, featuring serverless functions (for hybrid and semantic search) and SQL schemas (with and without full-text search) to support advanced data operations.
 
 ##  Supabase Commands
 

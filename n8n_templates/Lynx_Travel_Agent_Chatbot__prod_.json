@@ -1,5 +1,5 @@
 {
-  "name": "Pan PAC Chatbot (prod)",
+  "name": "Lynx Travel Agent Chatbot (prod)",
   "nodes": [
     {
       "parameters": {
@@ -220,7 +220,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "44738536-a964-429d-a7c2-20de924044b9",
+  "versionId": "c16bbb57-9963-476b-b1ec-bcf948ad05f4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"

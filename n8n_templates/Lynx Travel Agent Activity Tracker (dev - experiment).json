@@ -1,5 +1,5 @@
 {
-  "name": "Pan PAC Travel Agent Activity Tracker",
+  "name": "Lynx Travel Agent Activity Tracker (dev - experiment)",
   "nodes": [
     {
       "parameters": {
@@ -22,8 +22,9 @@
       "parameters": {
         "promptType": "define",
         "text": "=screenshot",
+        "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are receiving the screenshot of a travel booking agent. The user experience is constrained in a page that displays navigation menus and various form elements. A red cross indicates which field the travel agent has clicked. We want to infer the meaning of that field the travel agent has clicked on and what kind of data should be filled inside. You need to output 3 vital informations:\n- the purpose of the overall form in the page.\n- the purpose of the clicked field. Focus on the closest labels to the red cross and next to the field the travel agent has clicked on. Don't take any label that is too far from that field. Observe the overall form layout to determine if you should read the label that is to the left of the clicked field, or above.\n- the kind of data the travel agent should fill inside that field (specifying the data format you find any visible label  specifying that).\n\nInstructions:\n- Use bullet points for outputing the 3 infos.\n- If you can't retrieve the above informations, don't invent and output that the clicked field is unknowned.\n- If you notice the icon of a password manager such as 1Password or Bitwarden next to the clicked field, please disregard this piece of UX in your reasoning.",
+          "systemMessage": "## Role\nYou are an AI agent tasked with analyzing a screenshot of a travel booking system interface. The screenshot contains editable fields used by a travel agent to process a booking request. Your objective is to extract all editable fields and generate structured information about them.\n\n## Instructions:\nBased on the provided screenshot, identify all editable fields and capture the following details:\n- Field Label: Extract the exact label of each field.\n- Field Description: Provide a concise description of the field's purpose and expected input (max 20 words).\n- Expected Input Type: Categorize input type as one of the following:\n  - Text (single-line, multi-line, predefined options)\n  - Date/time\n  - Number (integer, decimal, currency)\n  - Selection (dropdown, checkbox, radio buttons)\n- Required: Determine if the field is mandatory (true/false)\n\n## Output Format:\nReturn a structured JSON object capturing the extracted details, adhering to the following schema:\n\n```json\n{\n  \"fields\": [\n    {\n      \"label\": \"string\",\n      \"description\": \"string\",\n      \"inputType\": \"string\",\n      \"required\": true\n    }\n  ]\n}\n```\n\nEach entry in the \"fields\" array should strictly represent editable fields, ensuring accurate extraction and classification\n\n\n",
           "passthroughBinaryImages": true
         }
       },
@@ -42,7 +43,8 @@
       "parameters": {
         "model": "gemma3:12b",
         "options": {
-          "keepAlive": "1h"
+          "keepAlive": "1h",
+          "format": "json"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
@@ -56,7 +58,7 @@
       "credentials": {
         "ollamaApi": {
           "id": "cuAn52puN6Y1j2cv",
-          "name": "Ollama Local"
+          "name": "Ollama LOCAL"
         }
       }
     },
@@ -116,7 +118,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8c09aedd-9707-469c-bad6-80fa9fb4685a",
+  "versionId": "4d264dc9-a1b1-438c-a108-1913b707d842",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"

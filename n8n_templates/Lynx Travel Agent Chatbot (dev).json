@@ -1,5 +1,5 @@
 {
-  "name": "Pan PAC Chatbot (dev)",
+  "name": "Lynx Travel Agent Chatbot (dev)",
   "nodes": [
     {
       "parameters": {
@@ -49,11 +49,7 @@
     {
       "parameters": {
         "sseEndpoint": "http://host.docker.internal:9600/sse",
-        "authentication": "bearerAuth",
-        "include": "selected",
-        "includeTools": [
-          "file_search_by_party_name"
-        ]
+        "authentication": "bearerAuth"
       },
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
@@ -218,7 +214,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "cf183d35-6d2f-439f-bbcf-c9c1f846190f",
+  "versionId": "8f84a9eb-7518-44cf-a89a-c5240fd2ba16",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"

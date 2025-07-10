@@ -1,6 +1,6 @@
-# panpac-helper-browser-extension
+# browser-extension
 
-Firefox/Chrome extension to use as helper for Pan PAC day to day tasks.
+Firefox/Chrome extension to use as Lynx Travel Agent.
 
 ## Prerequisites
 
