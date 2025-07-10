@@ -13,15 +13,19 @@ import (
 )
 
 const (
-	TOOL_FILE_DOCUMENT_SAVE             string = "file_document_save"
-	TOOL_FILE_DOCUMENT_SAVE_DESCRIPTION string = "Save file document details"
-	TOOL_FILE_DOCUMENT_SAVE_SCHEMA      string = `{
+	TOOL_TRANSACTION_DOCUMENT_SAVE             string = "transaction_document_save"
+	TOOL_TRANSACTION_DOCUMENT_SAVE_DESCRIPTION string = "Save transaction document details"
+	TOOL_TRANSACTION_DOCUMENT_SAVE_SCHEMA      string = `{
 		"type": "object",
-		"description": "Save file document details",
+		"description": "Save transaction document details",
 		"properties": {
 			"fileIdentifier": {
 				"type": "string",
 				"description": "File identifier"
+			},
+			"transactionIdentifier": {
+				"type": "string",
+				"description": "Transaction identifier"
 			},
 			"name": {
 				"type": "string",
@@ -40,17 +44,17 @@ const (
 				"description": "Attachment URL"
 			}
 		},
-		"required": ["fileIdentifier", "name", "content", "type"],
+		"required": ["fileIdentifier", "transactionIdentifier", "name", "content", "type"],
 		"outputSchema": {
 			"type": "object",
 			"properties": {}
 		}
 	}`
 
-	LYNX_FILE_DOCUMENT_SAVE_DETAILS_URL string = "/lynx/service/file.rpc"
+	LYNX_TRANSACTION_DOCUMENT_SAVE_DETAILS_URL string = "/lynx/service/file.rpc"
 )
 
-func HandleFileDocumentSave(
+func HandleTransactionDocumentSave(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
@@ -67,6 +71,11 @@ func HandleFileDocumentSave(
 	fileIdentifier, ok := arguments["fileIdentifier"].(string)
 	if !ok {
 		return nil, fmt.Errorf("invalid file identifier argument: %v", arguments["fileIdentifier"])
+	}
+
+	transactionIdentifier, ok := arguments["transactionIdentifier"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid transaction identifier argument: %v", arguments["transactionIdentifier"])
 	}
 
 	name, ok := arguments["name"].(string)
@@ -89,9 +98,10 @@ func HandleFileDocumentSave(
 		return nil, fmt.Errorf("invalid attachmentUrl argument: %v", arguments["attachmentUrl"])
 	}
 
-	body := gwt.BuildFileDocumentSaveGWTBody(&gwt.FileDocumentSaveDetailsArgs{
-		RemoteHost:     lynxConfig.RemoteHost,
-		FileIdentifier: fileIdentifier,
+	body := gwt.BuildTransactionDocumentSaveGWTBody(&gwt.TransactionDocumentSaveDetailsArgs{
+		RemoteHost:            lynxConfig.RemoteHost,
+		FileIdentifier:        fileIdentifier,
+		TransactionIdentifier: transactionIdentifier,
 
 		Name:          name,
 		Content:       content,
@@ -101,7 +111,7 @@ func HandleFileDocumentSave(
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s%s", lynxConfig.RemoteHost, LYNX_FILE_DOCUMENT_SAVE_DETAILS_URL), strings.NewReader(body))
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create file document save details request: %w", err)
+		return nil, fmt.Errorf("failed to create transaction document save details request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", gwt.CONTENT_TYPE)
@@ -110,19 +120,19 @@ func HandleFileDocumentSave(
 	// Use retry utility with exponential backoff
 	resp, bodyStr, err := utils.RetryHTTPRequest(ctx, client, req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute file document save details request after retries: %w", err)
+		return nil, fmt.Errorf("failed to execute transaction document save details request after retries: %w", err)
 	}
 	defer resp.Body.Close()
 
 	// Parse the GWT response body
 	err = gwt.ParseDocumentSaveResponseBody(bodyStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse file document save details response: %w", err)
+		return nil, fmt.Errorf("failed to parse transaction document save details response: %w", err)
 	}
 
 	return utils.NewToolResultJSON(map[string]interface{}{}), nil
 }
 
-func GetFileDocumentSaveDetailsSchema() json.RawMessage {
-	return json.RawMessage(TOOL_FILE_DOCUMENT_SAVE_SCHEMA)
+func GetTransactionDocumentSaveDetailsSchema() json.RawMessage {
+	return json.RawMessage(TOOL_TRANSACTION_DOCUMENT_SAVE_SCHEMA)
 }

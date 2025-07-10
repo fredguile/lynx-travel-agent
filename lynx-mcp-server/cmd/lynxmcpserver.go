@@ -28,8 +28,6 @@ func main() {
 	// Load configuration
 	serverConfig := config.NewMCPServerConfig()
 
-	log.Printf("Starting SSE server on %s/see", serverConfig.Port)
-
 	mcpServer := NewMCPServer()
 	sse := server.NewSSEServer(mcpServer)
 
@@ -48,6 +46,8 @@ func main() {
 	go func() {
 		serverErrors <- sse.Start(":" + serverConfig.Port)
 	}()
+
+	log.Printf("Started SSE server on %s/see", serverConfig.Port)
 
 	// Create a channel to listen for OS signals
 	sigChan := make(chan os.Signal, 1)
@@ -166,6 +166,12 @@ func NewMCPServer() *server.MCPServer {
 		tools.TOOL_FILE_DOCUMENT_SAVE_DESCRIPTION,
 		tools.GetFileDocumentSaveDetailsSchema(),
 	), tools.HandleFileDocumentSave)
+
+	mcpServer.AddTool(mcp.NewToolWithRawSchema(
+		tools.TOOL_TRANSACTION_DOCUMENT_SAVE,
+		tools.TOOL_TRANSACTION_DOCUMENT_SAVE_DESCRIPTION,
+		tools.GetTransactionDocumentSaveDetailsSchema(),
+	), tools.HandleTransactionDocumentSave)
 
 	return mcpServer
 }

@@ -47,5 +47,7 @@ go run ./cmd/lynxmcpclient.go --command 'file_documents_by_transaction_reference
 
 go run ./cmd/lynxmcpclient.go --command 'attachment_upload --binary --identifier=YYY --fileName=attachment.pdf'
 
-go run ./cmd/lynxmcpclient.go --command 'file_document_save_details --fileIdentifier=XXX --transactionIdentifier=XXX --name=document --content "<span>test</span>" --type=SUPP --attachmentUrl=/documents/file/f16476987/d20250709064401.pdf'
+go run ./cmd/lynxmcpclient.go --command 'file_document_save_details --fileIdentifier=XXX --name=document --content "<span>test</span>" --type=SUPP --attachmentUrl=/documents/file/f16476987/d20250709064401.pdf'
+
+go run ./cmd/lynxmcpclient.go --command 'transaction_document_save_details --fileIdentifier=XXX --transactionIdentifier=XXX --name=document --content "<span>test</span>" --type=SUPP --attachmentUrl=/documents/file/f16476987/d20250709064401.pdf'
 ```

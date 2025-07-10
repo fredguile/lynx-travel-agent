@@ -5,6 +5,15 @@ import (
 	"strings"
 )
 
+type BuildFileDocumentsByFileReferenceArgs struct {
+	RemoteHost     string
+	FileIdentifier string
+}
+
+func BuildFileDocumentsByFileReferenceGWTBody(args *BuildFileDocumentsByFileReferenceArgs) string {
+	return fmt.Sprintf("7|0|8|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|getFileDocumentsAsList|J|java.lang.Long/4227064769|I|java.lang.String/2004016611|1|2|3|4|4|5|6|7|8|%s|0|1|0|", args.RemoteHost, args.FileIdentifier)
+}
+
 type FileDocumentsByTransactionReferenceArgs struct {
 	RemoteHost            string
 	FileIdentifier        string
@@ -15,7 +24,7 @@ func BuildFileDocumentsByTransactionReferenceGWTBody(args *FileDocumentsByTransa
 	return fmt.Sprintf("7|0|8|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|getFileDocumentsAsList|J|java.lang.Long/4227064769|I|java.lang.String/2004016611|1|2|3|4|4|5|6|7|8|%s|6|%s|1|0|", args.RemoteHost, args.FileIdentifier, args.TransactionIdentifier)
 }
 
-type FileDocumentSaveDetailsArgs struct {
+type TransactionDocumentSaveDetailsArgs struct {
 	RemoteHost            string
 	FileIdentifier        string
 	TransactionIdentifier string
@@ -25,8 +34,21 @@ type FileDocumentSaveDetailsArgs struct {
 	AttachmentURL         string
 }
 
-func BuildFileDocumentSaveGWTBody(args *FileDocumentSaveDetailsArgs) string {
+func BuildTransactionDocumentSaveGWTBody(args *TransactionDocumentSaveDetailsArgs) string {
 	return fmt.Sprintf("7|0|10|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|saveFileDocumentsDetails|com.lynxtraveltech.common.gui.shared.model.DocumentDetails/2779362264|java.lang.Long/4227064769|%s|%s|%s|%s|1|2|3|4|1|5|5|6|%s|1|A|0|0|0|FO6_|7|8|0|%s|9|10|0|", args.RemoteHost, args.Content, args.Type, args.Name, args.AttachmentURL, args.TransactionIdentifier, args.FileIdentifier)
+}
+
+type FileDocumentSaveDetailsArgs struct {
+	RemoteHost     string
+	FileIdentifier string
+	Name           string
+	Content        string
+	Type           string
+	AttachmentURL  string
+}
+
+func BuildFileDocumentSaveGWTBody(args *FileDocumentSaveDetailsArgs) string {
+	return fmt.Sprintf("7|0|9|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|saveFileDocumentsDetails|com.lynxtraveltech.common.gui.shared.model.DocumentDetails/2779362264|%s|%s|%s|%s|1|2|3|4|1|5|5|0|1|A|0|0|0|P__________|6|7|0|%s|8|9|0|", args.RemoteHost, args.Content, args.Type, args.Name, args.AttachmentURL, args.FileIdentifier)
 }
 
 type FileDocumentsResponseArray struct {
@@ -136,9 +158,9 @@ func ParseFileDocumentsListResponseBody(responseBody string) (*FileDocumentsResp
 	return &fileDocumentsResponse, nil
 }
 
-// ParseFileDocumentSaveResponseBody parsed a GWT response in content of saving document details
+// ParseDocumentSaveResponseBody parsed a GWT response in content of saving document details
 // Returns nil if successful
-func ParseFileDocumentSaveResponseBody(responseBody string) error {
+func ParseDocumentSaveResponseBody(responseBody string) error {
 	// Ensure response starts with "//OK"
 	if !strings.HasPrefix(responseBody, "//OK") {
 		return fmt.Errorf("response body missing //OK")
