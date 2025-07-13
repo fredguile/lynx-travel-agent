@@ -2,6 +2,8 @@
 
 Firefox/Chrome extension to use as Lynx Travel Agent.
 
+**Note: MVP isn't finalized yet, still a work-in-progress here**
+
 ## Prerequisites
 
 ```sh
