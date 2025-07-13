@@ -42,6 +42,10 @@ const (
 								"type": "string",
 								"description": "Company code"
 							},
+							"clientIdentifier": {
+								"type": "string",
+								"description": "Client identifier"
+							},
 							"clientReference": {
 								"type": "string",
 								"description": "Client reference"
@@ -71,7 +75,7 @@ const (
 								"description": "Travel date"
 							}
 						},
-						"required": ["companyCode", "clientReference", "currency", "fileIdentifier", "fileReference", "partyName", "status", "travelDate"]
+						"required": ["companyCode", "clientIdentifier", "clientReference", "currency", "fileIdentifier", "fileReference", "partyName", "status", "travelDate"]
 					}
 				}
 			},

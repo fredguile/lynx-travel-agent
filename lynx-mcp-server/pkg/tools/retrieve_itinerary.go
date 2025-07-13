@@ -22,48 +22,80 @@ const (
 		"properties": {
 			"fileIdentifier": {
 				"type": "string",
-				"description":  "File identifier"
+				"description": "File identifier"
 			}
 		},
 		"required": ["fileIdentifier"],
 		"outputSchema": {
 			"type": "object",
 			"properties": {
-				"count": {
-					"type": "integer",
-					"description": "Number of results found"
+				"type": {
+					"type": "string",
+					"description": "Itinerary type"
 				},
-				"results": {
+				"partyName": {
+					"type": "string",
+					"description": "Party name"
+				},
+				"fileReference": {
+					"type": "string",
+					"description": "File reference"
+				},
+				"fileIdentifier": {
+					"type": "string",
+					"description": "File identifier"
+				},
+				"clientIdentifier": {
+					"type": "string",
+					"description": "Client identifier"
+				},
+				"agentReference": {
+					"type": "string",
+					"description": "Agent reference"
+				},
+				"itineraryCount": {
+					"type": "integer",
+					"description": "Number of itineraries found"
+				},
+				"itineraries": {
 					"type": "array",
 					"items": {
 						"type": "object",
 						"properties": {
-							"supplier": {
+							"voucherIdentifier": {
 								"type": "string",
-								"description": "Supplier name"
-							},
-							"productName": {
-								"type": "string",
-								"description": "Product name"
+								"description": "Voucher identifier"
 							},
 							"date": {
 								"type": "string",
 								"description": "Date"
 							},
-							"location": {
+							"transactionIdentifier": {
 								"type": "string",
-								"description": "Location"
+								"description": "Transaction identifier"
+							},
+							"supplier": {
+								"type": "string",
+								"description": "Supplier name"
 							},
 							"status": {
 								"type": "string",
 								"description": "Status"
+							},
+							"confirmationNumber": {
+								"type": "string",
+								"description": "Confirmation number"
+							},
+							"location": {
+								"type": "string",
+								"description": "Location"
 							}
 						},
-						"required": ["supplier", "productName", "date", "location", "status"]
+						"required": ["voucherIdentifier", "date", "transactionIdentifier", "supplier", "status", "location"]
 					}
 				}
 			},
-			"required": ["count", "results"]
+			"required": ["type", "partyName", "fileReference", "fileIdentifier", "clientIdentifier", "agentReference", "itineraryCount", "itineraries"]
 		}
 	}`
 
