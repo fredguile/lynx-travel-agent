@@ -20,7 +20,7 @@
       "typeVersion": 1,
       "position": [
         -1280,
-        660
+        630
       ],
       "id": "442f93e4-3289-47f1-898a-aa5575a426fe",
       "name": "Microsoft Outlook Trigger",
@@ -97,7 +97,7 @@
       "typeVersion": 3.4,
       "position": [
         -1060,
-        660
+        630
       ],
       "id": "88f38f8b-42da-4231-b923-2a7f745a8c98",
       "name": "Select Relevant Fields"
@@ -108,7 +108,7 @@
         "text": "=Here is my email content:\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking.\n   - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n   - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Extract File Reference (if available)**: If the email contains a file reference, extract it and include it in the response. File reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n3. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"fileReference\": \"<string>\",  // Optional. If a file reference is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"english\", \"french\").\n}",
+          "systemMessage": "You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly. If an e-mail is classified as booking-related, you will classify an e-mail category following instructions below.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking or not:\n  - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n  - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Email Category**: Analyze the content of a booking-related email (see previous point) and determine to which of the following 4 categories it belongs: Supplier communication (SUPP), Agent Communication (CLINT), Travelling Client Communication (CLCOM) or General (GEN):\n  - If the email sender works for Voyageurs du Monde, Comptoir des Voyages or Pan Pacific Travel, classify it as Supplier Communication and use code SUPP.\n  - If the email sender provides a travel service as part of a travel itinerary (example: hotel booking, leisure or car rental), classify it as Supplier Communication and use code SUPP.\n  - If the email  is written by the travelling customer themselves (example: question about travel or reply to an agent), classify it as Travelling Client Communication  and use code (CLCOM).\n  - if none of these patterns applies, classify it as General and use code GEN.\n\n3. **Extract File Reference (if available)**: If the email contains a file reference, extract it and include it in the response. File reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n4. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"emailCategoryCode\": <string>, // Optional. The inferred email category code (e.g., \"SUPP\", \"CLINT\", \"CLCOM\", \"FLIGH\", \"GEN\").\n  \"fileReference\": \"<string>\",  // Optional. If a file reference is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"english\", \"french\").\n}",
           "maxIterations": 1,
           "returnIntermediateSteps": false
         }
@@ -117,7 +117,7 @@
       "typeVersion": 1.9,
       "position": [
         -840,
-        660
+        630
       ],
       "id": "8478bb90-bc78-44c4-8cc8-2420b354d846",
       "name": "Classify booking-related emails",
@@ -126,13 +126,13 @@
     },
     {
       "parameters": {
-        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nfunction parseAttachments(items) {\n  const results = [];\n\n  for (const item of items) {\n    if (typeof item?.binary === 'object') {\n      for (const key of Object.keys(item.binary)) {\n          results.push({\n              json: {\n                  fileName: item.binary[key].fileName\n              },\n              binary: {\n                  data: item.binary[key],\n              }\n          });\n      }\n    }\n  }\n  \n  return results;\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst from = typeof $('Microsoft Outlook Trigger').first().json.from === 'object' ? $('Microsoft Outlook Trigger').first().json.from.emailAddress.name + '<' + $('Microsoft Outlook Trigger').first().json.from.emailAddress.address + '>' :\n    typeof $('Microsoft Outlook Trigger').first().json.internetMessageId === 'string' ? $('Microsoft Outlook Trigger').first().json.internetMessageId : 'UNKNOWN SENDER';\n\nconst hasAttachments = $('Microsoft Outlook Trigger').first().json.hasAttachments;\n\nconst attachements = hasAttachments ? parseAttachments( $('Microsoft Outlook Trigger').all()) : [];\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Microsoft Outlook Trigger').first().json.id,\n  conversationId: $('Microsoft Outlook Trigger').first().json.conversationId,\n  fileReference: input.fileReference,\n  receivedAt: $('Microsoft Outlook Trigger').first().json.receivedDateTime,\n  from,\n  subject: $('Microsoft Outlook Trigger').first().json.subject,\n  body: stripHtmlTags($('Microsoft Outlook Trigger').first().json.body.content),\n  hasAttachments,\n  attachements,\n};\n\nreturn bookingKnowledge;"
+        "jsCode": "function stripHtmlTags(input) {\n    return input.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n/g, ' ');\n}\n\nfunction parseAttachments(items) {\n  const results = [];\n\n  for (const item of items) {\n    if (typeof item?.binary === 'object') {\n      for (const key of Object.keys(item.binary)) {\n          results.push({\n              json: {\n                  fileName: item.binary[key].fileName\n              },\n              binary: {\n                  data: item.binary[key],\n              }\n          });\n      }\n    }\n  }\n  \n  return results;\n}\n\nconst input = JSON.parse($input.first().json.output);\n\nif (!input || !input.bookingRelated) {\n   return {\n     bookingRelated: false\n  };\n}\n\nconst from = typeof $('Microsoft Outlook Trigger').first().json.from === 'object' ? $('Microsoft Outlook Trigger').first().json.from.emailAddress.name + '<' + $('Microsoft Outlook Trigger').first().json.from.emailAddress.address + '>' :\n    typeof $('Microsoft Outlook Trigger').first().json.internetMessageId === 'string' ? $('Microsoft Outlook Trigger').first().json.internetMessageId : 'UNKNOWN SENDER';\n\nconst hasAttachments = $('Microsoft Outlook Trigger').first().json.hasAttachments;\n\nconst attachments = hasAttachments ? parseAttachments( $('Microsoft Outlook Trigger').all()) : [];\n\nconst bookingKnowledge = {\n  bookingRelated: true,\n  emailCategoryCode: input.emailCategoryCode,\n  inferredLanguage: input.inferredLanguage,\n  emailId: $('Microsoft Outlook Trigger').first().json.id,\n  conversationId: $('Microsoft Outlook Trigger').first().json.conversationId,\n  fileReference: input.fileReference,\n  receivedAt: $('Microsoft Outlook Trigger').first().json.receivedDateTime,\n  from,\n  subject: $('Microsoft Outlook Trigger').first().json.subject,\n  body: stripHtmlTags($('Microsoft Outlook Trigger').first().json.body.content),\n  hasAttachments,\n  attachments,\n};\n\nreturn bookingKnowledge;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        660
+        -480,
+        630
       ],
       "id": "22a4b146-4ffc-4607-b7b5-ef626a5d74e0",
       "name": "Build booking knowledge",
@@ -146,8 +146,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        780,
-        380
+        880,
+        550
       ],
       "id": "b53d0349-ad61-4de9-9fac-b23986d665af",
       "name": "Recursive Character Text Splitter"
@@ -181,8 +181,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -244,
-        660
+        -260,
+        630
       ],
       "id": "9e25ec31-7043-4735-988f-d14406280557",
       "name": "If booking-related email"
@@ -215,8 +215,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        54,
-        660
+        30,
+        830
       ],
       "id": "b6b64176-28ea-4c5f-a1d6-2df5d6d45b84",
       "name": "If booking has attachment"
@@ -229,8 +229,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        1936,
-        980
+        2160,
+        850
       ],
       "id": "0456f3f5-7efd-4e6f-8642-bac65ad6a136",
       "name": "Recursive Character Text Splitter1"
@@ -270,15 +270,15 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1068,
-        660
+        1230,
+        830
       ],
       "id": "c8bc4676-8443-4df9-b10a-8066ceaae2cf",
       "name": "Switch"
     },
     {
       "parameters": {
-        "fieldToSplitOut": "attachements",
+        "fieldToSplitOut": "attachments",
         "options": {
           "includeBinary": true
         }
@@ -286,8 +286,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        352,
-        560
+        390,
+        730
       ],
       "id": "cb0ebd6b-7005-4824-b1e5-00444e4d489d",
       "name": "Split Out"
@@ -299,8 +299,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        710,
-        560
+        810,
+        730
       ],
       "id": "a0eed458-53f1-472c-8575-f567ce181ee0",
       "name": "Loop Over Items"
@@ -317,8 +317,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        1288,
-        560
+        1520,
+        430
       ],
       "id": "d9b120a5-60d3-47c1-ab3a-fd005a267913",
       "name": "Convert to File"
@@ -328,8 +328,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        54,
-        860
+        30,
+        1030
       ],
       "id": "115637df-a0f6-492a-99dd-1880fd6f5c38",
       "name": "Not booking-related, do nothing"
@@ -339,8 +339,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        352,
-        760
+        390,
+        930
       ],
       "id": "a19ae8a6-97fd-43e3-8707-b491817858d3",
       "name": "No attachment, do nothing"
@@ -350,8 +350,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1068,
-        460
+        1230,
+        380
       ],
       "id": "f3c65f0a-862e-4abc-ba31-0fae0aa03082",
       "name": "Loop done, nothing to do"
@@ -361,8 +361,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1288,
-        760
+        1520,
+        930
       ],
       "id": "e7e0a4c9-de39-4de0-bbd3-9de7cfec08db",
       "name": "Not implemented yet"
@@ -376,8 +376,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        1508,
-        560
+        1740,
+        430
       ],
       "id": "038db0a3-be7d-4408-9168-fd8c73d55715",
       "name": "Extract from PDF"
@@ -396,8 +396,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        588,
-        -40
+        700,
+        130
       ],
       "id": "e2ebd9e8-daf7-495a-82dc-ffc7ea1dfbfa",
       "name": "Supabase Vector Store for Emails",
@@ -422,8 +422,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        1744,
-        560
+        1980,
+        430
       ],
       "id": "0431e511-1271-4b28-89ee-dc221db7cb09",
       "name": "Supabase Vector Store for PDFs",
@@ -450,8 +450,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -752,
-        880
+        -760,
+        850
       ],
       "id": "7ff0ee57-4779-4af6-aa9d-0f2fffbb24f7",
       "name": "OpenAI Chat Model 1",
@@ -474,8 +474,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -24,
-        160
+        -40,
+        330
       ],
       "id": "fcbfbed1-27ae-49dc-a185-ff04fee8d795",
       "name": "Summarize email content"
@@ -494,8 +494,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        64,
-        380
+        40,
+        550
       ],
       "id": "0f8541ae-1210-45e0-8540-e7999dadf3a1",
       "name": "OpenAI Chat Model",
@@ -513,8 +513,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        352,
-        160
+        390,
+        330
       ],
       "id": "3d41ae20-7eec-4a54-9632-1e3e2398e361",
       "name": "Code"
@@ -528,8 +528,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        572,
-        180
+        680,
+        350
       ],
       "id": "f09faf41-c7f8-4545-8b0a-f25aa307ac43",
       "name": "Embeddings OpenAI 1",
@@ -586,8 +586,8 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        692,
-        182.5
+        800,
+        352.5
       ],
       "id": "5f959f45-12e4-4e6b-ab3b-78110484b900",
       "name": "Document Loader 1"
@@ -601,8 +601,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1728,
-        780
+        1960,
+        650
       ],
       "id": "4d846586-d093-4077-a4bb-d144838cf9a1",
       "name": "Embeddings OpenAI 2",
@@ -667,11 +667,213 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        1848,
-        782.5
+        2080,
+        652.5
       ],
       "id": "dd58ab8e-b9df-4e2a-8422-096569dc4377",
       "name": "Document Loader 2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88e185f9-035f-4af4-864d-9786913ee97d",
+              "leftValue": "={{ $json.emailCategoryCode }}",
+              "rightValue": "SUPP",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        30,
+        -70
+      ],
+      "id": "5a88a7e5-5ebb-4070-9d05-62db1dc1a7f2",
+      "name": "If email from supplier"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is my email content:\nReceived At: {{ $json.receivedAt }}\nFrom: {{ $json.from }}\nSubject: {{ $json.subject }}\nFile Reference: {{ $json.fileReference }}\nBody: {{ $json.body }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# 🧠 AI Agent Prompt: Email-Based Travel Transaction Matching\n\nYou are an AI agent responsible for analyzing email content to determine if it corresponds to a specific travel transaction. Provided with both the email content and a known `fileReference`, you will use tools from the **Lynx MCP Server** system to retrieve and evaluate transaction data.\n\n## 🛠 Step-by-Step Instructions\n\n### 1. Search for File Reference\n- **Use tool**: `file_search_by_file_reference`\n- **Input**: `fileReference` — the known reference provided\n\n### 2. Validate Search Result\n- If **no result** or **multiple results** are returned:\n  - Output an empty response  \n  - Stop processing  \n- If **exactly one result** is returned:\n  - Extract the `fileIdentifier`\n\n### 3. Retrieve Itinerary Details\n- **Use tool**: `retrieve_itinerary`\n- **Input**: `fileIdentifier` — obtained from step 2  \n- The tool returns a list of travel transactions\n\n### 4. Match Transaction Against Email  \nCompare the following fields from each transaction with the email subject or body:\n- `voucherIdentifier`\n- `supplier`\n- `location`\n- `confirmationNumber`\n\nIf a matching transaction is found, format the response as described below.  \nIf no match is found or if the tool returns an empty list, respond with an empty output.\n\n## 📦 Structured JSON Response\n```json\n{\n  \"voucherIdentifier\": \"<string>\",\n  \"date\": \"<string>\",\n  \"transactionIdentifier\": \"<string>\",\n  \"supplier\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmationNumber\": \"<string>\"\n}\n```\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -320
+      ],
+      "id": "0f425c98-c94c-44ab-b68c-8c573b59a74f",
+      "name": "Retrieve related transaction"
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const input = JSON.parse($input.first().json.output);\n\n  let firstValidAttachment = null;\n  \n\n  for (const attachment of $(\"Build booking knowledge\").first().json.attachments) {\n    if ( attachment.binary.data.mimeType === 'application/pdf' && firstValidAttachment ==  null) { \n      firstValidAttachment = {\n        data: attachment.binary.data.data,\n        mimeType: attachment.binary.data.mimeType,\n        fileName: attachment.json.fileName,\n      };\n   }\n }\n  \n  return {\n    voucherIdentifier: input.voucherIdentifier,\n    date: input.date,\n    transactionIdentifier: input.transactionIdentifier,\n    supplier: input.supplier,\n    status: input.status,\n    confirmationNumber: input.confirmationNumber,\n    firstValidAttachment,\n  };\n}\ncatch {\n  return {};\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        810,
+        -220
+      ],
+      "id": "00421a32-1843-43aa-a219-e1cf4ac6f5a9",
+      "name": "Extract JSON"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is my email content:\nEmail Category Code: {{ $('Build booking knowledge').first().json.emailCategoryCode }}\nFrom: {{ $('If booking-related email').first().json.from }}\nSubject: {{ $('If booking-related email').first().json.subject }}\n\nBody: {{ $('Microsoft Outlook Trigger').first().json.body.content }}\n\nAttachmentFileName: {{ $json.firstValidAttachment.fileName }}\n\nAttachmentIdentifier: {{  $json.voucherIdentifier }}\n\nAttachmentData:",
+        "options": {
+          "systemMessage": "## 🧠 AI Agent Instruction: Archive Email to Lynx MCP Server 2\n\nYou are an AI agent responsible for archiving the provided email content into the **Lynx MCP Server 2** system.\n\n## 🛠 Task Workflow\n\n### 1️⃣ Attachment Upload *(Conditional)*  \nProceed **only if** both email fields `AttachmentFileName` and `AttachmentData` are **non-empty**.\n\n- **Invoke Tool**: `attachment_upload`  \n- **Parameters**:  \n  - `binary`: provided `AttachmentData` (base64-encoded)  \n  - `identifier`: provided `AttachmentIdentifier`  \n  - `fileName`: provided `AttachmentFileName`\n\n### 2️⃣ Get `attachmentUrl`  \n- If **error** or **no result** returned:  \n  - Return an empty response  \n  - **Terminate process**  \n\n- If **one result** is returned:  \n  - Extract the `attachmentUrl` for the next step\n\n### 3️⃣ Save Transaction Document  \n- **Invoke Tool**: `transaction_document_save`  \n- **Parameters**:  \n  - `fileIdentifier`: `$2s7`  \n  - `transactionIdentifier`: `BgsOD`  \n  - `name`: use the provided **email subject**  \n  - `content`: use the provided **email body content** *(prefer HTML)*  \n  - `type`: use the provided **email category code**  \n  - `attachmentUrl`: use extracted `attachmentUrl` or an empty string if no upload occurred\n\n### 4️⃣ Completion  \nAfter tool execution, expect an empty response.  \n✅ No additional actions are required after this step."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        -220
+      ],
+      "id": "695c6eca-be19-40d9-8e15-92cfcb0ec69c",
+      "name": "Store email as file document"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        390,
+        80
+      ],
+      "id": "9275d1da-f3bc-4dce-8aeb-c178fd6155d1",
+      "name": "No need to store anything"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -220
+      ],
+      "id": "b4552ea0-5002-486e-8e83-518b046c1ddc",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://pmcp.dodmcdund.cc/sse",
+        "authentication": "bearerAuth",
+        "include": "selected",
+        "includeTools": [
+          "file_search_by_file_reference",
+          "retrieve_itinerary"
+        ]
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -100
+      ],
+      "id": "ee84c6f6-0446-4dcb-884b-50022ab68ad6",
+      "name": "Lynx MCP Server",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "HxeOsYch9S8sR8a1",
+          "name": "Bearer Token for MCP Server PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://pmcp.dodmcdund.cc/sse",
+        "authentication": "bearerAuth",
+        "include": "selected",
+        "includeTools": [
+          "transaction_document_save",
+          "attachment_upload"
+        ]
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        0
+      ],
+      "id": "896b9888-991b-4c24-a2f3-1281bea72637",
+      "name": "Lynx MCP Server 2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "HxeOsYch9S8sR8a1",
+          "name": "Bearer Token for MCP Server PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        340,
+        -100
+      ],
+      "id": "025f2af8-4d98-4edd-939a-8abad0f5296b",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "nKrzBiQTtSNGEZqH",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1180,
+        0
+      ],
+      "id": "91e9ffd5-21da-436f-8d08-a68a7a5ebf28",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "nKrzBiQTtSNGEZqH",
+          "name": "OpenAi account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -741,6 +943,11 @@
           },
           {
             "node": "Summarize email content",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If email from supplier",
             "type": "main",
             "index": 0
           }
@@ -939,13 +1146,108 @@
           }
         ]
       ]
+    },
+    "If email from supplier": {
+      "main": [
+        [
+          {
+            "node": "Retrieve related transaction",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No need to store anything",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve related transaction": {
+      "main": [
+        [
+          {
+            "node": "Extract JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract JSON": {
+      "main": [
+        [
+          {
+            "node": "Store email as file document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store email as file document": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lynx MCP Server": {
+      "ai_tool": [
+        [
+          {
+            "node": "Retrieve related transaction",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lynx MCP Server 2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Store email as file document",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve related transaction",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Store email as file document",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1893b17e-33d3-4c1b-9db2-df8a6e0cf03f",
+  "versionId": "4ea7cc40-bd63-478e-a543-c7c5396e6516",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"
