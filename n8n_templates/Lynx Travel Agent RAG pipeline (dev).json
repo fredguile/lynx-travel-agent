@@ -20,7 +20,7 @@
       "typeVersion": 1,
       "position": [
         -140,
-        950
+        830
       ],
       "id": "05dc57e5-c675-47b6-9b76-9eb98f22b663",
       "name": "Microsoft Outlook Trigger",
@@ -97,7 +97,7 @@
       "typeVersion": 3.4,
       "position": [
         80,
-        950
+        830
       ],
       "id": "4d5a47c6-6c63-4135-8ed1-a801b97a4555",
       "name": "Select Relevant Fields"
@@ -117,7 +117,7 @@
       "typeVersion": 1.9,
       "position": [
         300,
-        950
+        830
       ],
       "id": "959c52e7-182e-41ed-a061-cd36b4179703",
       "name": "Classify booking-related emails",
@@ -132,7 +132,7 @@
       "typeVersion": 2,
       "position": [
         660,
-        950
+        830
       ],
       "id": "6408b463-7b76-4909-9100-c65dde890a53",
       "name": "Build booking knowledge",
@@ -168,7 +168,7 @@
       "typeVersion": 2.2,
       "position": [
         880,
-        950
+        830
       ],
       "id": "12b37d1c-c8d8-4927-97f9-3598318a5db3",
       "name": "If booking-related email"
@@ -202,7 +202,7 @@
       "typeVersion": 2.2,
       "position": [
         1170,
-        1150
+        1030
       ],
       "id": "5ae8e327-0246-492d-9e7a-e2240fd8ccc8",
       "name": "If booking has attachment"
@@ -242,8 +242,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        2370,
-        1150
+        2300,
+        1030
       ],
       "id": "8002c088-fa72-4360-ba36-2503612c6770",
       "name": "Switch"
@@ -259,7 +259,7 @@
       "typeVersion": 1,
       "position": [
         1530,
-        1050
+        930
       ],
       "id": "b0de4ac4-36f7-4900-a750-342f65ebeff0",
       "name": "Split Out"
@@ -272,7 +272,7 @@
       "typeVersion": 3,
       "position": [
         1950,
-        1050
+        930
       ],
       "id": "c850e9b2-d8a1-4360-88aa-d43be7270a8b",
       "name": "Loop Over Items"
@@ -289,8 +289,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        2660,
-        750
+        2520,
+        780
       ],
       "id": "72dc8302-fede-444d-ab17-c7cc0320545d",
       "name": "Convert to File"
@@ -301,7 +301,7 @@
       "typeVersion": 1,
       "position": [
         1170,
-        1350
+        1230
       ],
       "id": "e78f3e32-f7e9-40a8-b017-3af7ff05ab94",
       "name": "Not booking-related, do nothing"
@@ -312,7 +312,7 @@
       "typeVersion": 1,
       "position": [
         1530,
-        1250
+        1130
       ],
       "id": "59c0e29e-c341-421e-b496-95a207969f0b",
       "name": "No attachment, do nothing"
@@ -322,8 +322,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2370,
-        700
+        2300,
+        530
       ],
       "id": "93f978f2-5fa2-485c-9804-c7e892ee22a6",
       "name": "Loop done, nothing to do"
@@ -333,8 +333,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2660,
-        1250
+        2520,
+        1130
       ],
       "id": "6202d754-74db-469b-a4d0-b6427edbfba3",
       "name": "Not implemented yet"
@@ -348,8 +348,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        2880,
-        750
+        2740,
+        780
       ],
       "id": "d6d9aea3-6aa6-4c31-9a82-0fb0922eaf24",
       "name": "Extract from PDF"
@@ -369,7 +369,7 @@
       "typeVersion": 1.1,
       "position": [
         1840,
-        450
+        330
       ],
       "id": "35cafd11-40b9-4450-a09a-dbad0d9905bb",
       "name": "Supabase Vector Store for Emails",
@@ -394,8 +394,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        3120,
-        750
+        2980,
+        780
       ],
       "id": "b99b5216-aac5-4def-a5e6-33caade7bdd0",
       "name": "Supabase Vector Store for PDFs",
@@ -414,7 +414,7 @@
       "typeVersion": 2,
       "position": [
         1530,
-        650
+        530
       ],
       "id": "d019fdd2-7987-446b-b920-4b1325a7aa50",
       "name": "Code"
@@ -432,7 +432,7 @@
       "typeVersion": 1.9,
       "position": [
         1100,
-        650
+        530
       ],
       "id": "3ff14099-c254-4131-976f-f19427f3b2f4",
       "name": "Summarize email content"
@@ -449,7 +449,7 @@
       "typeVersion": 1,
       "position": [
         380,
-        1170
+        1050
       ],
       "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
       "name": "Ollama Chat Model 1",
@@ -471,7 +471,7 @@
       "typeVersion": 1,
       "position": [
         1180,
-        870
+        750
       ],
       "id": "c5aba24f-c04a-43d6-970f-081908717c9e",
       "name": "Ollama Chat Model 2",
@@ -490,7 +490,7 @@
       "typeVersion": 1.2,
       "position": [
         1820,
-        670
+        550
       ],
       "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
       "name": "Embeddings OpenAI 1",
@@ -508,8 +508,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3100,
-        970
+        2960,
+        1000
       ],
       "id": "fed834d0-bba7-4a0b-95bd-08c9cd985f28",
       "name": "Embeddings OpenAI 2",
@@ -529,7 +529,7 @@
       "typeVersion": 1,
       "position": [
         2020,
-        870
+        750
       ],
       "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
       "name": "Recursive Character Text Splitter 1"
@@ -542,8 +542,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        3300,
-        1170
+        3160,
+        1200
       ],
       "id": "bf38bfdc-4a4b-4f5f-a459-88bd62e5d8c0",
       "name": "Recursive Character Text Splitter 2"
@@ -591,7 +591,7 @@
       "typeVersion": 1,
       "position": [
         1940,
-        672.5
+        552.5
       ],
       "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
       "name": "Document Loader 1"
@@ -642,8 +642,8 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        3220,
-        972.5
+        3080,
+        1002.5
       ],
       "id": "57125b25-b721-4fb6-9268-a201a70258b9",
       "name": "Document Loader 2"
@@ -662,7 +662,7 @@
       "typeVersion": 1,
       "position": [
         1600,
-        220
+        100
       ],
       "id": "49d62188-af54-41da-8829-de5ea3379a47",
       "name": "Lynx MCP Server LOCAL",
@@ -686,7 +686,7 @@
       "typeVersion": 1.2,
       "position": [
         1480,
-        220
+        100
       ],
       "id": "6e6c8846-5c35-40cc-99a0-6605ee8c6747",
       "name": "OpenAI Chat Model",
@@ -705,7 +705,7 @@
       "typeVersion": 2,
       "position": [
         1950,
-        100
+        -20
       ],
       "id": "0eba9941-8f10-4602-b88d-1169758b0d75",
       "name": "Extract JSON"
@@ -723,8 +723,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2320,
-        320
+        3040,
+        200
       ],
       "id": "ce1a170c-a664-4ea8-9811-7739bf01d813",
       "name": "OpenAI Chat Model 2",
@@ -741,15 +741,14 @@
         "authentication": "bearerAuth",
         "include": "selected",
         "includeTools": [
-          "transaction_document_save",
-          "attachment_upload"
+          "transaction_document_save"
         ]
       },
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        2540,
-        320
+        3160,
+        200
       ],
       "id": "6fc1bfec-89ce-454e-9a08-d4a484675f99",
       "name": "Lynx MCP Server LOCAL 2",
@@ -763,16 +762,16 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Here is my email content:\nEmail Category Code: {{ $('Build booking knowledge').first().json.emailCategoryCode }}\nFrom: {{ $('If booking-related email').first().json.from }}\nSubject: {{ $('If booking-related email').first().json.subject }}\n\nBody: {{ $('Microsoft Outlook Trigger').first().json.body.content }}\n\nAttachmentFileName: {{ $json.firstValidAttachment.fileName }}\n\nAttachmentIdentifier: {{  $json.voucherIdentifier }}\n\nAttachmentData:",
+        "text": "=Here is my email content:\n\nFrom: {{ $('If booking-related email').first().json.from }}\nSubject: {{ $('If booking-related email').first().json.subject }}\nEmail Category Code: {{ $('Build booking knowledge').first().json.emailCategoryCode }}\nAttachmentUrl: {{ $json.attachmentUrl }}\nBody: {{ $('Microsoft Outlook Trigger').first().json.body.content }}\n",
         "options": {
-          "systemMessage": "=## 🧠 AI Agent Instruction: Archive Email to Lynx MCP Server LOCAL 2\n\nYou are an AI agent responsible for archiving the provided email content into the **Lynx MCP Server LOCAL 2** system.\n\n## 🛠 Task Workflow\n\n### 1️⃣ Attachment Upload *(Conditional)*  \nProceed **only if** both email fields `AttachmentFileName` and `AttachmentData` are **non-empty**.\n\n- **Invoke Tool**: `attachment_upload`  \n- **Parameters**:  \n  - `binary`: provided `AttachmentData` (base64-encoded)  \n  - `identifier`: provided `AttachmentIdentifier`  \n  - `fileName`: provided `AttachmentFileName`\n\n### 2️⃣ Get `attachmentUrl`  \n- If **error** or **no result** returned:  \n  - Return an empty response  \n  - **Terminate process**  \n\n- If **one result** is returned:  \n  - Extract the `attachmentUrl` for the next step\n\n### 3️⃣ Save Transaction Document  \n- **Invoke Tool**: `transaction_document_save`  \n- **Parameters**:  \n  - `fileIdentifier`: `$2s7`  \n  - `transactionIdentifier`: `BgsOD`  \n  - `name`: use the provided **email subject**  \n  - `content`: use the provided **email body content** *(prefer HTML)*  \n  - `type`: use the provided **email category code**  \n  - `attachmentUrl`: use extracted `attachmentUrl` or an empty string if no upload occurred\n\n### 4️⃣ Completion  \nAfter tool execution, expect an empty response.  \n✅ No additional actions are required after this step."
+          "systemMessage": "=## 🧠 AI Agent Instruction: Archive Email to Lynx MCP Server LOCAL 2\n\nYou are an AI agent responsible for archiving the provided email content into the **Lynx MCP Server LOCAL 2** system.\n\n## 🛠 Task Workflow\n\n### 1️⃣ Save Transaction Document  \n- **Invoke Tool**: `transaction_document_save`  \n- **Parameters**:  \n  - `fileIdentifier`: `$2s7`  \n  - `transactionIdentifier`: `BgsOD`  \n  - `name`: use the provided **email subject**  \n  - `content`: use the provided **email body content** *(prefer HTML)*  \n  - `type`: use the provided **email category code**  \n  - `attachmentUrl`: use the provided **attachment URL**, or a blank string if empty\n\n### 3️⃣ Completion  \nAfter tool execution, expect an empty response.  \n✅ No additional actions are required after this step."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        2300,
-        100
+        3020,
+        -20
       ],
       "id": "d59fcfa5-caef-457f-aaf0-8f0bd676be78",
       "name": "Store email as file document",
@@ -784,7 +783,7 @@
       "typeVersion": 1,
       "position": [
         1530,
-        400
+        280
       ],
       "id": "603977c3-f523-47ed-9d70-d1b972ce9c78",
       "name": "No need to store anything"
@@ -818,7 +817,7 @@
       "typeVersion": 2.2,
       "position": [
         1170,
-        250
+        130
       ],
       "id": "c74f9849-0842-435b-9aad-a7c6ef6893a7",
       "name": "If email from supplier"
@@ -836,7 +835,7 @@
       "typeVersion": 2,
       "position": [
         1460,
-        0
+        -120
       ],
       "id": "0c3318b1-824e-4854-bffe-47a45d2401b6",
       "name": "Retrieve related transaction",
@@ -847,11 +846,138 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2660,
-        100
+        3440,
+        -20
       ],
       "id": "ca1e2643-0243-4f81-9270-353316d30075",
       "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1ec2dd17-8598-4482-a3b6-559334ba20a7",
+              "leftValue": "={{ $json.firstValidAttachment }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2300,
+        -20
+      ],
+      "id": "25e44d97-2053-4360-a97b-e6b2bcb55cbd",
+      "name": "If has attachment"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "=firstValidAttachment.data",
+        "binaryPropertyName": "attachment",
+        "options": {
+          "fileName": "={{ $json.firstValidAttachment.fileName }}",
+          "mimeType": "={{ $json.firstValidAttachment.mimeType }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2520,
+        -120
+      ],
+      "id": "c7b86a19-57b1-4b77-9ed8-8e275c0c97a8",
+      "name": "Convert to Attachment"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:9600/attachmentUpload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "attachment"
+            },
+            {
+              "name": "fileId",
+              "value": "={{ $('Extract JSON').item.json.voucherIdentifier }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2740,
+        -120
+      ],
+      "id": "0fcc6dda-6647-4794-8732-269365b4c7f4",
+      "name": "Upload Attachment",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "zb9hdyb9PVMQstXI",
+          "name": "Bearer Token for MCP Server LOCAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "619c1474-c075-46b2-a290-7c86a4b96d37",
+              "name": "attachmentUrl",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2740,
+        430
+      ],
+      "id": "af023df6-a212-4e56-b615-00e84d287b13",
+      "name": "Empty attachmentUrl"
     }
   ],
   "pinData": {},
@@ -1151,7 +1277,7 @@
       "main": [
         [
           {
-            "node": "Store email as file document",
+            "node": "If has attachment",
             "type": "main",
             "index": 0
           }
@@ -1219,6 +1345,57 @@
           }
         ]
       ]
+    },
+    "If has attachment": {
+      "main": [
+        [
+          {
+            "node": "Convert to Attachment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Empty attachmentUrl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Attachment": {
+      "main": [
+        [
+          {
+            "node": "Upload Attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Attachment": {
+      "main": [
+        [
+          {
+            "node": "Store email as file document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empty attachmentUrl": {
+      "main": [
+        [
+          {
+            "node": "Store email as file document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1227,7 +1404,7 @@
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "9c81b3a8-464e-4b8c-8ea5-4adaeb7d5bdc",
+  "versionId": "af5bd97f-5ed1-4623-bb73-b9cf70faf9c4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
