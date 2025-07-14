@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/config"
+	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/rest"
 	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/tools"
 	"dodmcdund.cc/lynx-travel-agent/lynxmcpserver/pkg/utils"
 
@@ -31,9 +32,18 @@ func main() {
 	mcpServer := NewMCPServer()
 	sse := server.NewSSEServer(mcpServer)
 
+	// Create a multiplexer to handle multiple routes
+	mux := http.NewServeMux()
+
+	// Add the SSE server route at root for MCP client compatibility
+	mux.Handle("/", sse)
+
+	// Add the attachment upload endpoint
+	mux.HandleFunc("/attachmentUpload", rest.HandleAttachmentUpload)
+
 	// Create custom HTTP server with BearerAuthMiddleware
 	httpServer := &http.Server{
-		Handler: utils.BearerAuthMiddleware(serverConfig.BearerToken)(sse),
+		Handler: utils.BearerAuthMiddleware(serverConfig.BearerToken)(mux),
 	}
 
 	// Use WithHTTPServer to inject our custom server
@@ -47,7 +57,8 @@ func main() {
 		serverErrors <- sse.Start(":" + serverConfig.Port)
 	}()
 
-	log.Printf("Started SSE server on %s/see", serverConfig.Port)
+	log.Printf("Started SSE server on %s/", serverConfig.Port)
+	log.Printf("Started attachment upload endpoint on %s/attachmentUpload", serverConfig.Port)
 
 	// Create a channel to listen for OS signals
 	sigChan := make(chan os.Signal, 1)
