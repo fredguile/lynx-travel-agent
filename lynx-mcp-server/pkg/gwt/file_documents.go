@@ -35,7 +35,7 @@ type TransactionDocumentSaveDetailsArgs struct {
 }
 
 func BuildTransactionDocumentSaveGWTBody(args *TransactionDocumentSaveDetailsArgs) string {
-	return fmt.Sprintf("7|0|10|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|saveFileDocumentsDetails|com.lynxtraveltech.common.gui.shared.model.DocumentDetails/2779362264|java.lang.Long/4227064769|%s|%s|%s|%s|1|2|3|4|1|5|5|6|%s|1|A|0|0|0|FO6_|7|8|0|%s|9|10|0|", args.RemoteHost, args.Content, args.Type, args.Name, args.AttachmentURL, args.TransactionIdentifier, args.FileIdentifier)
+	return fmt.Sprintf("7|0|10|https://%s/lynx/lynx/|63A734E3E71C14883B20AFEC1238F6A7|com.lynxtraveltech.client.client.rpc.FileService|saveFileDocumentsDetails|com.lynxtraveltech.common.gui.shared.model.DocumentDetails/2779362264|java.lang.Long/4227064769|%s|%s|%s|%s|1|2|3|4|1|5|5|6|%s|1|A|0|0|0|P__________|7|8|0|%s|9|10|0|", args.RemoteHost, args.Content, args.Type, args.Name, args.AttachmentURL, args.TransactionIdentifier, args.FileIdentifier)
 }
 
 type FileDocumentSaveDetailsArgs struct {

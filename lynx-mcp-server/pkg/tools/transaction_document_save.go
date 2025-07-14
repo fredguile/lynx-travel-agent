@@ -95,7 +95,7 @@ func HandleTransactionDocumentSave(
 
 	attachmentUrl, ok := arguments["attachmentUrl"].(string)
 	if !ok {
-		return nil, fmt.Errorf("invalid attachmentUrl argument: %v", arguments["attachmentUrl"])
+		attachmentUrl = ""
 	}
 
 	body := gwt.BuildTransactionDocumentSaveGWTBody(&gwt.TransactionDocumentSaveDetailsArgs{
