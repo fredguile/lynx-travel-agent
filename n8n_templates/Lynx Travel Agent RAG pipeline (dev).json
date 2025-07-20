@@ -20,7 +20,7 @@
       "typeVersion": 1,
       "position": [
         -140,
-        830
+        500
       ],
       "id": "05dc57e5-c675-47b6-9b76-9eb98f22b663",
       "name": "Microsoft Outlook Trigger",
@@ -97,7 +97,7 @@
       "typeVersion": 3.4,
       "position": [
         80,
-        830
+        500
       ],
       "id": "4d5a47c6-6c63-4135-8ed1-a801b97a4555",
       "name": "Select Relevant Fields"
@@ -117,7 +117,7 @@
       "typeVersion": 1.9,
       "position": [
         300,
-        830
+        500
       ],
       "id": "959c52e7-182e-41ed-a061-cd36b4179703",
       "name": "Classify booking-related emails",
@@ -132,7 +132,7 @@
       "typeVersion": 2,
       "position": [
         660,
-        830
+        500
       ],
       "id": "6408b463-7b76-4909-9100-c65dde890a53",
       "name": "Build booking knowledge",
@@ -168,7 +168,7 @@
       "typeVersion": 2.2,
       "position": [
         880,
-        830
+        500
       ],
       "id": "12b37d1c-c8d8-4927-97f9-3598318a5db3",
       "name": "If booking-related email"
@@ -202,7 +202,7 @@
       "typeVersion": 2.2,
       "position": [
         1170,
-        1030
+        700
       ],
       "id": "5ae8e327-0246-492d-9e7a-e2240fd8ccc8",
       "name": "If booking has attachment"
@@ -243,7 +243,7 @@
       "typeVersion": 3.2,
       "position": [
         2300,
-        1030
+        700
       ],
       "id": "8002c088-fa72-4360-ba36-2503612c6770",
       "name": "Switch"
@@ -259,7 +259,7 @@
       "typeVersion": 1,
       "position": [
         1530,
-        930
+        700
       ],
       "id": "b0de4ac4-36f7-4900-a750-342f65ebeff0",
       "name": "Split Out"
@@ -272,7 +272,7 @@
       "typeVersion": 3,
       "position": [
         1950,
-        930
+        700
       ],
       "id": "c850e9b2-d8a1-4360-88aa-d43be7270a8b",
       "name": "Loop Over Items"
@@ -290,7 +290,7 @@
       "typeVersion": 1.1,
       "position": [
         2520,
-        780
+        700
       ],
       "id": "72dc8302-fede-444d-ab17-c7cc0320545d",
       "name": "Convert to File"
@@ -301,43 +301,10 @@
       "typeVersion": 1,
       "position": [
         1170,
-        1230
+        900
       ],
       "id": "e78f3e32-f7e9-40a8-b017-3af7ff05ab94",
       "name": "Not booking-related, do nothing"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        1530,
-        1130
-      ],
-      "id": "59c0e29e-c341-421e-b496-95a207969f0b",
-      "name": "No attachment, do nothing"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        2300,
-        530
-      ],
-      "id": "93f978f2-5fa2-485c-9804-c7e892ee22a6",
-      "name": "Loop done, nothing to do"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        2520,
-        1130
-      ],
-      "id": "6202d754-74db-469b-a4d0-b6427edbfba3",
-      "name": "Not implemented yet"
     },
     {
       "parameters": {
@@ -349,7 +316,7 @@
       "typeVersion": 1,
       "position": [
         2740,
-        780
+        700
       ],
       "id": "d6d9aea3-6aa6-4c31-9a82-0fb0922eaf24",
       "name": "Extract from PDF"
@@ -369,7 +336,7 @@
       "typeVersion": 1.1,
       "position": [
         1840,
-        330
+        100
       ],
       "id": "35cafd11-40b9-4450-a09a-dbad0d9905bb",
       "name": "Supabase Vector Store for Emails",
@@ -395,7 +362,7 @@
       "typeVersion": 1.1,
       "position": [
         2980,
-        780
+        700
       ],
       "id": "b99b5216-aac5-4def-a5e6-33caade7bdd0",
       "name": "Supabase Vector Store for PDFs",
@@ -414,7 +381,7 @@
       "typeVersion": 2,
       "position": [
         1530,
-        530
+        300
       ],
       "id": "d019fdd2-7987-446b-b920-4b1325a7aa50",
       "name": "Code"
@@ -432,7 +399,7 @@
       "typeVersion": 1.9,
       "position": [
         1100,
-        530
+        200
       ],
       "id": "3ff14099-c254-4131-976f-f19427f3b2f4",
       "name": "Summarize email content"
@@ -449,7 +416,7 @@
       "typeVersion": 1,
       "position": [
         380,
-        1050
+        720
       ],
       "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
       "name": "Ollama Chat Model 1",
@@ -471,7 +438,7 @@
       "typeVersion": 1,
       "position": [
         1180,
-        750
+        420
       ],
       "id": "c5aba24f-c04a-43d6-970f-081908717c9e",
       "name": "Ollama Chat Model 2",
@@ -490,7 +457,7 @@
       "typeVersion": 1.2,
       "position": [
         1820,
-        550
+        320
       ],
       "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
       "name": "Embeddings OpenAI 1",
@@ -509,7 +476,7 @@
       "typeVersion": 1.2,
       "position": [
         2960,
-        1000
+        920
       ],
       "id": "fed834d0-bba7-4a0b-95bd-08c9cd985f28",
       "name": "Embeddings OpenAI 2",
@@ -529,7 +496,7 @@
       "typeVersion": 1,
       "position": [
         2020,
-        750
+        520
       ],
       "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
       "name": "Recursive Character Text Splitter 1"
@@ -543,7 +510,7 @@
       "typeVersion": 1,
       "position": [
         3160,
-        1200
+        1120
       ],
       "id": "bf38bfdc-4a4b-4f5f-a459-88bd62e5d8c0",
       "name": "Recursive Character Text Splitter 2"
@@ -591,7 +558,7 @@
       "typeVersion": 1,
       "position": [
         1940,
-        552.5
+        322.5
       ],
       "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
       "name": "Document Loader 1"
@@ -643,7 +610,7 @@
       "typeVersion": 1,
       "position": [
         3080,
-        1002.5
+        922.5
       ],
       "id": "57125b25-b721-4fb6-9268-a201a70258b9",
       "name": "Document Loader 2"
@@ -662,7 +629,7 @@
       "typeVersion": 1,
       "position": [
         1600,
-        100
+        20
       ],
       "id": "49d62188-af54-41da-8829-de5ea3379a47",
       "name": "Lynx MCP Server LOCAL",
@@ -686,7 +653,7 @@
       "typeVersion": 1.2,
       "position": [
         1480,
-        100
+        20
       ],
       "id": "6e6c8846-5c35-40cc-99a0-6605ee8c6747",
       "name": "OpenAI Chat Model",
@@ -699,13 +666,13 @@
     },
     {
       "parameters": {
-        "jsCode": "try {\n  const input = JSON.parse($input.first().json.output);\n\n  let firstValidAttachment = null;\n\n  for (const attachment of $(\"Build booking knowledge\").first().json.attachments) {\n    if ( attachment.binary.data.mimeType === 'application/pdf' && firstValidAttachment ==  null) { \n      firstValidAttachment = {\n        data: attachment.binary.data.data,\n        mimeType: attachment.binary.data.mimeType,\n        fileName: attachment.json.fileName,\n      };\n   }\n }\n  \n  return {\n    voucherIdentifier: input.voucherIdentifier,\n    date: input.date,\n    transactionIdentifier: input.transactionIdentifier,\n    supplier: input.supplier,\n    status: input.status,\n    confirmationNumber: input.confirmationNumber,\n    firstValidAttachment,\n  };\n}\ncatch {\n  return {};\n}"
+        "jsCode": "try {\n  const input = JSON.parse($input.first().json.output);\n\n  let firstValidAttachment = null;\n\n  for (const attachment of $(\"Build booking knowledge\").first().json.attachments) {\n    if ( attachment.binary.data.mimeType === 'application/pdf' && firstValidAttachment ==  null) { \n      firstValidAttachment = {\n        data: attachment.binary.data.data,\n        mimeType: attachment.binary.data.mimeType,\n        fileName: attachment.json.fileName,\n      };\n   }\n }\n  \n  return {\n    voucherIdentifier: input.voucherIdentifier,\n    date: input.date,\n    transactionIdentifier: input.transactionIdentifier,\n    fileIdentifier: input.fileIdentifier,\n    supplier: input.supplier,\n    status: input.status,\n    confirmationNumber: input.confirmationNumber,\n    firstValidAttachment,\n  };\n}\ncatch {\n  return {};\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         1950,
-        -20
+        -100
       ],
       "id": "0eba9941-8f10-4602-b88d-1169758b0d75",
       "name": "Extract JSON"
@@ -723,8 +690,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3040,
-        200
+        3460,
+        120
       ],
       "id": "ce1a170c-a664-4ea8-9811-7739bf01d813",
       "name": "OpenAI Chat Model 2",
@@ -747,8 +714,8 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        3160,
-        200
+        3580,
+        120
       ],
       "id": "6fc1bfec-89ce-454e-9a08-d4a484675f99",
       "name": "Lynx MCP Server LOCAL 2",
@@ -770,23 +737,12 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        3020,
-        -20
+        3440,
+        -100
       ],
       "id": "d59fcfa5-caef-457f-aaf0-8f0bd676be78",
       "name": "Store email as file document",
       "executeOnce": true
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        1530,
-        280
-      ],
-      "id": "603977c3-f523-47ed-9d70-d1b972ce9c78",
-      "name": "No need to store anything"
     },
     {
       "parameters": {
@@ -798,6 +754,16 @@
             "version": 2
           },
           "conditions": [
+            {
+              "id": "c65c3e72-2923-4510-8562-2f179a860378",
+              "leftValue": "={{ $('Build booking knowledge').item.json.fileReference }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
             {
               "id": "88e185f9-035f-4af4-864d-9786913ee97d",
               "leftValue": "={{ $json.emailCategoryCode }}",
@@ -817,7 +783,7 @@
       "typeVersion": 2.2,
       "position": [
         1170,
-        130
+        -100
       ],
       "id": "c74f9849-0842-435b-9aad-a7c6ef6893a7",
       "name": "If email from supplier"
@@ -828,29 +794,18 @@
         "text": "=Here is my email content:\nReceived At: {{ $json.receivedAt }}\nFrom: {{ $json.from }}\nSubject: {{ $json.subject }}\nFile Reference: {{ $json.fileReference }}\nBody: {{ $json.body }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "# 🧠 AI Agent Prompt: Email-Based Travel Transaction Matching\n\nYou are an AI agent responsible for analyzing email content to determine if it corresponds to a specific travel transaction. Provided with both the email content and a known `fileReference`, you will use tools from the **MCP Server Local** system to retrieve and evaluate transaction data.\n\n## 🛠 Step-by-Step Instructions\n\n### 1. Search for File Reference\n- **Use tool**: `file_search_by_file_reference`\n- **Input**: `fileReference` — the known reference provided\n\n### 2. Validate Search Result\n- If **no result** or **multiple results** are returned:\n  - Output an empty response  \n  - Stop processing  \n- If **exactly one result** is returned:\n  - Extract the `fileIdentifier`\n\n### 3. Retrieve Itinerary Details\n- **Use tool**: `retrieve_itinerary`\n- **Input**: `fileIdentifier` — obtained from step 2  \n- The tool returns a list of travel transactions\n\n### 4. Match Transaction Against Email  \nCompare the following fields from each transaction with the email subject or body:\n- `voucherIdentifier`\n- `supplier`\n- `location`\n- `confirmationNumber`\n\nIf a matching transaction is found, format the response as described below.  \nIf no match is found or if the tool returns an empty list, respond with an empty output.\n\n## 📦 Structured JSON Response\n```json\n{\n  \"voucherIdentifier\": \"<string>\",\n  \"date\": \"<string>\",\n  \"transactionIdentifier\": \"<string>\",\n  \"supplier\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmationNumber\": \"<string>\"\n}\n```\n"
+          "systemMessage": "# 🧠 AI Agent Prompt: Email-Based Travel Transaction Matching\n\nYou are an AI agent responsible for analyzing email content to determine if it corresponds to a specific travel transaction. Provided with both the email content and a known `fileReference`, you will use tools from the **MCP Server Local** system to retrieve and evaluate transaction data.\n\n## 🛠 Step-by-Step Instructions\n\n### 1. Search for File Reference\n- **Use tool**: `file_search_by_file_reference`\n- **Input**: `fileReference` — the known reference provided\n\n### 2. Validate Search Result\n- If **no result** or **multiple results** are returned:\n  - Output an empty response  \n  - Stop processing  \n- If **exactly one result** is returned:\n  - Extract the `fileIdentifier`\n\n### 3. Retrieve Itinerary Details\n- **Use tool**: `retrieve_itinerary`\n- **Input**: `fileIdentifier` — obtained from step 2  \n- The tool returns a list of travel transactions\n\n### 4. Match Transaction Against Email  \nCompare the following fields from each transaction with the email subject or body:\n- `voucherIdentifier`\n- `supplier`\n- `location`\n- `confirmationNumber`\n\nIf a matching transaction is found, format the response as described below.  \nIf no match is found or if the tool returns an empty list, respond with an empty output.\n\n## 📦 Structured JSON Response\n```json\n{\n  \"voucherIdentifier\": \"<string>\",\n  \"date\": \"<string>\",\n  \"transactionIdentifier\": \"<string>\",\n  \"fileIdentifier\": \"<string>\",\n  \"supplier\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmationNumber\": \"<string>\"\n}\n```\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
         1460,
-        -120
+        -200
       ],
       "id": "0c3318b1-824e-4854-bffe-47a45d2401b6",
       "name": "Retrieve related transaction",
       "executeOnce": true
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        3440,
-        -20
-      ],
-      "id": "ca1e2643-0243-4f81-9270-353316d30075",
-      "name": "No Operation, do nothing"
     },
     {
       "parameters": {
@@ -880,8 +835,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2300,
-        -20
+        2520,
+        -100
       ],
       "id": "25e44d97-2053-4360-a97b-e6b2bcb55cbd",
       "name": "If has attachment"
@@ -899,8 +854,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        2520,
-        -120
+        2740,
+        -200
       ],
       "id": "c7b86a19-57b1-4b77-9ed8-8e275c0c97a8",
       "name": "Convert to Attachment"
@@ -944,8 +899,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2740,
-        -120
+        3090,
+        -200
       ],
       "id": "0fcc6dda-6647-4794-8732-269365b4c7f4",
       "name": "Upload Attachment",
@@ -973,11 +928,45 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2740,
-        430
+        3090,
+        100
       ],
       "id": "af023df6-a212-4e56-b615-00e84d287b13",
       "name": "Empty attachmentUrl"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7c485f65-81fe-4450-9bcc-7fec5c5cbec1",
+              "leftValue": "={{ $json.transactionIdentifier }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2300,
+        -100
+      ],
+      "id": "86ff801e-39a3-40bc-9607-b23c62454be6",
+      "name": "If retrieved transaction"
     }
   ],
   "pinData": {},
@@ -1063,13 +1052,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "No attachment, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Switch": {
@@ -1081,13 +1064,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Not implemented yet",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Split Out": {
@@ -1103,13 +1080,7 @@
     },
     "Loop Over Items": {
       "main": [
-        [
-          {
-            "node": "Loop done, nothing to do",
-            "type": "main",
-            "index": 0
-          }
-        ],
+        [],
         [
           {
             "node": "Switch",
@@ -1277,7 +1248,7 @@
       "main": [
         [
           {
-            "node": "If has attachment",
+            "node": "If retrieved transaction",
             "type": "main",
             "index": 0
           }
@@ -1315,13 +1286,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "No need to store anything",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Retrieve related transaction": {
@@ -1337,13 +1302,7 @@
     },
     "Store email as file document": {
       "main": [
-        [
-          {
-            "node": "No Operation, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "If has attachment": {
@@ -1396,6 +1355,17 @@
           }
         ]
       ]
+    },
+    "If retrieved transaction": {
+      "main": [
+        [
+          {
+            "node": "If has attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1404,7 +1374,7 @@
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "af5bd97f-5ed1-4623-bb73-b9cf70faf9c4",
+  "versionId": "75624ef9-8b95-47f3-ba5a-f1e623ad2666",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"

@@ -20,7 +20,7 @@
       "typeVersion": 1,
       "position": [
         -1280,
-        490
+        240
       ],
       "id": "442f93e4-3289-47f1-898a-aa5575a426fe",
       "name": "Microsoft Outlook Trigger",
@@ -97,7 +97,7 @@
       "typeVersion": 3.4,
       "position": [
         -1060,
-        490
+        240
       ],
       "id": "88f38f8b-42da-4231-b923-2a7f745a8c98",
       "name": "Select Relevant Fields"
@@ -117,7 +117,7 @@
       "typeVersion": 1.9,
       "position": [
         -840,
-        490
+        240
       ],
       "id": "8478bb90-bc78-44c4-8cc8-2420b354d846",
       "name": "Classify booking-related emails",
@@ -132,7 +132,7 @@
       "typeVersion": 2,
       "position": [
         -480,
-        490
+        240
       ],
       "id": "22a4b146-4ffc-4607-b7b5-ef626a5d74e0",
       "name": "Build booking knowledge",
@@ -147,7 +147,7 @@
       "typeVersion": 1,
       "position": [
         880,
-        410
+        260
       ],
       "id": "b53d0349-ad61-4de9-9fac-b23986d665af",
       "name": "Recursive Character Text Splitter"
@@ -182,7 +182,7 @@
       "typeVersion": 2.2,
       "position": [
         -260,
-        490
+        240
       ],
       "id": "9e25ec31-7043-4735-988f-d14406280557",
       "name": "If booking-related email"
@@ -216,7 +216,7 @@
       "typeVersion": 2.2,
       "position": [
         30,
-        690
+        440
       ],
       "id": "b6b64176-28ea-4c5f-a1d6-2df5d6d45b84",
       "name": "If booking has attachment"
@@ -271,7 +271,7 @@
       "typeVersion": 3.2,
       "position": [
         1160,
-        690
+        440
       ],
       "id": "c8bc4676-8443-4df9-b10a-8066ceaae2cf",
       "name": "Switch"
@@ -287,7 +287,7 @@
       "typeVersion": 1,
       "position": [
         390,
-        590
+        440
       ],
       "id": "cb0ebd6b-7005-4824-b1e5-00444e4d489d",
       "name": "Split Out"
@@ -300,7 +300,7 @@
       "typeVersion": 3,
       "position": [
         810,
-        590
+        440
       ],
       "id": "a0eed458-53f1-472c-8575-f567ce181ee0",
       "name": "Loop Over Items"
@@ -329,43 +329,10 @@
       "typeVersion": 1,
       "position": [
         30,
-        890
+        640
       ],
       "id": "115637df-a0f6-492a-99dd-1880fd6f5c38",
       "name": "Not booking-related, do nothing"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        390,
-        790
-      ],
-      "id": "a19ae8a6-97fd-43e3-8707-b491817858d3",
-      "name": "No attachment, do nothing"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        1160,
-        190
-      ],
-      "id": "f3c65f0a-862e-4abc-ba31-0fae0aa03082",
-      "name": "Loop done, nothing to do"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        1380,
-        790
-      ],
-      "id": "e7e0a4c9-de39-4de0-bbd3-9de7cfec08db",
-      "name": "Not implemented yet"
     },
     {
       "parameters": {
@@ -397,7 +364,7 @@
       "typeVersion": 1.1,
       "position": [
         700,
-        -10
+        -160
       ],
       "id": "e2ebd9e8-daf7-495a-82dc-ffc7ea1dfbfa",
       "name": "Supabase Vector Store for Emails",
@@ -451,7 +418,7 @@
       "typeVersion": 1.2,
       "position": [
         -760,
-        710
+        460
       ],
       "id": "7ff0ee57-4779-4af6-aa9d-0f2fffbb24f7",
       "name": "OpenAI Chat Model 1",
@@ -475,7 +442,7 @@
       "typeVersion": 2,
       "position": [
         -40,
-        190
+        -60
       ],
       "id": "fcbfbed1-27ae-49dc-a185-ff04fee8d795",
       "name": "Summarize email content"
@@ -495,7 +462,7 @@
       "typeVersion": 1.2,
       "position": [
         40,
-        410
+        160
       ],
       "id": "0f8541ae-1210-45e0-8540-e7999dadf3a1",
       "name": "OpenAI Chat Model",
@@ -514,7 +481,7 @@
       "typeVersion": 2,
       "position": [
         390,
-        190
+        40
       ],
       "id": "3d41ae20-7eec-4a54-9632-1e3e2398e361",
       "name": "Code"
@@ -529,7 +496,7 @@
       "typeVersion": 1.2,
       "position": [
         680,
-        210
+        60
       ],
       "id": "f09faf41-c7f8-4545-8b0a-f25aa307ac43",
       "name": "Embeddings OpenAI 1",
@@ -587,7 +554,7 @@
       "typeVersion": 1,
       "position": [
         800,
-        212.5
+        62.5
       ],
       "id": "5f959f45-12e4-4e6b-ab3b-78110484b900",
       "name": "Document Loader 1"
@@ -684,6 +651,16 @@
           },
           "conditions": [
             {
+              "id": "dbf24b63-fdfb-4332-b557-ecfcc5b2ece1",
+              "leftValue": "={{ $('Build booking knowledge').item.json.fileReference }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
               "id": "88e185f9-035f-4af4-864d-9786913ee97d",
               "leftValue": "={{ $json.emailCategoryCode }}",
               "rightValue": "SUPP",
@@ -702,7 +679,7 @@
       "typeVersion": 2.2,
       "position": [
         30,
-        -210
+        -360
       ],
       "id": "5a88a7e5-5ebb-4070-9d05-62db1dc1a7f2",
       "name": "If email from supplier"
@@ -713,7 +690,7 @@
         "text": "=Here is my email content:\nReceived At: {{ $json.receivedAt }}\nFrom: {{ $json.from }}\nSubject: {{ $json.subject }}\nFile Reference: {{ $json.fileReference }}\nBody: {{ $json.body }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "# 🧠 AI Agent Prompt: Email-Based Travel Transaction Matching\n\nYou are an AI agent responsible for analyzing email content to determine if it corresponds to a specific travel transaction. Provided with both the email content and a known `fileReference`, you will use tools from the **Lynx MCP Server** system to retrieve and evaluate transaction data.\n\n## 🛠 Step-by-Step Instructions\n\n### 1. Search for File Reference\n- **Use tool**: `file_search_by_file_reference`\n- **Input**: `fileReference` — the known reference provided\n\n### 2. Validate Search Result\n- If **no result** or **multiple results** are returned:\n  - Output an empty response  \n  - Stop processing  \n- If **exactly one result** is returned:\n  - Extract the `fileIdentifier`\n\n### 3. Retrieve Itinerary Details\n- **Use tool**: `retrieve_itinerary`\n- **Input**: `fileIdentifier` — obtained from step 2  \n- The tool returns a list of travel transactions\n\n### 4. Match Transaction Against Email  \nCompare the following fields from each transaction with the email subject or body:\n- `voucherIdentifier`\n- `supplier`\n- `location`\n- `confirmationNumber`\n\nIf a matching transaction is found, format the response as described below.  \nIf no match is found or if the tool returns an empty list, respond with an empty output.\n\n## 📦 Structured JSON Response\n```json\n{\n  \"voucherIdentifier\": \"<string>\",\n  \"date\": \"<string>\",\n  \"transactionIdentifier\": \"<string>\",\n  \"supplier\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmationNumber\": \"<string>\"\n}\n```\n"
+          "systemMessage": "# 🧠 AI Agent Prompt: Email-Based Travel Transaction Matching\n\nYou are an AI agent responsible for analyzing email content to determine if it corresponds to a specific travel transaction. Provided with both the email content and a known `fileReference`, you will use tools from the **Lynx MCP Server** system to retrieve and evaluate transaction data.\n\n## 🛠 Step-by-Step Instructions\n\n### 1. Search for File Reference\n- **Use tool**: `file_search_by_file_reference`\n- **Input**: `fileReference` — the known reference provided\n\n### 2. Validate Search Result\n- If **no result** or **multiple results** are returned:\n  - Output an empty response  \n  - Stop processing  \n- If **exactly one result** is returned:\n  - Extract the `fileIdentifier`\n\n### 3. Retrieve Itinerary Details\n- **Use tool**: `retrieve_itinerary`\n- **Input**: `fileIdentifier` — obtained from step 2  \n- The tool returns a list of travel transactions\n\n### 4. Match Transaction Against Email  \nCompare the following fields from each transaction with the email subject or body:\n- `voucherIdentifier`\n- `supplier`\n- `location`\n- `confirmationNumber`\n\nIf a matching transaction is found, format the response as described below.  \nIf no match is found or if the tool returns an empty list, respond with an empty output.\n\n## 📦 Structured JSON Response\n```json\n{\n  \"voucherIdentifier\": \"<string>\",\n  \"date\": \"<string>\",\n  \"transactionIdentifier\": \"<string>\",\n  \"fileIdentifier\": \"<string>\",\n  \"supplier\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmationNumber\": \"<string>\"\n}\n```\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -727,7 +704,7 @@
     },
     {
       "parameters": {
-        "jsCode": "try {\n  const input = JSON.parse($input.first().json.output);\n\n  let firstValidAttachment = null;\n\n  for (const attachment of $(\"Build booking knowledge\").first().json.attachments) {\n    if ( attachment.binary.data.mimeType === 'application/pdf' && firstValidAttachment ==  null) { \n      firstValidAttachment = {\n        data: attachment.binary.data.data,\n        mimeType: attachment.binary.data.mimeType,\n        fileName: attachment.json.fileName,\n      };\n   }\n }\n  \n  return {\n    voucherIdentifier: input.voucherIdentifier,\n    date: input.date,\n    transactionIdentifier: input.transactionIdentifier,\n    supplier: input.supplier,\n    status: input.status,\n    confirmationNumber: input.confirmationNumber,\n    firstValidAttachment,\n  };\n}\ncatch {\n  return {};\n}"
+        "jsCode": "try {\n  const input = JSON.parse($input.first().json.output);\n\n  let firstValidAttachment = null;\n\n  for (const attachment of $(\"Build booking knowledge\").first().json.attachments) {\n    if ( attachment.binary.data.mimeType === 'application/pdf' && firstValidAttachment ==  null) { \n      firstValidAttachment = {\n        data: attachment.binary.data.data,\n        mimeType: attachment.binary.data.mimeType,\n        fileName: attachment.json.fileName,\n      };\n   }\n }\n  \n  return {\n    voucherIdentifier: input.voucherIdentifier,\n    date: input.date,\n    transactionIdentifier: input.transactionIdentifier,\n    fileIdentifier: input.fileIdentifier,\n    supplier: input.supplier,\n    status: input.status,\n    confirmationNumber: input.confirmationNumber,\n    firstValidAttachment,\n  };\n}\ncatch {\n  return {};\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -741,42 +718,20 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Here is my email content:\n\nFrom: {{ $('If booking-related email').first().json.from }}\nSubject: {{ $('If booking-related email').first().json.subject }}\nEmail Category Code: {{ $('Build booking knowledge').first().json.emailCategoryCode }}\nAttachmentUrl: {{ $json.attachmentUrl }}\nBody: {{ $('Microsoft Outlook Trigger').first().json.body.content }}\n",
+        "text": "=Here is my email content:\n\nFrom: {{ $('If booking-related email').first().json.from }}\nSubject: {{ $('If booking-related email').first().json.subject }}\nEmail Category Code: {{ $('Build booking knowledge').first().json.emailCategoryCode }}\nTransaction Identifier: {{ $('Extract JSON').first().json.transactionIdentifier }}\nFile Identifier: {{ $('Extract JSON').first().json.fileIdentifier }}\nAttachmentUrl: {{ $json.attachmentUrl }}\nBody: {{ $('Microsoft Outlook Trigger').first().json.body.content }}\n",
         "options": {
-          "systemMessage": "=## 🧠 AI Agent Instruction: Archive Email to Lynx MCP Server 2\n\nYou are an AI agent responsible for archiving the provided email content into the **Lynx MCP Server 2** system.\n\n## 🛠 Task Workflow\n\n### 1️⃣ Save Transaction Document  \n- **Invoke Tool**: `transaction_document_save`  \n- **Parameters**:  \n  - `fileIdentifier`: `$2s7`  \n  - `transactionIdentifier`: `BgsOD`  \n  - `name`: use the provided **email subject**  \n  - `content`: use the provided **email body content** *(prefer HTML)*  \n  - `type`: use the provided **email category code**  \n  - `attachmentUrl`: use the provided **attachment URL**, or a blank string if empty\n\n### 3️⃣ Completion  \nAfter tool execution, expect an empty response.  \n✅ No additional actions are required after this step."
+          "systemMessage": "=## 🧠 AI Agent Instruction: Archive Email to Lynx MCP Server 2\n\nYou are an AI agent responsible for archiving the provided email content into the **Lynx MCP Server 2** system.\n\n## 🛠 Task Workflow\n\n### 1️⃣ Save Transaction Document  \n- **Invoke Tool**: `transaction_document_save`  \n- **Parameters**:  \n  - `fileIdentifier`: use the provided **file identifier**\n  - `transactionIdentifier`: use the provided **transaction identifier**\n  - `name`: use the provided **email subject**  \n  - `content`: use the provided **email body content** *(prefer HTML)*  \n  - `type`: use the provided **email category code**  \n  - `attachmentUrl`: use the provided **attachment URL**, or a blank string if empty\n\n### 3️⃣ Completion  \nAfter tool execution, expect an empty response.  \n✅ No additional actions are required after this step."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        1880,
+        2300,
         -360
       ],
       "id": "695c6eca-be19-40d9-8e15-92cfcb0ec69c",
       "name": "Store email as file document",
       "executeOnce": true
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        390,
-        -60
-      ],
-      "id": "9275d1da-f3bc-4dce-8aeb-c178fd6155d1",
-      "name": "No need to store anything"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        2300,
-        -360
-      ],
-      "id": "b4552ea0-5002-486e-8e83-518b046c1ddc",
-      "name": "No Operation, do nothing"
     },
     {
       "parameters": {
@@ -815,7 +770,7 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        2020,
+        2440,
         -140
       ],
       "id": "896b9888-991b-4c24-a2f3-1281bea72637",
@@ -863,7 +818,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1900,
+        2320,
         -140
       ],
       "id": "91e9ffd5-21da-436f-8d08-a68a7a5ebf28",
@@ -903,7 +858,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1160,
+        1380,
         -360
       ],
       "id": "1d6f4c24-5847-42f2-99c0-16af59d0c4a5",
@@ -922,7 +877,7 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        1380,
+        1600,
         -460
       ],
       "id": "1106294c-4a77-4907-ac21-405ce18305c4",
@@ -967,7 +922,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1600,
+        1950,
         -460
       ],
       "id": "25ea074f-2a34-488a-8eef-b7c2e3328be7",
@@ -996,11 +951,45 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1600,
-        90
+        1950,
+        -160
       ],
       "id": "4ec9d92a-10af-46d1-8faa-a7cab7d0dcce",
       "name": "Empty attachmentUrl"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "44009bb1-6ac0-44aa-b219-248dc6f3e574",
+              "leftValue": "={{ $json.transactionIdentifier }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        -360
+      ],
+      "id": "cc1070f7-7c98-4142-a4f7-539d1741300d",
+      "name": "If retrieved transaction"
     }
   ],
   "pinData": {},
@@ -1097,13 +1086,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "No attachment, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Recursive Character Text Splitter1": {
@@ -1126,13 +1109,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Not implemented yet",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Split Out": {
@@ -1148,13 +1125,7 @@
     },
     "Loop Over Items": {
       "main": [
-        [
-          {
-            "node": "Loop done, nothing to do",
-            "type": "main",
-            "index": 0
-          }
-        ],
+        [],
         [
           {
             "node": "Switch",
@@ -1283,13 +1254,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "No need to store anything",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Retrieve related transaction": {
@@ -1307,7 +1272,7 @@
       "main": [
         [
           {
-            "node": "If has attachment",
+            "node": "If retrieved transaction",
             "type": "main",
             "index": 0
           }
@@ -1316,13 +1281,7 @@
     },
     "Store email as file document": {
       "main": [
-        [
-          {
-            "node": "No Operation, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Lynx MCP Server": {
@@ -1419,13 +1378,24 @@
           }
         ]
       ]
+    },
+    "If retrieved transaction": {
+      "main": [
+        [
+          {
+            "node": "If has attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a48c950f-c768-4a40-8b69-655d0424eada",
+  "versionId": "94c8c487-3e6d-4360-b85e-6afcb0082c56",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "71858dc20d24af9eb47eadb374391d01e8a205e765e9dfb0596516276c758084"
