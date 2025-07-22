@@ -19,7 +19,7 @@
       "type": "n8n-nodes-base.microsoftOutlookTrigger",
       "typeVersion": 1,
       "position": [
-        -140,
+        -540,
         500
       ],
       "id": "05dc57e5-c675-47b6-9b76-9eb98f22b663",
@@ -96,7 +96,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
+        -100,
         500
       ],
       "id": "4d5a47c6-6c63-4135-8ed1-a801b97a4555",
@@ -108,7 +108,7 @@
         "text": "=Here is my email content:\nReceived At: {{ $json.receivedDateTime }}\nFrom:  {{ $json.from.emailAddress.name }} <{{ $json.from.emailAddress.address }}>\nTo: {{ $json.toRecipients[0].emailAddress.address }}\nSubject: {{ $json.subject }}\nBody: {{ $json.body.content.removeTags().trim() }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly. If an e-mail is classified as booking-related, you will classify an e-mail category following instructions below.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking or not:\n  - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n  - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Email Category**: Analyze the content of a booking-related email (see previous point) and determine to which of the following 4 categories it belongs: Supplier communication (SUPP), Agent Communication (CLINT), Travelling Client Communication (CLCOM) or General (GEN):\n  - If the email sender works for Voyageurs du Monde, Comptoir des Voyages or Pan Pacific Travel, classify it as Supplier Communication and use code SUPP.\n  - If the email sender provides a travel service as part of a travel itinerary (example: hotel booking, leisure or car rental), classify it as Supplier Communication and use code SUPP.\n  - If the email  is written by the travelling customer themselves (example: question about travel or reply to an agent), classify it as Travelling Client Communication  and use code (CLCOM).\n  - if none of these patterns applies, classify it as General and use code GEN.\n\n3. **Extract File Reference (if available)**: If the email contains a file reference, extract it and include it in the response. File reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n4. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"emailCategoryCode\": <string>, // Optional. The inferred email category code (e.g., \"SUPP\", \"CLINT\", \"CLCOM\", \"FLIGH\", \"GEN\").\n  \"fileReference\": \"<string>\",  // Optional. If a file reference is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"english\", \"french\").\n}",
+          "systemMessage": "=You are an AI agent designed to analyze the content of emails and determine whether they pertain to a travel booking. Given an email, you will process its text and classify it accordingly. If an e-mail is classified as booking-related, you will classify an e-mail category following instructions below.\n\n### Instructions:\n1. **Booking Classification**: Analyze the content of the email and determine whether it relates to a travel booking or not:\n  - If the email contains travel reservation details, confirmations, itinerary information, or booking updates, classify it as booking-related.\n  - If the email does not pertain to a booking, classify it as not booking-related.\n\n2. **Email Category**: Analyze the content of a booking-related email (see previous point) and determine to which of the following 4 categories it belongs: Supplier communication (SUPP), Agent Communication (CLINT), Travelling Client Communication (CLCOM) or General (GEN):\n  - If the email sender works for Voyageurs du Monde, Comptoir des Voyages or Pan Pacific Travel, classify it as Agent Communication and use code CLINT. In other words, if the sender has an email address that contains \"panpacifictravel.com.au\", classify it as Agent Communication and use code CLINT.\n  - If the email sender doesn't match the previous rule and still provides a travel service as part of a travel itinerary (example: hotel booking, leisure or car rental), classify it as Supplier Communication and use code SUPP.\n  - If the email  is written by the travelling customer themselves (example: question about travel or reply to an agent), classify it as Travelling Client Communication  and use code (CLCOM).\n  - if none of these patterns applies, classify it as General and use code GEN.\n\n3. **Extract File Reference (if available)**: If the email contains a file reference, extract it and include it in the response. File reference is a plain string containing alphanumerical characters, no spaces, always starting with the \"FT\" prefix. It's generally found next to the customer lastname informations.\n\n4. **Infer Language**: Identify the primary language of the email content. There are only 2 possible language, french or english. Set value to either \"english\" or \"french\". If unknown, default to \"English\".\n\n### Expected JSON Response:\nReturn a structured JSON object with the following attributes:\n```json\n{\n  \"bookingRelated\": <boolean>,  // Required. \"true\" if the email is related to a travel booking, otherwise \"false\".\n  \"emailCategoryCode\": <string>, // Optional. The inferred email category code (e.g., \"SUPP\", \"CLINT\", \"CLCOM\", \"FLIGH\", \"GEN\").\n  \"fileReference\": \"<string>\",  // Optional. If a file reference is found, provide it; otherwise, return an empty string.\n  \"inferredLanguage\": \"<string>\"  // Required. The inferred language of the email content (e.g., \"english\", \"french\").\n}",
           "maxIterations": 1,
           "returnIntermediateSteps": false
         }
@@ -116,7 +116,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        300,
+        120,
         500
       ],
       "id": "959c52e7-182e-41ed-a061-cd36b4179703",
@@ -131,7 +131,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        660,
+        480,
         500
       ],
       "id": "6408b463-7b76-4909-9100-c65dde890a53",
@@ -167,7 +167,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        880,
+        700,
         500
       ],
       "id": "12b37d1c-c8d8-4927-97f9-3598318a5db3",
@@ -201,7 +201,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1170,
+        990,
         700
       ],
       "id": "5ae8e327-0246-492d-9e7a-e2240fd8ccc8",
@@ -232,6 +232,29 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "655bba28-0bbb-4382-a804-6d8e46708a80",
+                    "leftValue": "={{ $json.binary.data.fileExtension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -242,7 +265,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        2300,
+        2120,
         700
       ],
       "id": "8002c088-fa72-4360-ba36-2503612c6770",
@@ -258,7 +281,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1530,
+        1350,
         700
       ],
       "id": "b0de4ac4-36f7-4900-a750-342f65ebeff0",
@@ -271,7 +294,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1950,
+        1770,
         700
       ],
       "id": "c850e9b2-d8a1-4360-88aa-d43be7270a8b",
@@ -289,7 +312,7 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        2520,
+        2340,
         700
       ],
       "id": "72dc8302-fede-444d-ab17-c7cc0320545d",
@@ -300,7 +323,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1170,
+        990,
         900
       ],
       "id": "e78f3e32-f7e9-40a8-b017-3af7ff05ab94",
@@ -315,7 +338,7 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        2740,
+        2560,
         700
       ],
       "id": "d6d9aea3-6aa6-4c31-9a82-0fb0922eaf24",
@@ -335,7 +358,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        1840,
+        1660,
         100
       ],
       "id": "35cafd11-40b9-4450-a09a-dbad0d9905bb",
@@ -361,7 +384,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.1,
       "position": [
-        2980,
+        2800,
         700
       ],
       "id": "b99b5216-aac5-4def-a5e6-33caade7bdd0",
@@ -380,7 +403,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1530,
+        1350,
         300
       ],
       "id": "d019fdd2-7987-446b-b920-4b1325a7aa50",
@@ -398,7 +421,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        1100,
+        920,
         200
       ],
       "id": "3ff14099-c254-4131-976f-f19427f3b2f4",
@@ -415,7 +438,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        380,
+        200,
         720
       ],
       "id": "f42ba9e1-0d97-4e64-91a5-8c8dcd3af428",
@@ -437,7 +460,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        1180,
+        1000,
         420
       ],
       "id": "c5aba24f-c04a-43d6-970f-081908717c9e",
@@ -456,7 +479,7 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1820,
+        1640,
         320
       ],
       "id": "ef90af3d-2553-4180-b6f2-85e9b6078718",
@@ -475,7 +498,7 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2960,
+        2780,
         920
       ],
       "id": "fed834d0-bba7-4a0b-95bd-08c9cd985f28",
@@ -495,7 +518,7 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        2020,
+        1840,
         520
       ],
       "id": "30b5a9de-57cf-4966-b779-5fa526a1498e",
@@ -509,7 +532,7 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        3160,
+        2980,
         1120
       ],
       "id": "bf38bfdc-4a4b-4f5f-a459-88bd62e5d8c0",
@@ -557,7 +580,7 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        1940,
+        1760,
         322.5
       ],
       "id": "9fa8d8de-dade-410d-8f23-d4bdfb9dd699",
@@ -609,7 +632,7 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        3080,
+        2900,
         922.5
       ],
       "id": "57125b25-b721-4fb6-9268-a201a70258b9",
@@ -628,7 +651,7 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        1600,
+        1420,
         20
       ],
       "id": "49d62188-af54-41da-8829-de5ea3379a47",
@@ -652,7 +675,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1480,
+        1300,
         20
       ],
       "id": "6e6c8846-5c35-40cc-99a0-6605ee8c6747",
@@ -671,7 +694,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1950,
+        1770,
         -100
       ],
       "id": "0eba9941-8f10-4602-b88d-1169758b0d75",
@@ -690,7 +713,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        3460,
+        3280,
         120
       ],
       "id": "ce1a170c-a664-4ea8-9811-7739bf01d813",
@@ -714,7 +737,7 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        3580,
+        3400,
         120
       ],
       "id": "6fc1bfec-89ce-454e-9a08-d4a484675f99",
@@ -737,7 +760,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        3440,
+        3260,
         -100
       ],
       "id": "d59fcfa5-caef-457f-aaf0-8f0bd676be78",
@@ -782,7 +805,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1170,
+        990,
         -100
       ],
       "id": "c74f9849-0842-435b-9aad-a7c6ef6893a7",
@@ -800,7 +823,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        1460,
+        1280,
         -200
       ],
       "id": "0c3318b1-824e-4854-bffe-47a45d2401b6",
@@ -835,7 +858,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2520,
+        2340,
         -100
       ],
       "id": "25e44d97-2053-4360-a97b-e6b2bcb55cbd",
@@ -854,7 +877,7 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        2740,
+        2560,
         -200
       ],
       "id": "c7b86a19-57b1-4b77-9ed8-8e275c0c97a8",
@@ -899,7 +922,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3090,
+        2910,
         -200
       ],
       "id": "0fcc6dda-6647-4794-8732-269365b4c7f4",
@@ -928,7 +951,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3090,
+        2910,
         100
       ],
       "id": "af023df6-a212-4e56-b615-00e84d287b13",
@@ -962,11 +985,45 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2300,
+        2120,
         -100
       ],
       "id": "86ff801e-39a3-40bc-9607-b23c62454be6",
       "name": "If retrieved transaction"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c3cf69e9-9346-4543-b6b8-5ae9b405bbf6",
+              "leftValue": "={{ $json.isDraft }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        500
+      ],
+      "id": "f043ebec-d81d-4a69-a0ce-a59972692134",
+      "name": "Discard Drafts"
     }
   ],
   "pinData": {},
@@ -975,7 +1032,7 @@
       "main": [
         [
           {
-            "node": "Select Relevant Fields",
+            "node": "Discard Drafts",
             "type": "main",
             "index": 0
           }
@@ -1057,6 +1114,13 @@
     },
     "Switch": {
       "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Convert to File",
@@ -1366,6 +1430,17 @@
           }
         ]
       ]
+    },
+    "Discard Drafts": {
+      "main": [
+        [
+          {
+            "node": "Select Relevant Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1374,7 +1449,7 @@
     "timezone": "Europe/Paris",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "75624ef9-8b95-47f3-ba5a-f1e623ad2666",
+  "versionId": "b943e654-847b-465d-ae3c-b7b3420aea73",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6a78c7ff53dbf8b685f1a29b43c6372d678ea2682ddfbb53e124dfee099dbf82"
