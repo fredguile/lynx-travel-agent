@@ -1,16 +1,44 @@
 {
   "name": "lynx-travel-agent-browser-extension",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Firefox/Chrome extension to use as Lynx Travel Agent.",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "yarn clean && parcel build manifest.json",
+    "build": "yarn clean && parcel build manifest.json && yarn check-bundle-size",
+    "check-bundle-size": "find dist -name '*.js' -exec wc -c {} + | awk '{if($1>5242880) {print \"❌ Bundle \" $2 \" exceeds 5MB: \" $1 \" bytes\"; exit 1} else if($1>4000000) {print \"⚠️  Bundle \" $2 \" is large: \" $1 \" bytes\"} else {print \"✅ Bundle \" $2 \": \" $1 \" bytes\"}} END {if($1<=5242880) print \"🎉 All bundles are under 5MB!\"}'",
+    "lint": "web-ext lint",
+    "sign": "web-ext sign",
     "watch": "DEBUG=* parcel watch manifest.json --host localhost"
+  },
+  "@parcel/bundler-default": {
+    "manualSharedBundles": [
+      {
+        "name": "react-vendor",
+        "assets": [
+          "react",
+          "react-dom"
+        ],
+        "types": [
+          "js"
+        ]
+      },
+      {
+        "name": "ui-chunk",
+        "assets": [
+          "src/ui.tsx"
+        ],
+        "types": [
+          "tsx"
+        ]
+      }
+    ]
   },
   "author": "Fred Ghilini <fredguile@gmail.com>",
   "license": "UNLICENSED",
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "dependencies": {
+    "@compiled/react": "^0.18.4",
+    "@n8n/chat": "^0.50.0",
     "debug": "^4.4.1",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
@@ -20,9 +48,9 @@
   },
   "devDependencies": {
     "@compiled/babel-plugin": "^0.38.0",
-    "@compiled/react": "^0.18.4",
-    "@parcel/config-webextension": "^2.15.2",
-    "@parcel/core": "^2.15.2",
+    "@parcel/config-webextension": "~2.15.2",
+    "@parcel/core": "~2.15.2",
+    "@parcel/optimizer-terser": "^2.15.4",
     "@types/debug": "^4.1.12",
     "@types/firefox-webext-browser": "^120.0.4",
     "@types/lodash": "^4.17.17",
@@ -30,9 +58,10 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "console-browserify": "^1.2.0",
-    "parcel": "^2.15.2",
+    "parcel": "~2.15.4",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "~5.7.2"
+    "typescript": "~5.7.2",
+    "web-ext": "^8.9.0"
   }
 }

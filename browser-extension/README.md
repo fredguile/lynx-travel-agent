@@ -27,3 +27,9 @@ yarn watch
 As Firefox user, I usually go to `about:debugging` and load the `dist` folder as temporary extension. 
 
 When using `yarn watch`, Parcel will automatically reload the current page to force reload the latest extension code (HMR).
+
+## How to sign
+
+```sh
+yarn sign --api-key <API_KEY> --api-secret <API_SECRET> --channel unlisted --source-dir dist/
+```
