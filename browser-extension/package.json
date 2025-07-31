@@ -8,7 +8,7 @@
     "check-bundle-size": "find dist -name '*.js' -exec wc -c {} + | awk '{if($1>5242880) {print \"❌ Bundle \" $2 \" exceeds 5MB: \" $1 \" bytes\"; exit 1} else if($1>4000000) {print \"⚠️  Bundle \" $2 \" is large: \" $1 \" bytes\"} else {print \"✅ Bundle \" $2 \": \" $1 \" bytes\"}} END {if($1<=5242880) print \"🎉 All bundles are under 5MB!\"}'",
     "lint": "web-ext lint",
     "sign": "web-ext sign",
-    "watch": "DEBUG=* parcel watch manifest.json --host localhost"
+    "watch": "yarn clean && DEBUG=* parcel watch manifest.json --host localhost"
   },
   "@parcel/bundler-default": {
     "manualSharedBundles": [

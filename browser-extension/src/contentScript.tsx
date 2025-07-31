@@ -1,8 +1,8 @@
 /// <reference types="@types/firefox-webext-browser"/>
 import { debounce } from 'lodash';
 import { sessionStorage } from './sessionStorage';
-import { wrapElementWithAutoSuggest } from './ui';
-import { createLogger, createContentChangeObserver, findElementLabel, isWhitelistedAIField, waitForElements } from './utils';
+import { createLogger, createContentChangeObserver, findElementLabel, waitForElements } from './utils';
+import { injectN8nChat } from './ui';
 
 const log = createLogger('contentScript');
 
@@ -50,15 +50,18 @@ async function onPageRefreshed() {
     // Set flag to indicate we're modifying DOM
     isWrappingDOMFields = true;
 
-    for (const element of document.querySelectorAll('input, textarea') as NodeListOf<HTMLElement>) {
-        if (isWhitelistedAIField(currentUrl, element) && currentBookingRef) {
-            // Check if element is already wrapped by looking for our placeholder
-            const isAlreadyWrapped = element.closest('[id^="ai-auto-suggest-placeholder-"]') !== null;
-            if (!isAlreadyWrapped) {
-                wrapElementWithAutoSuggest(element);
-            }
-        }
-    }
+    // FEATURE IS DISABLED FOR NOW
+    // for (const element of document.querySelectorAll('input, textarea') as NodeListOf<HTMLElement>) {
+    //     if (isWhitelistedAIField(currentUrl, element) && currentBookingRef) {
+    //         // Check if element is already wrapped by looking for our placeholder
+    //         const isAlreadyWrapped = element.closest('[id^="ai-auto-suggest-placeholder-"]') !== null;
+    //         if (!isAlreadyWrapped) {
+    //             wrapElementWithAutoSuggest(element);
+    //         }
+    //     }
+    // }
+
+    await injectN8nChat();
 
     // Reset flag after DOM modifications are complete
     isWrappingDOMFields = false;
