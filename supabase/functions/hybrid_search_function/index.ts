@@ -5,7 +5,8 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { OpenAIEmbeddings } from "npm:@langchain/openai";
-import { createClient, SupabaseClient } from 'jsr:@supabase/supabase-js@2.50.2';
+import { SupabaseVectorStore } from "npm:@langchain/community/vectorstores/supabase";
+import { createClient, SupabaseClient } from 'jsr:@supabase/supabase-js';
 import { CohereClient } from "npm:cohere-ai";
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -31,9 +32,10 @@ if (!cohereApiKey) {
 const EMBEDDING_MODEL = "text-embedding-3-small";
 const EMBEDDING_SIZE = 1536;
 
-const SIMILARITY_QUERY_NAME = "hybrid_search";
+const TABLE_NAME = "emails";
+const SIMILARITY_QUERY_NAME = "semantic_search";
 const KEYWORD_QUERY_NAME = "kw_hybrid_search";
-const SIMILARITY_K = 3;
+const SIMILARITY_K = 4;
 const KEYWORD_K = 3;
 
 interface SearchResult {
@@ -96,24 +98,28 @@ async function rerankWithCohere(
 
 async function customHybridSearch(
   client: SupabaseClient,
-  embeddings: OpenAIEmbeddings,
+  vectorStore: SupabaseVectorStore,
   query: string,
   filterByFileReference: string | null
 ): Promise<SearchResult[]> {
-  // Generate embedding for the query
-  const queryEmbedding = await embeddings.embedQuery(query);
-
   const filter = filterByFileReference ? {
     fileReference: filterByFileReference
   } : {};
 
+  const funcFilterOnBookingRef = (rpc: any) => {
+    if (filterByFileReference) {
+      rpc.filter("metadata->>fileReference::string", "ilike", `%${filterByFileReference}%`);
+    }
+    return rpc;
+  }
+
   // Call both similarity and keyword search functions
   const [similarityResults, keywordResults] = await Promise.all([
-    client.rpc(SIMILARITY_QUERY_NAME, {
-      query_embedding: queryEmbedding,
-      match_count: SIMILARITY_K,
-      filter: filter
-    }),
+    await vectorStore.similaritySearchWithScore(
+      query,
+      SIMILARITY_K,
+      funcFilterOnBookingRef
+    ),
     client.rpc(KEYWORD_QUERY_NAME, {
       query_text: query,
       match_count: KEYWORD_K,
@@ -125,19 +131,21 @@ async function customHybridSearch(
   const allResults = new Map<string, SearchResult>();
 
   // Process similarity results
-  if (similarityResults?.data && Array.isArray(similarityResults.data)) {
-    similarityResults.data.forEach((result: any) => {
-      const key = `${result.content}-${JSON.stringify(result.metadata)}`;
+  if (Array.isArray(similarityResults)) {
+    console.log("similarityResults length", similarityResults.length);
+    similarityResults.forEach(([{ pageContent, metadata }, score]: any) => {
+      const key = `${pageContent}-${JSON.stringify(metadata)}`;
       allResults.set(key, {
-        pageContent: result.content,
-        metadata: result.metadata,
-        score: result.similarity
+        pageContent,
+        metadata,
+        score
       });
     });
   }
-  
+
   // Process keyword results
   if (keywordResults?.data && Array.isArray(keywordResults.data)) {
+    console.log("keywordResults length", keywordResults.data.length);
     keywordResults.data.forEach((result: any) => {
       const key = `${result.content}-${JSON.stringify(result.metadata)}`;
       if (!allResults.has(key)) {
@@ -151,7 +159,7 @@ async function customHybridSearch(
   }
 
   const combinedResults = Array.from(allResults.values());
-  
+
   // Apply Cohere reranking to improve the final ranking
   return await rerankWithCohere(query, combinedResults);
 }
@@ -163,19 +171,31 @@ Deno.serve(async (req) => {
     throw new Error("query is required");
   }
 
+  console.log("query:", query);
+  console.log("filterByFileReference:", filterByFileReference);
+
   const client = createClient(supabaseUrl, supabaseServiceRoleKey);
 
   const embeddings = new OpenAIEmbeddings({
     apiKey: openaiApiKey,
     model: EMBEDDING_MODEL,
-    dimensions: EMBEDDING_SIZE
+    dimensions: EMBEDDING_SIZE,
   });
 
-  const results = await customHybridSearch(client, embeddings, query, filterByFileReference);
+  const vectorStore = new SupabaseVectorStore(embeddings, {
+    client,
+    tableName: TABLE_NAME,
+    queryName: SIMILARITY_QUERY_NAME,
+  });
+
+  const results = await customHybridSearch(client, vectorStore, query, filterByFileReference);
+
+  console.log("results length:", results.length);
 
   return new Response(
     JSON.stringify(
       results
+        .filter(({ score }) => !!score && score > 0)
         .map(({ pageContent: emailContent, metadata, score }) => ({ emailContent, metadata, score }))
     ), {
     headers: {

@@ -6,7 +6,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { OpenAIEmbeddings } from "npm:@langchain/openai";
 import { SupabaseVectorStore } from "npm:@langchain/community/vectorstores/supabase";
-import { createClient } from 'jsr:@supabase/supabase-js@2.50.2';
+import { createClient } from 'jsr:@supabase/supabase-js';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 if (!supabaseUrl) {
@@ -37,6 +37,9 @@ Deno.serve(async (req) => {
         throw new Error("query is required");
     }
 
+    console.log("query:", query);
+    console.log("filterByFileReference:", filterByFileReference);
+
     const client = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     const embeddings = new OpenAIEmbeddings({
@@ -64,12 +67,14 @@ Deno.serve(async (req) => {
         funcFilterOnBookingRef
     );
 
+    console.log("results length:", results.length);
+
     return new Response(
         JSON.stringify(
             results
                 .filter(([_, score]) => score > 0)
                 .map(([{ pageContent: emailContent, metadata }, score]) => ({ emailContent, metadata, score })
-            )
+                )
         ), {
         headers: {
             'Content-Type': 'application/json'

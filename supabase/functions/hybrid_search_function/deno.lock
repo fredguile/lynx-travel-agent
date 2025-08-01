@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@supabase/functions-js@*": "2.4.4",
+    "jsr:@supabase/supabase-js@*": "2.50.2",
     "jsr:@supabase/supabase-js@2": "2.49.6",
     "jsr:@supabase/supabase-js@2.50.2": "2.50.2",
     "npm:@langchain/community@*": "0.3.47_@browserbasehq+stagehand@1.14.0__@playwright+test@1.53.1__deepmerge@4.3.1__dotenv@16.5.0__openai@4.100.0___zod@3.25.67___ws@8.18.2__zod@3.25.67__ws@8.18.2_@ibm-cloud+watsonx-ai@1.6.8_@langchain+core@0.3.61__openai@4.100.0___zod@3.25.67___ws@8.18.2__zod@3.25.67_ibm-cloud-sdk-core@5.4.0__axios@1.10.0_openai@4.100.0__ws@8.18.2__zod@3.25.67_zod@3.25.67_cohere-ai@7.17.1",
