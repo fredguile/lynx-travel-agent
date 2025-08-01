@@ -1,5 +1,5 @@
 import { StatusPopup } from './ui/components/StatusPopup';
-import { renderReactComponent } from './utils';
+import { renderReactComponent } from './ui/utils';
 
 // Event listener for when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {

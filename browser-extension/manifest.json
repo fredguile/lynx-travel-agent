@@ -2,7 +2,7 @@
   "description": "Firefox/Chrome extension to use as Lynx Travel Agent.",
   "manifest_version": 2,
   "name": "Lynx Travel Agent",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "homepage_url": "https://github.com/fredguile/lynx-travel-agent",
   "icons": {
     "128": "src/icons/icon-light-128.png",

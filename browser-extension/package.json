@@ -1,6 +1,6 @@
 {
   "name": "lynx-travel-agent-browser-extension",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Firefox/Chrome extension to use as Lynx Travel Agent.",
   "scripts": {
     "clean": "rm -rf dist",

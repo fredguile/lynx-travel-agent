@@ -3,7 +3,7 @@ import type { WhitelistedAIFields } from './types';
 export const ENDPOINTS = {
     // ANALYSE_USER_CLICK: "http://localhost:5678/webhook/1831ad0f-9c9b-4fb3-99e6-1ce8c0857931",
     // AI_AUTO_SUGGEST: "http://localhost:5678/webhook/12ad90c0-beb8-44e8-b46e-373d7f4809ea",
-    AI_CHATBOT: "https://pn8n.dodmcdund.cc/webhook/2dce8a97-da40-474a-bc1d-80286a44a9bf/chat",
+    AI_CHATBOT: "https://pn8n.dodmcdund.cc/webhook/022d6461-e68d-4531-b713-833953c388c2/chat",
 }
 
 export const WHITELISTED_AI_FIELDS: WhitelistedAIFields = {
