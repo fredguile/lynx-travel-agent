@@ -2,7 +2,7 @@
   "name": "supabase",
   "packageManager": "yarn@4.6.0",
   "devDependencies": {
-    "supabase": "2.33.7"
+    "supabase": "2.39.2"
   },
   "scripts": {
     "login": "supabase login",
